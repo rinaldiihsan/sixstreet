@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const Sidebar = ({ sidebarOpen, showSidebar }) => {
+const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn }) => {
   const [activeSubMenu, setActiveSubMenu] = useState(null);
 
   const toggleSubMenu = (subMenu) => {
     setActiveSubMenu(activeSubMenu === subMenu ? null : subMenu);
+  };
+
+  useEffect(() => {
+    setActiveSubMenu(null);
+  }, [isLoggedIn]);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
   };
 
   return (
@@ -241,6 +249,35 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                           Live with sixstreet
                         </Link>
                       </li>
+                    </ul>
+                  </li>
+                  {/* User Section */}
+                  <li className="block md:hidden">
+                    <button className="flex justify-between w-full" onClick={() => toggleSubMenu('user')}>
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">User</span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">{activeSubMenu === 'user' ? '-' : '+'}</span>
+                    </button>
+                    <ul className={`${activeSubMenu === 'user' ? 'block' : 'hidden'} pl-4 space-y-1`}>
+                      {isLoggedIn ? (
+                        <>
+                          <li>
+                            <Link to="/profile" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                              Profile
+                            </Link>
+                          </li>
+                          <li>
+                            <button onClick={handleLogout} className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                              Logout
+                            </button>
+                          </li>
+                        </>
+                      ) : (
+                        <li>
+                          <Link to="/login" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                            Login
+                          </Link>
+                        </li>
+                      )}
                     </ul>
                   </li>
                 </ul>

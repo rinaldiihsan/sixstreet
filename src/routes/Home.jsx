@@ -9,10 +9,16 @@ const Home = () => {
       setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    const mediaQuery = window.matchMedia('(min-width: 1098px)');
+
+    if (mediaQuery.matches) {
+      window.addEventListener('resize', handleResize);
+    }
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      if (mediaQuery.matches) {
+        window.removeEventListener('resize', handleResize);
+      }
     };
   }, []);
 
@@ -22,10 +28,10 @@ const Home = () => {
         <img src="/hero1.png" alt="Hero" className="w-full" style={{ height: windowHeight }} />
         <div className="absolute bottom-[10%] left-0 text-white px-10 flex flex-col items-start">
           <div className="max-w-[40rem] mb-2">
-            <h1 className="uppercase font-overpass tracking-[10px] font-extrabold text-3xl">sixstreet apparel</h1>
-            <p className="capitalize font-garamond font-medium text-2xl">Lorem ipsum dolor sit amet consectetur. Vehicula ac bibendum elit varius auctor posuere.</p>
+            <h1 className="uppercase font-overpass tracking-[8px] md:tracking-[10px] font-extrabold text-2xl md:text-3xl">sixstreet apparel</h1>
+            <p className="capitalize font-garamond font-medium text-xl md:text-2xl">Lorem ipsum dolor sit amet consectetur. Vehicula ac bibendum elit varius auctor posuere.</p>
           </div>
-          <Link className="capitalize font-garamond font-medium text-2xl border border-white px-12 py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
+          <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-8 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
             Buy Now
           </Link>
         </div>
@@ -34,15 +40,15 @@ const Home = () => {
         <img src="/hero2.png" alt="Hero2" className="w-full" style={{ height: windowHeight }} />
         <div className="absolute bottom-[10%] right-0 text-white px-10 flex flex-col items-end">
           <div className="max-w-[40rem] mb-2 ">
-            <h1 className="uppercase font-overpass tracking-[10px] font-extrabold text-3xl text-right">sixstreet apparel</h1>
-            <p className="capitalize font-garamond font-medium text-2xl text-right">Lorem ipsum dolor sit amet consectetur. Vehicula ac bibendum elit varius auctor posuere.</p>
+            <h1 className="uppercase font-overpass tracking-[8px] md:tracking-[10px] font-extrabold text-2xl md:text-3xl text-right">sixstreet apparel</h1>
+            <p className="capitalize font-garamond font-medium text-xl md:text-2xl text-right">Lorem ipsum dolor sit amet consectetur. Vehicula ac bibendum elit varius auctor posuere.</p>
           </div>
-          <Link className="capitalize font-garamond font-medium text-2xl border border-white px-12 py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
+          <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-8 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
             Buy Now
           </Link>
         </div>
       </div>
-      <div className="max-w-[115rem] mx-auto flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10">
+      <div className="max-w-[115rem] mx-5 md:mx-auto flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10">
         <div className="flex flex-col gap-y-5 items-center">
           <Link to="/">
             <img src="/dummy-product.png" alt="dummy" className="w-[27rem]" />
