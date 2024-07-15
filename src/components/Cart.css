@@ -13,7 +13,7 @@
 .overlay-cart {
   position: fixed;
   top: 0;
-  right: 0; /* Mengubah left menjadi right */
+  right: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(16, 16, 16, 0.3);
@@ -38,4 +38,11 @@
 
 .cart-closed .cart-content {
   transform: translateX(100%); /* Cart tertutup, translasi keluar layar */
+}
+
+/* Responsif layar hp */
+@media screen and (max-width: 768px) {
+  .cart-content {
+    width: 100%;
+  }
 }

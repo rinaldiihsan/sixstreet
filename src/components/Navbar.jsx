@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-// CSS
+import React, { useState, useEffect, useRef, useId } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import './Navbar.css';
 import Sidebar from './Sidebar';
 import Cart from './Cart';
+import { useCart } from './CartContext';
+import { toast } from 'react-toastify';
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [scrolling, setScrolling] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(1);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const showSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -26,9 +30,30 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     setUserDropdownOpen(!userDropdownOpen);
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserDropdownOpen(false);
+  const handleLogout = async () => {
+    try {
+      await axios.delete('http://localhost:3000/logout');
+      Cookies.remove('accessToken');
+      sessionStorage.removeItem('DetailUser');
+      setIsLoggedIn(false);
+      setUserDropdownOpen(false);
+      navigate('/login');
+      window.location.reload();
+    } catch (error) {
+      console.error(
+        toast.error('Gagal melakukan logout', {
+          position: 'top-right',
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          limit: 1,
+          className: 'font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg',
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -69,6 +94,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     <>
       <nav className={`${navbarColor} fixed top-0 left-0 right-0 w-full z-[999] transition-colors duration-300`}>
         <div className="max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex justify-between items-center">
+          {/* Hamburger Button */}
           <Link to="#" className="menu-bars transition-colors duration-300" onClick={showSidebar}>
             <svg className="w-7 h-7 md:w-8 md:h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 11.6667H35" stroke={svgColor} strokeWidth="2" strokeLinecap="round" />
@@ -77,7 +103,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             </svg>
           </Link>
           <div className="logo">
-            <Link to="/" className={`font-garamond font-semibold text-xl md:text-3xl tracking-[12px] md:tracking-[18px] ${textColor}`}>
+            <Link to="/" className={`font-garamond font-semibold text-xl md:text-3xl tracking-[10px] md:tracking-[18px] ${textColor}`}>
               SIXSTREET
             </Link>
           </div>
@@ -99,7 +125,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                   <div className="py-1">
                     {isLoggedIn ? (
                       <>
-                        <Link to="/profile" className="block px-4 py-2 text-[#333333] font-medium font-overpass text-center">
+                        <Link to={`/profile/${userId}`} className="block px-4 py-2 text-[#333333] font-medium font-overpass text-center">
                           Profile
                         </Link>
                         <button onClick={handleLogout} className="block w-full px-4 py-2 text-[#333333] font-medium font-overpass text-center">
@@ -143,8 +169,8 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
         </div>
       </nav>
-      <Sidebar sidebarOpen={sidebarOpen} showSidebar={showSidebar} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Cart cartOpen={cartOpen} showCart={showCart} />
+      <Sidebar sidebarOpen={sidebarOpen} showSidebar={showSidebar} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} userId={userId} />
+      <Cart cartOpen={cartOpen} showCart={showCart} showSidebar={showSidebar} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} userId={userId} />
     </>
   );
 };
