@@ -172,6 +172,10 @@ const Profile = () => {
     return <div>Loading...</div>;
   }
 
+  const formatDate = (date) => {
+    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'full' }).format(new Date(date));
+  };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white p-8 shadow-md mx-3 md:max-w-md w-full space-y-2">
@@ -197,7 +201,7 @@ const Profile = () => {
               </li>
               <li className="block text-md text-[#333333] font-overpass">
                 Birthday:
-                <br /> {userData.birthday}
+                <br /> {formatDate(userData.birthday)}
               </li>
               <button className="bg-[#333] hover:bg-white font-garamond text-white hover:text-[#333] transition-colors w-full py-2" onClick={toggleEditUserForm}>
                 Edit Profile
