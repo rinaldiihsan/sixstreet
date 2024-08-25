@@ -2,29 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useCart } from './CartContext'; // Mengimpor CartContext
+import { useCart } from './CartContext';
 import Cookies from 'js-cookie';
+import CryptoJS from 'crypto-js';
 import './Cart.css';
+import { motion } from 'framer-motion';
 import axios from 'axios';
 
-const Cart = ({ cartOpen, showCart, isLoggedIn, userId }) => {
-  const { cartItems, fetchCartItems } = useCart();
+const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
+  const secretKey = import.meta.env.VITE_KEY_LOCALSTORAGE;
+  const { cartItems, setCartItems, fetchCartItems, removeFromCart, userAddress } = useCart();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const navigate = useNavigate();
 
+  function getUserId(key) {
+    const encryptedItem = sessionStorage.getItem(key);
+    if (!encryptedItem) {
+      return null;
+    }
+    const itemStr = decryptData(encryptedItem);
+    const item = JSON.parse(itemStr);
+    return item.user_id;
+  }
+
+  function decryptData(data) {
+    const bytes = CryptoJS.AES.decrypt(data, secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  }
+
   const handleRemoveItem = async (product) => {
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      const token = Cookies.get('accessToken');
-
-      await axios.delete(`${backendUrl}/cart/${userId}/${product.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      fetchCartItems(userId);
+      await removeFromCart(product);
     } catch (error) {
       console.error('Error removing item from cart:', error);
       toast.error('Failed to remove item from cart', {
@@ -48,12 +56,60 @@ const Cart = ({ cartOpen, showCart, isLoggedIn, userId }) => {
     }).format(price);
   };
 
-  const handleCheckout = () => {
-    if (isLoggedIn) {
-      navigate('/checkout');
-      showCart(false);
-    } else {
+  const handleCheckout = async () => {
+    const addressData = Array.isArray(userAddress) && userAddress.length > 0 ? userAddress[0] : undefined;
+
+    if (!isLoggedIn) {
       setShowLoginPopup(true);
+      return;
+    }
+
+    const userId = getUserId('DetailUser');
+    const token = Cookies.get('accessToken');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    try {
+      // Create transaction
+      const transactionResponse = await axios.post(
+        `${backendUrl}/transaction`,
+        {
+          user_id: userId,
+          name: addressData.username,
+          address: addressData.address,
+          cartItems: cartItems,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // Clear cart items
+      await axios.delete(`${backendUrl}/cart/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Cart cleared');
+
+      const transactionId = transactionResponse.data.transaction_uuid;
+      navigate(`/checkout/${userId}/${transactionId}`);
+      showCart(false);
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      toast.error('Failed to complete checkout', {
+        position: 'top-right',
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
@@ -69,20 +125,25 @@ const Cart = ({ cartOpen, showCart, isLoggedIn, userId }) => {
   }, [cartOpen]);
 
   useEffect(() => {
-    if (isLoggedIn && userId) {
-      fetchCartItems(userId);
+    if (isLoggedIn && cartOpen) {
+      fetchCartItems();
     }
-  }, [isLoggedIn, userId, fetchCartItems]);
+  }, [isLoggedIn, cartOpen, fetchCartItems]);
+
+  const cartVariants = {
+    open: { x: 0, opacity: 1, transition: { duration: 0.1, ease: 'easeInOut' } },
+    closed: { x: '100%', opacity: 0, transition: { duration: 0.1, ease: 'easeInOut' } },
+  };
 
   const renderCartItems = () => {
     return cartItems.map((product, index) => (
       <div key={`${product.product_id}`} className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 md:items-center justify-between mb-4" style={{ marginBottom: index < cartItems.length - 1 ? '30px' : '0' }}>
         <div className="flex items-center">
-          <img src={product.image || '/dummy-product.png'} alt={product.name} className="w-[5rem] h-[5rem] mr-4 " />
+          <img src={product.image || '/dummy-product.png'} alt={product.product_name} className="w-[5rem] h-[5rem] mr-4 " />
           <div className="flex flex-col">
-            <h4 className="md:text-lg font-overpass mb-2 font-medium">{product.name}</h4>
+            <h4 className="md:text-lg font-overpass mb-2 font-medium">{product.product_name}</h4>
             <div className="flex gap-x-5 mb-2">
-              {product.size && <h4 className="md:text-lg font-overpass">Size: {product.size}</h4>}
+              {product.size && <h4 className="md:text-lg font-overpass">Size: {product.product_size}</h4>}
               <p className="md:text-lg text-[#333333] font-overpass">Quantity: {product.quantity}</p>
             </div>
             <div className="flex gap-x-2 mb-2">
@@ -91,10 +152,10 @@ const Cart = ({ cartOpen, showCart, isLoggedIn, userId }) => {
                 Remove
               </button>
             </div>
-            <p className="block md:hidden font-overpass">{formatPrice(product.price * product.quantity)}</p>
+            <p className="block md:hidden font-overpass">{formatPrice(product.product_price * product.quantity)}</p>
           </div>
         </div>
-        <p className="hidden md:block text-lg font-overpass">{formatPrice(product.price * product.quantity)}</p>
+        <p className="hidden md:block text-lg font-overpass">{formatPrice(product.product_price * product.quantity)}</p>
       </div>
     ));
   };
@@ -106,7 +167,7 @@ const Cart = ({ cartOpen, showCart, isLoggedIn, userId }) => {
           <div className={`overlay-cart ${cartOpen ? 'overlay-open' : ''}`} onClick={() => showCart(false)}>
             <div className="absolute inset-0 bg-[#333333] opacity-30"></div>
           </div>
-          <div className={`cart-content ${cartOpen ? 'cart-content-open' : ''}`}>
+          <motion.div className={`cart-content ${cartOpen ? 'cart-content-open' : ''}`} initial="closed" animate={cartOpen ? 'open' : 'closed'} variants={cartVariants}>
             <div className="flex-1 flex flex-col py-10 overflow-y-auto">
               <div className="flex items-center justify-between w-full px-10">
                 <h2 className="font-garamond text-2xl font-semibold">Shopping Cart</h2>
@@ -128,7 +189,7 @@ const Cart = ({ cartOpen, showCart, isLoggedIn, userId }) => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
       {showLoginPopup && (

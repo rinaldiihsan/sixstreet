@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }) => {
   const [activeSubMenu, setActiveSubMenu] = useState(null);
@@ -20,6 +21,11 @@ const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }
     setIsLoggedIn(false);
   };
 
+  const sidebarVariants = {
+    open: { x: 0, opacity: 1, transition: { duration: 0.1, ease: 'easeInOut' } },
+    closed: { x: '-100%', opacity: 0, transition: { duration: 0.1, ease: 'easeInOut' } },
+  };
+
   return (
     <>
       {sidebarOpen && (
@@ -27,7 +33,7 @@ const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }
           <div className={`overlay`} onClick={showSidebar}>
             <div className="absolute inset-0 bg-[#333333] opacity-30"></div>
           </div>
-          <div className="sidebar-content">
+          <motion.div className="sidebar-content" initial="closed" animate={sidebarOpen ? 'open' : 'closed'} variants={sidebarVariants} transition={{ type: 'spring', stiffness: 100 }}>
             <div className="flex-1 flex flex-col py-10 overflow-y-auto">
               <div className="flex items-center justify-between w-full px-10 ">
                 <div className="logo">
@@ -244,6 +250,30 @@ const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }
                       </li>
                     </ul>
                   </li>
+                  {/* Collectible Item */}
+                  <li>
+                    <button className="flex justify-between w-full" onClick={() => toggleSubMenu('collectible')}>
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">collectible</span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">{activeSubMenu === 'collectible' ? '-' : '+'}</span>
+                    </button>
+                    <ul className={`${activeSubMenu === 'collectible' ? 'block' : 'hidden'} pl-4 space-y-1`}>
+                      <li>
+                        <Link to="/collectible/figure" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Figure
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/collectible/toys" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Toys
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/collectible/miniature" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Miniature
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
                   {/* Comunnity Menu */}
                   <li>
                     <button className="flex justify-between w-full" onClick={() => toggleSubMenu('comunnity')}>
@@ -309,7 +339,7 @@ const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }
                 </ul>
               </nav>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </>

@@ -4,14 +4,15 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const Profile = () => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { id } = useParams();
   const [userData, setUserData] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
-  const [showEditAddressForm, setShowEditAddressForm] = useState(false); // State for edit address form
-  const [editAddressId, setEditAddressId] = useState(null); // State to store edit address id
+  const [showEditAddressForm, setShowEditAddressForm] = useState(false);
+  const [editAddressId, setEditAddressId] = useState(null);
   const [formData, setFormData] = useState({
     address: '',
     kelurahan: '',
@@ -26,6 +27,7 @@ const Profile = () => {
     email: '',
     username: '',
     no_hp: '',
+    birthday: '',
   });
 
   const toggleSubMenu = (subMenu) => {
@@ -80,7 +82,7 @@ const Profile = () => {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(`http://localhost:3000/getAddress/${id}`, { headers });
+      const response = await axios.get(`${backendUrl}/getAddress/${id}`, { headers });
       setAddresses(response.data.addresses || []);
     } catch (error) {
       console.error('Error fetching addresses:', error);
@@ -94,7 +96,7 @@ const Profile = () => {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(`http://localhost:3000/detail/${id}`, { headers });
+      const response = await axios.get(`${backendUrl}/detail/${id}`, { headers });
       setUserData(response.data.message);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -114,7 +116,7 @@ const Profile = () => {
       const requestData = {
         address: combinedAddress,
       };
-      await axios.post(`http://localhost:3000/addAddress/${id}`, requestData, { headers });
+      await axios.post(`${backendUrl}/addAddress/${id}`, requestData, { headers });
       fetchAddresses();
       toggleAddAddressForm();
     } catch (error) {
@@ -130,13 +132,14 @@ const Profile = () => {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       };
-      const { email, username, no_hp } = formUser;
+      const { email, username, no_hp, birthday } = formUser;
       const requestData = {
         email,
         username,
         no_hp,
+        birthday,
       };
-      await axios.put(`http://localhost:3000/update/${id}`, requestData, { headers });
+      await axios.put(`${backendUrl}/update/${id}`, requestData, { headers });
       fetchUserData();
       toggleEditUserForm();
     } catch (error) {
@@ -157,7 +160,7 @@ const Profile = () => {
       const requestData = {
         newAddress: combinedAddress,
       };
-      await axios.put(`http://localhost:3000/updateAddress/${id}/${editAddressId}`, requestData, { headers });
+      await axios.put(`${backendUrl}/updateAddress/${id}/${editAddressId}`, requestData, { headers });
       fetchAddresses();
       setShowEditAddressForm(false);
     } catch (error) {
@@ -191,6 +194,10 @@ const Profile = () => {
               <li className="block text-md text-[#333333] font-overpass">
                 No. Handphone:
                 <br /> {userData.no_hp}
+              </li>
+              <li className="block text-md text-[#333333] font-overpass">
+                Birthday:
+                <br /> {userData.birthday}
               </li>
               <button className="bg-[#333] hover:bg-white font-garamond text-white hover:text-[#333] transition-colors w-full py-2" onClick={toggleEditUserForm}>
                 Edit Profile
@@ -242,6 +249,20 @@ const Profile = () => {
                           required
                         />
                       </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="birthday" className="font-overpass font-semibold">
+                          Birthday
+                        </label>
+                        <input
+                          type="date"
+                          id="birthday"
+                          name="birthday"
+                          value={formUser.birthday}
+                          onChange={handleChangeUser}
+                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
+                          required
+                        />
+                      </div>
                       <div className="flex justify-end">
                         {/* Cancel Button */}
                         <button type="button" onClick={toggleEditUserForm} className="bg-white text-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2">
@@ -277,9 +298,11 @@ const Profile = () => {
               ) : (
                 <li className="block text-md text-[#333333] font-overpass">No addresses found.</li>
               )}
-              <button className="bg-[#333] hover:bg-white font-garamond text-white hover:text-[#333] transition-colors w-full py-2" onClick={toggleAddAddressForm}>
-                Add Address
-              </button>
+              {addresses.length === 0 && (
+                <button className="bg-[#333] hover:bg-white font-garamond text-white hover:text-[#333] transition-colors w-full py-2" onClick={toggleAddAddressForm}>
+                  Add Address
+                </button>
+              )}
               {showAddAddressForm && (
                 <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
                   <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-4">

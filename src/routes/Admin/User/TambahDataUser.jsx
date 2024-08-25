@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Register = () => {
+const TambahDataUser = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -123,7 +123,7 @@ const Register = () => {
           className: ' font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg',
         });
         setOtpSent(false);
-        navigate('/login');
+        navigate('/user-management');
       } else {
         const errorData = await response.json();
         toast.error(`OTP verification failed: ${errorData.message}`, {
@@ -150,12 +150,11 @@ const Register = () => {
       });
     }
   };
-
   return (
     <>
       <div className="flex justify-center items-center h-screen bg-gray-100">
         <form onSubmit={handleSubmit} className="bg-white p-8 shadow-md mx-3 md:max-w-md w-full">
-          <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">Sign - Up</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">Tambah Data User</h2>
           <div className="mb-4">
             <label className="block text-[#333333] text-lg font-bold mb-2 font-garamond" htmlFor="username">
               Username
@@ -240,14 +239,8 @@ const Register = () => {
               className="bg-[#333333] hover:bg-[#ffffff] text-white hover:text-[#333333] font-bold py-2 px-8 focus:outline-none focus:shadow-outline font-garamond w-full transition-colors duration-300 focus:ring-0"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+              {isSubmitting ? 'Tunggu Sebentar...' : 'Tambah Data'}
             </button>
-          </div>
-          <div className="flex items-center justify-center mt-4 gap-x-2">
-            <p className="text-[#333333] text-lg font-garamond">Already have an account?</p>
-            <Link to="/login" className="text-[#333333] text-lg font-garamond font-bold hover:underline focus:outline-none focus:ring-0">
-              Sign In
-            </Link>
           </div>
         </form>
         {otpSent && (
@@ -281,4 +274,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default TambahDataUser;

@@ -15,11 +15,12 @@ const Login = ({ setIsLoggedIn }) => {
     return CryptoJS.AES.encrypt(data, secretKey).toString();
   }
 
-  function setItemWithExpiry(key, user_id, ttl) {
+  function setItemWithExpiry(key, user_id, role, ttl) {
     const now = new Date();
 
     const item = {
       user_id,
+      role,
       expiry: now.getTime() + ttl,
     };
     const encryptedItem = encryptData(JSON.stringify(item));
@@ -40,12 +41,18 @@ const Login = ({ setIsLoggedIn }) => {
         const accessToken = response.data.accessToken;
         const detailUser = response.data.detailData;
         const user_id = detailUser.user_id;
-        setItemWithExpiry('DetailUser', user_id, 1800000);
+        const role = detailUser.role;
+        setItemWithExpiry('DetailUser', user_id, role, 3000000);
         const expiryDate = new Date();
-        expiryDate.setSeconds(expiryDate.getSeconds() + 1800);
+        expiryDate.setSeconds(expiryDate.getSeconds() + 3000);
         Cookies.set('accessToken', accessToken, { expires: expiryDate });
         setIsLoggedIn(true);
-        navigate('/');
+
+        if (role === 1) {
+          navigate('/dashboard-admin');
+        } else {
+          navigate('/');
+        }
         window.location.reload();
       }
     } catch (error) {

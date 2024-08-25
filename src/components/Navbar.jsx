@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -17,6 +17,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
   const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { cartItems } = useCart();
 
   const showSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -86,6 +87,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
     setUserDropdownOpen(false);
   }, [location]);
 
+  useEffect(() => {
+    setCartItemCount(cartItems.reduce((total, item) => total + item.quantity, 0));
+  }, [cartItems]);
+
   const navbarColor = location.pathname === '/' ? (scrolling ? 'bg-white shadow-md' : 'bg-transparent') : 'bg-white shadow-md';
   const svgColor = scrolling || location.pathname !== '/' ? '#333333' : '#FFFFFF';
   const textColor = scrolling || location.pathname !== '/' ? 'text-[#333333]' : 'text-white';
@@ -128,6 +133,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
                         <Link to={`/profile/${userId}`} className="block px-4 py-2 text-[#333333] font-medium font-overpass text-center">
                           Profile
                         </Link>
+                        <Link to={'/order-history'} className="block px-4 py-2 text-[#333333] font-medium font-overpass text-center">
+                          Order History
+                        </Link>
                         <button onClick={handleLogout} className="block w-full px-4 py-2 text-[#333333] font-medium font-overpass text-center">
                           Logout
                         </button>
@@ -164,7 +172,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
                 <path d="M25.8259 20H25.8409" stroke={svgColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M14.1574 20H14.1724" stroke={svgColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              {cartItemCount > 0 && <span className="absolute top-[-5px] right-[-5px] bg-red-500 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-overpass">{cartItemCount}</span>}
+              {cartItemCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartItemCount}</span>}
             </button>
           </div>
         </div>

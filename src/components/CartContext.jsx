@@ -7,6 +7,7 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [userAddress, setUserAddress] = useState(null);
   const secretKey = import.meta.env.VITE_KEY_LOCALSTORAGE;
 
   function decryptData(data) {
@@ -29,7 +30,6 @@ export const CartProvider = ({ children }) => {
     const userId = getUserId('DetailUser');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    // Check if userId is valid before making the API call
     if (userId) {
       try {
         const response = await axios.get(`${backendUrl}/cart/${userId}`, {
@@ -40,6 +40,25 @@ export const CartProvider = ({ children }) => {
         setCartItems(response.data);
       } catch (error) {
         console.error('Error fetching cart items:', error);
+      }
+    }
+  };
+
+  const fetchUserAddress = async () => {
+    const token = Cookies.get('accessToken');
+    const userId = getUserId('DetailUser');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    if (userId) {
+      try {
+        const response = await axios.get(`${backendUrl}/getAddress/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserAddress(response.data.addresses || []);
+      } catch (error) {
+        console.error('Error fetching user address:', error);
       }
     }
   };
@@ -74,22 +93,44 @@ export const CartProvider = ({ children }) => {
           }
         );
 
-        // Update state after successful update
         setCartItems((prevItems) => prevItems.map((item) => (item.id === existingItem.id ? { ...item, quantity: item.quantity + product.quantity } : item)));
       } catch (error) {
         console.error('Error updating cart item:', error);
       }
     } else {
-      // Add new item to cart
       setCartItems((prevItems) => [...prevItems, { ...product, quantity: product.quantity, id: product.product_id }]);
+    }
+  };
+
+  const removeFromCart = async (product) => {
+    const userId = getUserId('DetailUser');
+    const token = Cookies.get('accessToken');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    if (!userId) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${backendUrl}/cart/${userId}/${product.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      setCartItems((prevItems) => prevItems.filter((item) => item.id !== product.id));
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
     }
   };
 
   useEffect(() => {
     fetchCartItems();
+    fetchUserAddress();
   }, []);
 
-  return <CartContext.Provider value={{ cartItems, fetchCartItems, addToCart }}>{children}</CartContext.Provider>;
+  return <CartContext.Provider value={{ cartItems, fetchCartItems, addToCart, removeFromCart, setCartItems, userAddress }}>{children}</CartContext.Provider>;
 };
 
 export const useCart = () => {
