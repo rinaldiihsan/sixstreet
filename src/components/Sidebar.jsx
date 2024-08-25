@@ -1,25 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-const Sidebar = ({ sidebarOpen, showSidebar }) => {
+const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }) => {
   const [activeSubMenu, setActiveSubMenu] = useState(null);
 
   const toggleSubMenu = (subMenu) => {
     setActiveSubMenu(activeSubMenu === subMenu ? null : subMenu);
   };
 
+  const handleCloseSidebar = () => {
+    showSidebar(false);
+  };
+
+  useEffect(() => {
+    setActiveSubMenu(null);
+  }, [isLoggedIn]);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  const sidebarVariants = {
+    open: { x: 0, opacity: 1, transition: { duration: 0.1, ease: 'easeInOut' } },
+    closed: { x: '-100%', opacity: 0, transition: { duration: 0.1, ease: 'easeInOut' } },
+  };
+
   return (
     <>
       {sidebarOpen && (
-        <div className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-          <div className={`overlay ${sidebarOpen ? 'overlay-open' : ''}`} onClick={showSidebar}>
+        <div className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+          <div className={`overlay`} onClick={showSidebar}>
             <div className="absolute inset-0 bg-[#333333] opacity-30"></div>
           </div>
-          <div className={`sidebar-content ${sidebarOpen ? 'sidebar-content-open' : ''}`}>
+          <motion.div className="sidebar-content" initial="closed" animate={sidebarOpen ? 'open' : 'closed'} variants={sidebarVariants} transition={{ type: 'spring', stiffness: 100 }}>
             <div className="flex-1 flex flex-col py-10 overflow-y-auto">
               <div className="flex items-center justify-between w-full px-10 ">
                 <div className="logo">
-                  <Link to="/" className="font-garamond font-semibold text-2xl tracking-[10px]">
+                  <Link to="/" className="font-garamond font-semibold text-2xl tracking-[5px] md:tracking-[10px]" onClick={handleCloseSidebar}>
                     SIXSTREET
                   </Link>
                 </div>
@@ -49,7 +67,10 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
               {/* End Search */}
               <div className="mt-5 border-t border-gray-200 mx-8"></div>
               <nav className="mt-5 px-8 space-y-2 w-full">
-                <Link to="#" className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900">
+                <Link to="/flashsale" className="block text-lg font-overpass font-semibold text-red-500 hover:text-red-600 " onClick={handleCloseSidebar}>
+                  FLASH SALE
+                </Link>
+                <Link to="/allcategories" className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900" onClick={handleCloseSidebar}>
                   ALL CATEGORY
                 </Link>
                 {/* Menu with Sub Menu */}
@@ -62,32 +83,32 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                     </button>
                     <ul className={`${activeSubMenu === 'clothing' ? 'block' : 'hidden'} pl-4 space-y-1`}>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/clothing/tshirt" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           T-Shirt
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/clothing/shirt" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Shirt
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/clothing/polo" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Polo
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/clothing/jacket" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Jacket & Hoodie
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/clothing/pants" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Pants
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/clothing/jeans" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Jeans
                         </Link>
                       </li>
@@ -101,18 +122,23 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                     </button>
                     <ul className={`${activeSubMenu === 'footware' ? 'block' : 'hidden'} pl-4 space-y-1`}>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/footware/sneakers" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Sneakers
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/footware/sandals" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Sandals
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/footware/boots" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Boots
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/footware/slipon" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Slip On
                         </Link>
                       </li>
                     </ul>
@@ -125,52 +151,47 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                     </button>
                     <ul className={`${activeSubMenu === 'accessories' ? 'block' : 'hidden'} pl-4 space-y-1`}>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/eyewear" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Eyewear
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/hats" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Hats
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/wallets" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Wallets & Card Holder
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/belts" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Belts
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
-                          Belts
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/facemask" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Face Mask
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/jewelry" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Jewelry
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
-                          Brecelet
+                        <Link to="/accessories/bracelet" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Bracelet
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/necklace" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Necklace
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/accessories/bag" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Bag
                         </Link>
                       </li>
@@ -184,23 +205,71 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                     </button>
                     <ul className={`${activeSubMenu === 'sixstreet' ? 'block' : 'hidden'} pl-4 space-y-1`}>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/sixstreet/tshirt" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           T-Shirt
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/sixstreet/shirt" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Shirt
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
-                          Jacket & Hoodie Pants
+                        <Link to="/sixstreet/jacket" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Jacket & Hoodie
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="/sixstreet/pants" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Pants
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/sixstreet/hat" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Hat
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  {/* Collab Menu */}
+                  <li>
+                    <button className="flex justify-between w-full" onClick={() => toggleSubMenu('collboration')}>
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">collboration</span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">{activeSubMenu === 'collboration' ? '-' : '+'}</span>
+                    </button>
+                    <ul className={`${activeSubMenu === 'collboration' ? 'block' : 'hidden'} pl-4 space-y-1`}>
+                      <li>
+                        <Link to="/collaboration/wukong" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Sixstreet x Wukong
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/collaboration/jameson" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Sixstreet x Jameson
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  {/* Collectible Item */}
+                  <li>
+                    <button className="flex justify-between w-full" onClick={() => toggleSubMenu('collectible')}>
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">collectible</span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">{activeSubMenu === 'collectible' ? '-' : '+'}</span>
+                    </button>
+                    <ul className={`${activeSubMenu === 'collectible' ? 'block' : 'hidden'} pl-4 space-y-1`}>
+                      <li>
+                        <Link to="/collectible/figure" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Figure
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/collectible/toys" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Toys
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/collectible/miniature" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Miniature
                         </Link>
                       </li>
                     </ul>
@@ -213,12 +282,12 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                     </button>
                     <ul className={`${activeSubMenu === 'comunnity' ? 'block' : 'hidden'} pl-4 space-y-1`}>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           What News?
                         </Link>
                       </li>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
+                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
                           Live with sixstreet
                         </Link>
                       </li>
@@ -232,21 +301,45 @@ const Sidebar = ({ sidebarOpen, showSidebar }) => {
                     </button>
                     <ul className={`${activeSubMenu === 'location' ? 'block' : 'hidden'} pl-4 space-y-1`}>
                       <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
-                          What News?
+                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                          Location Store
                         </Link>
                       </li>
-                      <li>
-                        <Link to="#" className="block text-lg text-[#AAAAAA] font-overpass font-light">
-                          Live with sixstreet
-                        </Link>
-                      </li>
+                    </ul>
+                  </li>
+                  {/* User Section */}
+                  <li className="block md:hidden">
+                    <button className="flex justify-between w-full" onClick={() => toggleSubMenu('user')}>
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">User</span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">{activeSubMenu === 'user' ? '-' : '+'}</span>
+                    </button>
+                    <ul className={`${activeSubMenu === 'user' ? 'block' : 'hidden'} pl-4 space-y-1`}>
+                      {isLoggedIn ? (
+                        <>
+                          <li>
+                            <Link to={`/profile/${userId}`} className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                              Profile
+                            </Link>
+                          </li>
+                          <li>
+                            <button onClick={handleLogout} className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]">
+                              Logout
+                            </button>
+                          </li>
+                        </>
+                      ) : (
+                        <li>
+                          <Link to="/login" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
+                            Login
+                          </Link>
+                        </li>
+                      )}
                     </ul>
                   </li>
                 </ul>
               </nav>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </>

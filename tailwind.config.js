@@ -9,7 +9,12 @@ export default {
         garamond: ['Cormorant Garamond', 'serif'],
         overpass: ['Overpass', 'sans-serif'],
       },
+      screens: {
+        mobileS: '376px',
+        mobile: '425px',
+        tabletS: '768px',
+        laptopL: '1280px',
+      },
     },
   },
-  plugins: [flowbite.plugin()],
 };

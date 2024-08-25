@@ -7,10 +7,10 @@ const Footer = () => {
       <div className="bg-[#333333] flex flex-col justify-center items-center py-12 gap-y-[7rem]">
         <div className="flex flex-col items-center justify-center gap-y-6">
           <Link to="/" className="flex flex-col items-center justify-center gap-y-4">
-            <img src="/logo_s.svg" alt="Logo Sixstreeet" className="w-[4.5rem]" />
-            <h1 className="font-garamond font-semibold text-3xl tracking-[16px] text-white">SIXSTREET</h1>
+            <img src="/logo_s.svg" alt="Logo Sixstreeet" className="w-[3rem] md:w-[4.5rem]" />
+            <h1 className="font-garamond font-semibold text-2xl tracking-[10px] md:text-3xl md:tracking-[16px] text-white">SIXSTREET</h1>
           </Link>
-          <div className="flex gap-x-8">
+          <div className="flex gap-x-2 md:gap-x-8">
             <Link to="/categories" className="font-garamond text-white text-xl">
               Categories
             </Link>
@@ -59,7 +59,7 @@ const Footer = () => {
             </Link>
           </div>
         </div>
-        <h1 className='font-garamond text-white text-xl'>Laere.id All Right Reserved</h1>
+        <h1 className="font-garamond text-white text-lg md:text-xl">Laere.id All Right Reserved</h1>
       </div>
     </>
   );
