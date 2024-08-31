@@ -18,6 +18,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { cartItems } = useCart();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const showSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -33,7 +34,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.delete('http://localhost:3000/logout');
+      await axios.delete(`${backendUrl}/logout`);
       Cookies.remove('accessToken');
       sessionStorage.removeItem('DetailUser');
       setIsLoggedIn(false);
