@@ -23,6 +23,9 @@ const MultiLink = () => {
           <a href="#" className="block w-full text-center py-3 rounded-lg border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
             Link 4
           </a>
+          <a href="#" className="block w-full text-center py-3 rounded-lg border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
+            Link 4
+          </a>
         </div>
       </div>
     </div>
