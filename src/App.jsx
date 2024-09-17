@@ -47,6 +47,8 @@ import OrderHistory from './routes/Client/OrderHistory';
 import OrderDetail from './routes/Client/OrderDetail';
 import TransactionManagement from './routes/Admin/Transaction/TransactionManagement';
 import FinishTransaction from './routes/Client/FinishTransaction';
+import Lock from './components/Lock';
+import MultiLink from './routes/Client/MultiLink';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -112,77 +114,84 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      {role !== 1 ? (
-        <>
-          <CartProvider>
-            <ToastContainer limit={1} />
-            <Navbar userId={userId} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/allcategories" element={<AllCategories />} />
-              {/* Clothing */}
-              <Route path="/clothing/tshirt" element={<Tshirt />} />
-              <Route path="/clothing/shirt" element={<Shirt />} />
-              <Route path="/clothing/polo" element={<Polo />} />
-              <Route path="/clothing/jacket" element={<Jacket />} />
-              <Route path="/clothing/pants" element={<Pants />} />
-              <Route path="/clothing/jeans" element={<Jeans />} />
-              {/* Footware */}
-              <Route path="/footware/sneakers" element={<Sneakers />} />
-              <Route path="/footware/sandals" element={<Sandals />} />
-              <Route path="/footware/boots" element={<Boots />} />
-              <Route path="/footware/slipon" element={<Slipon />} />
-              {/* Accessories */}
-              <Route path="/accessories/eyewear" element={<Eyewear />} />
-              <Route path="/accessories/hats" element={<Hats />} />
-              <Route path="/accessories/wallets" element={<Wallets />} />
-              <Route path="/accessories/belts" element={<Belts />} />
-              <Route path="/accessories/facemask" element={<Facemask />} />
-              <Route path="/accessories/bag" element={<Bag />} />
-              {/* Sixstreet */}
-              <Route path="/sixstreet/tshirt" element={<TshirtSixstreet />} />
-              {/* Collab */}
-              <Route path="/collaboration/wukong" element={<Wukong />} />
-              <Route path="/collaboration/jameson" element={<Jameson />} />
-              {/* Product Detail */}
-              <Route path="/product-detail/:itemId" element={<ProductDetail userId={userId} isLoggedIn={isLoggedIn} />} />
-              <Route path="/checkout/:user_id/:transaction_uuid" element={<Checkout isLoggedIn={isLoggedIn} />} />
-              <Route path="/thank-you" element={<FinishTransaction />} />
-              <Route path="/order-detail/:user_id/:transaction_uuid" element={<OrderDetail isLoggedIn={isLoggedIn} />} />
-              <Route path="/order-history" element={<OrderHistory />} />
+      <ToastContainer limit={1} />
+      <Routes>
+        <Route path="/multi-link" element={<MultiLink />} />
 
-              {/* Profile User */}
-              <Route path="/profile/:id" element={<Profile isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
-              {/* News Detail */}
-              <Route path="/news/:judulberita" element={<NewsDetail />} />
+        {role !== 1 ? (
+          <Route
+            path="*"
+            element={
+              <CartProvider>
+                <Navbar userId={userId} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/allcategories" element={<AllCategories />} />
+                  {/* Clothing */}
+                  <Route path="/clothing/tshirt" element={<Tshirt />} />
+                  <Route path="/clothing/shirt" element={<Shirt />} />
+                  <Route path="/clothing/polo" element={<Polo />} />
+                  <Route path="/clothing/jacket" element={<Jacket />} />
+                  <Route path="/clothing/pants" element={<Pants />} />
+                  <Route path="/clothing/jeans" element={<Jeans />} />
+                  {/* Footware */}
+                  <Route path="/footware/sneakers" element={<Sneakers />} />
+                  <Route path="/footware/sandals" element={<Sandals />} />
+                  <Route path="/footware/boots" element={<Boots />} />
+                  <Route path="/footware/slipon" element={<Slipon />} />
+                  {/* Accessories */}
+                  <Route path="/accessories/eyewear" element={<Eyewear />} />
+                  <Route path="/accessories/hats" element={<Hats />} />
+                  <Route path="/accessories/wallets" element={<Wallets />} />
+                  <Route path="/accessories/belts" element={<Belts />} />
+                  <Route path="/accessories/facemask" element={<Facemask />} />
+                  <Route path="/accessories/bag" element={<Bag />} />
+                  {/* Sixstreet */}
+                  <Route path="/sixstreet/tshirt" element={<TshirtSixstreet />} />
+                  {/* Collab */}
+                  <Route path="/collaboration/wukong" element={<Wukong />} />
+                  <Route path="/collaboration/jameson" element={<Jameson />} />
+                  {/* Product Detail */}
+                  <Route path="/product-detail/:itemId" element={<ProductDetail userId={userId} isLoggedIn={isLoggedIn} />} />
+                  <Route path="/checkout/:user_id/:transaction_uuid" element={<Checkout isLoggedIn={isLoggedIn} />} />
+                  <Route path="/thank-you" element={<FinishTransaction />} />
+                  <Route path="/order-detail/:user_id/:transaction_uuid" element={<OrderDetail isLoggedIn={isLoggedIn} />} />
+                  <Route path="/order-history" element={<OrderHistory />} />
+                  {/* Profile User */}
+                  <Route path="/profile/:id" element={<Profile isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
+                  {/* News Detail */}
+                  <Route path="/news/:judulberita" element={<NewsDetail />} />
+                  {/* Lock */}
+                  <Route path="/lock" element={<Lock />} />
+                  {/* Not Found */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Footer />
+              </CartProvider>
+            }
+          />
+        ) : (
+          <>
+            <AdminNavbar userId={userId} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <Routes>
+              <Route path="/dashboard-admin" element={<DashboardAdmin />} />
+              {/* User Management */}
+              <Route path="/user-management" element={<UserManagement />} />
+              <Route path="/user-management/tambah-data-user" element={<TambahDataUser />} />
+              {/* News Management */}
+              <Route path="/news-management" element={<NewsManagement />} />
+              <Route path="/news-management/:judulberita" element={<NewsManagementDetail />} />
+              <Route path="/news-management/tambah-news" element={<TambahNews />} />
+              {/* Transaction Management */}
+              <Route path="/transaction-management" element={<TransactionManagement />} />
               {/* Not Found */}
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<NotFoundAdmin />} />
             </Routes>
-            <Footer />
-          </CartProvider>
-        </>
-      ) : (
-        <>
-          <ToastContainer limit={1} />
-          <AdminNavbar userId={userId} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-          <Routes>
-            <Route path="/dashboard-admin" element={<DashboardAdmin />} />
-            {/* User Management */}
-            <Route path="/user-management" element={<UserManagement />} />
-            <Route path="/user-management/tambah-data-user" element={<TambahDataUser />} />
-            {/* News Management */}
-            <Route path="/news-management" element={<NewsManagement />} />
-            <Route path="/news-management/:judulberita" element={<NewsManagementDetail />} />
-            <Route path="/news-management/tambah-news" element={<TambahNews />} />
-            {/* Transaction Management */}
-            <Route path="/transaction-management" element={<TransactionManagement />} />
-            {/* Not Found */}
-            <Route path="*" element={<NotFoundAdmin />} />
-          </Routes>
-        </>
-      )}
+          </>
+        )}
+      </Routes>
     </BrowserRouter>
   );
 };

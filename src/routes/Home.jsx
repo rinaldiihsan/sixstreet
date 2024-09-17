@@ -19,7 +19,6 @@ const Home = () => {
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
-    const apiUrl = import.meta.env.VITE_API_URL;
 
     if (!email || !password) {
       setError('Missing email or password in environment variables.');
@@ -28,18 +27,7 @@ const Home = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/login`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await axios.post('https://api3.six6street.co.id/loginjubelio');
 
       const data = response.data;
 
@@ -52,7 +40,7 @@ const Home = () => {
         setLoginStatus('error');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      setError(`An error occurred: ${error.message}`);
       setLoginStatus('error');
     }
   };
