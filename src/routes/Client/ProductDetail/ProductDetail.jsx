@@ -62,7 +62,7 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
   const loginAndFetchProduct = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const ApiLogin = import.meta.env.VITE_LOGIN_JUBELIO;
 
     if (!email || !password) {
       setError('Missing email or password in environment variables.');
@@ -71,7 +71,7 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     }
 
     try {
-      const response = await axios.post(`${apiUrl}/login`, { email, password }, { headers: { 'Content-Type': 'application/json' } });
+      const response = await axios.post(`${ApiLogin}/loginjubelio`);
 
       const data = response.data;
 
@@ -84,7 +84,7 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
         setLoginStatus('error');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      setError(`An error occurred: ${error.message}`);
       setLoginStatus('error');
     }
   };
