@@ -19,6 +19,7 @@ const Home = () => {
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
+    const ApiLogin = import.meta.env.VITE_LOGIN_JUBELIO;
 
     if (!email || !password) {
       setError('Missing email or password in environment variables.');
@@ -27,7 +28,7 @@ const Home = () => {
     }
 
     try {
-      const response = await axios.post('https://api3.six6street.co.id/loginjubelio');
+      const response = await axios.post(`${ApiLogin}/loginjubelio`);
 
       const data = response.data;
 
