@@ -134,7 +134,7 @@ const Home = () => {
   return (
     <>
       <div className="relative">
-        <img src="/hero1.png" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
+        <img src="/hero1.webp" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
         <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
           <div className="md:max-w-[40rem] mb-2 text-center md:text-left">
             <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet apparel</h1>
@@ -146,7 +146,7 @@ const Home = () => {
         </div>
       </div>
       <div className="relative mb-10">
-        <img src="/hero2.png" alt="Hero2" className="w-full object-cover" style={{ height: windowHeight }} />
+        <img src="/hero2.webp" alt="Hero2" className="w-full object-cover" style={{ height: windowHeight }} />
         <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
           <div className="md:max-w-[40rem] mb-2 text-center md:text-left">
             <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet apparel</h1>
@@ -202,7 +202,7 @@ const Home = () => {
         )}
       </div>
       <div className="relative mb-10">
-        <img src="/hero3.png" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
+        <img src="/hero3.webp" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
         <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
           <div className="md:max-w-[40rem] mb-2 text-center md:text-left">
             <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet sneakers</h1>
@@ -258,7 +258,7 @@ const Home = () => {
         )}
       </div>
       <div className="relative mb-10">
-        <img src="/hero4.png" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
+        <img src="/hero4.webp" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
         <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
           <div className="md:max-w-[40rem] mb-2 text-center md:text-left">
             <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet accessories</h1>

@@ -277,7 +277,7 @@ const Wallets = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty !== null && variant.available_qty > 1)
+                  .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty !== null && variant.available_qty >= 1)
                   .sort((a, b) => {
                     if (selectedOption === 'Harga Tertinggi') {
                       return b.sell_price - a.sell_price;
