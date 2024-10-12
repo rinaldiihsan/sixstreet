@@ -9,14 +9,13 @@ const Lock = ({ setIsUnlocked }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [isCheckingPassword, setIsCheckingPassword] = useState(false);
-  const BackendURL = import.meta.env.VITE_BACKEND_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
 
     try {
-      const response = await axios.post(`${BackendURL}/sendEmail`, { email });
+      const response = await axios.post('https://api3.six6street.co.id/sendEmail', { email });
 
       if (response.status === 200) {
         toast.success('Email berhasil dikirim! Silakan periksa inbox Anda untuk password sementara.');
@@ -36,7 +35,7 @@ const Lock = ({ setIsUnlocked }) => {
     setIsCheckingPassword(true);
 
     try {
-      const response = await axios.post(`${BackendURL}/cek_password`, { password });
+      const response = await axios.post('https://api3.six6street.co.id/cek_password', { password });
 
       if (response.status === 200) {
         setIsUnlocked(true);
