@@ -57,7 +57,21 @@ const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
   };
 
   const handleCheckout = async () => {
-    const addressData = Array.isArray(userAddress) && userAddress.length > 0 ? userAddress[0] : undefined;
+    // Cek terlebih dahulu apakah ada alamat
+    if (!userAddress || userAddress.length === 0) {
+      toast.error('Please add your address first', {
+        position: 'top-right',
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    const addressData = userAddress[0];
 
     if (!isLoggedIn) {
       setShowLoginPopup(true);
@@ -69,6 +83,11 @@ const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     try {
+      // Validasi data sebelum melakukan request
+      if (!userId || !token || !addressData.username || !addressData.address) {
+        throw new Error('Missing required checkout information');
+      }
+
       // Create transaction
       const transactionResponse = await axios.post(
         `${backendUrl}/transaction`,
@@ -101,7 +120,14 @@ const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
       showCart(false);
     } catch (error) {
       console.error('Error during checkout:', error);
-      toast.error('Failed to complete checkout', {
+
+      // Tampilkan pesan error yang lebih spesifik
+      let errorMessage = 'Failed to complete checkout';
+      if (error.message === 'Missing required checkout information') {
+        errorMessage = 'Please complete your address information';
+      }
+
+      toast.error(errorMessage, {
         position: 'top-right',
         autoClose: 1500,
         hideProgressBar: false,
