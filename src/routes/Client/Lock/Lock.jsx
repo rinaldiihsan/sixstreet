@@ -62,24 +62,33 @@ const Lock = ({ setIsUnlocked }) => {
         </div>
 
         {!showPassword ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex">
-              <input
-                type="email"
-                name="email"
-                id="email"
-                className="flex-grow px-3 py-2 border border-[#333333] rounded-l-md"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isSending}
-              />
-              <button type="submit" className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white font-overpass ${isSending ? 'bg-gray-400' : 'bg-[#333333]'}`} disabled={isSending}>
-                {isSending ? 'Mengirim...' : 'Kirim'}
+          <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex">
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  className="flex-grow px-3 py-2 border border-[#333333] rounded-l-md"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isSending}
+                />
+                <button type="submit" className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white font-overpass ${isSending ? 'bg-gray-400' : 'bg-[#333333]'}`} disabled={isSending}>
+                  {isSending ? 'Mengirim...' : 'Kirim'}
+                </button>
+              </div>
+            </form>
+            <div className="text-center pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600 mb-2">Sudah memiliki kode password?</p>
+              <button onClick={() => setShowPassword(true)} className="font-overpass text-[#333333] hover:underline focus:outline-none inline-flex items-center">
+                <LockIcon className="w-4 h-4 mr-2" />
+                Masukkan Password
               </button>
             </div>
-          </form>
+          </div>
         ) : (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div className="flex">
