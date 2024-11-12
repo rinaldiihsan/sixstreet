@@ -1,10 +1,42 @@
-export const featuresBrand = [
+export const featuredBrand = [
   {
-    title: "All Brands",
-    path: "#",
+    name: "All Brands",
+    path: "/allbrands",
   },
   {
-    title: "Adidas",
-    path: "/features/brand/adidas",
+    name: "Adidas",
+    path: "/featured/brand/adidas",
+  },
+  {
+    name: "Converse",
+    path: "/featured/brand/converse",
+  },
+  {
+    name: "Jordan",
+    path: "/featured/brand/jordan",
+  },
+  {
+    name: "Nike",
+    path: "/featured/brand/nike",
+  },
+  {
+    name: "New Balance",
+    path: "/featured/brand/newbalance",
+  },
+  {
+    name: "On",
+    path: "/featured/brand/on",
+  },
+  {
+    name: "Supreme",
+    path: "/featured/brand/supreme",
+  },
+  {
+    name: "Water The Plants",
+    path: "/featured/brand/watertheplants",
+  },
+  {
+    name: "Yeezy",
+    path: "/featured/brand/yeezy",
   },
 ];

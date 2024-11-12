@@ -11,7 +11,7 @@ import Footer from "./components/Footer";
 import Home from "./routes/Home";
 import Login from "./routes/Client/Login";
 import Register from "./routes/Client/Register";
-import AllCategories from "./routes/Client/AllCategories";
+import AllBrand from "./routes/Client/AllBrand";
 import Tshirt from "./routes/Client/Clothing/Tshirt";
 import Shirt from "./routes/Client/Clothing/Shirt";
 import Polo from "./routes/Client/Clothing/Polo";
@@ -58,7 +58,7 @@ import Nike from "./routes/Client/FeaturesBrand/Nike";
 import NewBalance from "./routes/Client/FeaturesBrand/NewBalance";
 import On from "./routes/Client/FeaturesBrand/On";
 import Supreme from "./routes/Client/FeaturesBrand/Supreme";
-import WaterThePlant from "./routes/Client/FeaturesBrand/WaterThePlant";
+import WaterThePlant from "./routes/Client/FeaturesBrand/WaterThePlants";
 import Yeezy from "./routes/Client/FeaturesBrand/Yeezy";
 
 const App = () => {
@@ -175,8 +175,7 @@ const App = () => {
               element={<Login setIsLoggedIn={setIsLoggedIn} />}
             />
             <Route path="/register" element={<Register />} />
-            <Route path="/allcategories" element={<AllCategories />} />
-            <Route path="/clothing/tshirt" element={<Tshirt />} />
+            <Route path="/allbrands" element={<AllBrand />} />
             <Route path="/featured/brand/adidas" element={<Adidas />} />
             <Route path="/featured/brand/converse" element={<Converse />} />
             <Route path="/featured/brand/jordan" element={<Jordan />} />
@@ -185,9 +184,10 @@ const App = () => {
             <Route path="/featured/brand/on" element={<On />} />
             <Route path="/featured/brand/supreme" element={<Supreme />} />
             <Route
-              path="/featured/brand/watertheplant"
+              path="/featured/brand/watertheplants"
               element={<WaterThePlant />}
             />
+            <Route path="/featured/brand/yeezy" element={<Yeezy />} />
             <Route path="/clothing/shirt" element={<Shirt />} />
             <Route path="/clothing/polo" element={<Polo />} />
             <Route path="/clothing/jacket" element={<Jacket />} />

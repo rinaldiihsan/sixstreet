@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import assetWtp from "../../../assets/banner/WTP.webp";
 import { motion } from "framer-motion";
 
 const WaterThePlant = () => {
@@ -13,6 +14,7 @@ const WaterThePlant = () => {
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
 
   const fetchProducts = async (token) => {
     try {
@@ -95,11 +97,27 @@ const WaterThePlant = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleSoldOutClick = (e) => {
+    e.preventDefault();
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   return (
     <>
       <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center overflow-x-hidden">
+        {showAlert && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[999]">
+            <div className="bg-red-100 border border-red-500 text-red-500 px-8 py-3 rounded-lg shadow-lg">
+              Maaf, produk ini sedang tidak tersedia (Sold Out)
+            </div>
+          </div>
+        )}
+
         <img
-          src="/hero-WaterThePlant.png" // Pastikan untuk mengganti dengan gambar hero WaterThePlant
+          src={assetWtp} // Pastikan untuk mengganti dengan gambar hero WaterThePlant
           alt="Hero WaterThePlant"
           className="w-full h-full md:h-auto mb-6"
         />
@@ -112,7 +130,9 @@ const WaterThePlant = () => {
                   products
                     .flatMap((item) => item.variants)
                     .filter((variant) =>
-                      variant.item_name.toUpperCase().includes("WaterThePlant")
+                      variant.item_name
+                        .toUpperCase()
+                        .includes("WATER THE PLANT")
                     ).length
                 }{" "}
                 Hasil
@@ -189,7 +209,7 @@ const WaterThePlant = () => {
                   }, {})
               )
                 .filter((variant) =>
-                  variant.item_name.toUpperCase().includes("WaterThePlant")
+                  variant.item_name.toUpperCase().includes("WATER THE PLANT")
                 )
                 .filter(
                   (variant) =>
@@ -255,32 +275,36 @@ const WaterThePlant = () => {
                   }, {})
               )
                 .filter((variant) =>
-                  variant.item_name.toUpperCase().includes("WaterThePlant")
+                  variant.item_name.toUpperCase().includes("WATER THE PLANT")
                 )
                 .filter(
                   (variant) =>
                     variant.sell_price !== null &&
                     variant.sell_price !== 0 &&
                     (variant.available_qty === null ||
-                      variant.available_qty <= 1)
+                      variant.available_qty <= 0)
                 )
                 .map((variant, index) => (
                   <div
                     key={index}
                     className="flex flex-col gap-y-5 items-center"
                   >
-                    <Link to="/">
+                    <Link
+                      href="#"
+                      onClick={handleSoldOutClick}
+                      className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                    >
                       {variant.parentThumbnail ? (
                         <img
                           src={variant.parentThumbnail}
                           alt={variant.item_name}
-                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                         />
                       ) : (
                         <img
                           src="/dummy-product.png"
                           alt={variant.item_name}
-                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                         />
                       )}
                     </Link>

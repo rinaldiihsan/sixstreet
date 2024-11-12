@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { featuredBrand } from "../constans/navlinks";
 
 const Sidebar = ({
   sidebarOpen,
@@ -134,13 +135,6 @@ const Sidebar = ({
                 >
                   FLASH SALE
                 </Link>
-                <Link
-                  to="/allcategories"
-                  className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900"
-                  onClick={handleCloseSidebar}
-                >
-                  ALL CATEGORY
-                </Link>
                 {/* Menu with Sub Menu */}
                 <ul className="space-y-2 w-full">
                   {/* Clothing Menu */}
@@ -150,7 +144,7 @@ const Sidebar = ({
                       onClick={() => toggleSubMenu("clothing")}
                     >
                       <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
-                        clothing
+                        Featured Brands
                       </span>
                       <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
                         {activeSubMenu === "clothing" ? "-" : "+"}
@@ -161,87 +155,18 @@ const Sidebar = ({
                         activeSubMenu === "clothing" ? "block" : "hidden"
                       } pl-4 space-y-1`}
                     >
-                      <li>
-                        <Link
-                          to="/clothing/tshirt"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          T-Shirt
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/featured/brand/adidas"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Adidas
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/featured/brand/converse"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Converse
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/featured/brand/jordan"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Jordan
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/clothing/shirt"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Shirt
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/clothing/polo"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Polo
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/clothing/jacket"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Jacket & Hoodie
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/clothing/pants"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Pants
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/clothing/jeans"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Jeans
-                        </Link>
-                      </li>
+                      {/* Featured Brand */}
+                      {featuredBrand.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   </li>
                   {/* Footware Menu */}
