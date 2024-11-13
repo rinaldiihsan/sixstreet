@@ -135,6 +135,13 @@ const Sidebar = ({
                 >
                   FLASH SALE
                 </Link>
+                <Link
+                  to="/allbrands-revamp"
+                  className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase"
+                  onClick={handleCloseSidebar}
+                >
+                  ALL BRANDS
+                </Link>
                 {/* Menu with Sub Menu */}
                 <ul className="space-y-2 w-full">
                   {/* Clothing Menu */}

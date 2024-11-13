@@ -15,6 +15,7 @@ const Adidas = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+  const [selectedBrands, setSelectedBrands] = useState([]);
 
   const fetchProducts = async (token) => {
     try {
@@ -97,6 +98,15 @@ const Adidas = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleBrandChange = (e) => {
+    const { checked, value } = e.target;
+    setSelectedBrands((prevState) =>
+      checked
+        ? [...prevState, value]
+        : prevState.filter((brand) => brand !== value)
+    );
+  };
+
   const handleSoldOutClick = (e) => {
     e.preventDefault();
     setShowAlert(true);
@@ -121,6 +131,7 @@ const Adidas = () => {
           alt="Hero Adidas"
           className="w-full h-full md:h-auto mb-6"
         />
+
         {/* Sort Options */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
@@ -181,147 +192,273 @@ const Adidas = () => {
           </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="w-full grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
-          {isLoading ? (
-            Array.from({ length: 9 }).map((_, index) => (
-              <div key={index} className="flex flex-col gap-y-5 items-center">
-                <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
-                <div className="flex flex-col text-center gap-y-2 w-full">
-                  <Skeleton className="md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
-                  <Skeleton className="md:text-xl" />
-                </div>
-              </div>
-            ))
-          ) : loginStatus === "success" ? (
-            <>
-              {/* Available Products */}
-              {Object.values(
-                products
-                  .flatMap((item) => item.variants)
-                  .reduce((uniqueVariants, variant) => {
-                    if (!uniqueVariants[variant.item_name]) {
-                      uniqueVariants[variant.item_name] = variant;
-                    }
-                    return uniqueVariants;
-                  }, {})
-              )
-                .filter((variant) =>
-                  variant.item_name.toUpperCase().includes("ADIDAS")
-                )
-                .filter(
-                  (variant) =>
-                    variant.sell_price !== null &&
-                    variant.sell_price !== 0 &&
-                    variant.available_qty !== null &&
-                    variant.available_qty >= 1
-                )
-                .sort((a, b) => {
-                  if (selectedOption === "Harga Tertinggi") {
-                    return b.sell_price - a.sell_price;
-                  } else if (selectedOption === "Harga Terendah") {
-                    return a.sell_price - b.sell_price;
-                  } else if (selectedOption === "Alphabet") {
-                    return a.item_name.localeCompare(b.item_name);
-                  } else if (selectedOption === "Product Terbaru") {
-                    return (
-                      new Date(b.last_modified) - new Date(a.last_modified)
-                    );
-                  }
-                  return 0;
-                })
-                .map((variant, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col gap-y-5 items-center"
-                  >
-                    <Link to={`/product-detail/${variant.item_id}`}>
-                      {variant.parentThumbnail ? (
-                        <img
-                          src={variant.parentThumbnail}
-                          alt={variant.item_name}
-                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                        />
-                      ) : (
-                        <img
-                          src="/dummy-product.png"
-                          alt={variant.item_name}
-                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                        />
-                      )}
-                    </Link>
-                    <div className="flex flex-col md:text-center gap-y-2">
-                      <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
-                        {variant.item_name}
-                      </h2>
-                      <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
-                        Rp. {variant.sell_price.toLocaleString("id-ID")}
-                      </h2>
-                    </div>
-                  </div>
-                ))}
+        <div className="w-full flex justify-between gap-x-3">
+          <div className="w-[15%] border border-[#E5E5E5] flex flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto">
+            {/* Filter Size */}
+            <div className="mb-6">
+              <h3 className="text-lg font-medium font-overpass">Size</h3>
+              <ul className="mt-3 space-y-2">
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="price"
+                    id="price1"
+                  />
+                  <label className="font-overpass" htmlFor="price1">
+                    S
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="price"
+                    id="price2"
+                  />
+                  <label className="font-overpass" htmlFor="price2">
+                    M
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="price"
+                    id="price3"
+                  />
+                  <label className="font-overpass" htmlFor="price3">
+                    L
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="price"
+                    id="price4"
+                  />
+                  <label className="font-overpass" htmlFor="price4">
+                    XL
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="price"
+                    id="price4"
+                  />
+                  <label className="font-overpass" htmlFor="price4">
+                    XXL
+                  </label>
+                </li>
+              </ul>
+            </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-medium font-overpass">Categories</h3>
+              <ul className="mt-3 space-y-2">
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="brand1"
+                  />
+                  <label className="font-overpass" htmlFor="brand1">
+                    Bags
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="brand2"
+                  />
+                  <label className="font-overpass" htmlFor="brand2">
+                    Hats
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="brand3"
+                  />
+                  <label className="font-overpass" htmlFor="brand3">
+                    Hoodie
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="brand4"
+                  />
+                  <label className="font-overpass" htmlFor="brand4">
+                    Socks
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="brand4"
+                  />
+                  <label className="font-overpass" htmlFor="brand4">
+                    T-Shirts
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </div>
 
-              {/* Sold Out Products */}
-              {Object.values(
-                products
-                  .flatMap((item) => item.variants)
-                  .reduce((uniqueVariants, variant) => {
-                    if (!uniqueVariants[variant.item_name]) {
-                      uniqueVariants[variant.item_name] = variant;
-                    }
-                    return uniqueVariants;
-                  }, {})
-              )
-                .filter((variant) =>
-                  variant.item_name.toUpperCase().includes("ADIDAS")
-                )
-                .filter(
-                  (variant) =>
-                    variant.sell_price !== null &&
-                    variant.sell_price !== 0 &&
-                    (variant.available_qty === null ||
-                      variant.available_qty <= 0)
-                )
-                .map((variant, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col gap-y-5 items-center"
-                  >
-                    <Link
-                      href="#"
-                      onClick={handleSoldOutClick}
-                      className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
-                    >
-                      {variant.parentThumbnail ? (
-                        <img
-                          src={variant.parentThumbnail}
-                          alt={variant.item_name}
-                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                        />
-                      ) : (
-                        <img
-                          src="/dummy-product.png"
-                          alt={variant.item_name}
-                          className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                        />
-                      )}
-                    </Link>
-                    <div className="flex flex-col text-center gap-y-2">
-                      <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
-                        {variant.item_name}
-                      </h2>
-                      <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
-                        Sold Out
-                      </h2>
-                    </div>
+          {/* Product Grid */}
+          <div className="w-full grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
+            {isLoading ? (
+              Array.from({ length: 9 }).map((_, index) => (
+                <div key={index} className="flex flex-col gap-y-5 items-center">
+                  <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
+                  <div className="flex flex-col text-center gap-y-2 w-full">
+                    <Skeleton className="md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
+                    <Skeleton className="md:text-xl" />
                   </div>
-                ))}
-            </>
-          ) : (
-            <p className="uppercase font-overpass font-bold text-xl">
-              {error ? `Login failed: ${error}` : "No products found"}
-            </p>
-          )}
+                </div>
+              ))
+            ) : loginStatus === "success" ? (
+              <>
+                {/* Available Products */}
+                {Object.values(
+                  products
+                    .flatMap((item) => item.variants)
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
+                  .filter((variant) =>
+                    variant.item_name.toUpperCase().includes("ADIDAS")
+                  )
+                  .filter(
+                    (variant) =>
+                      variant.sell_price !== null &&
+                      variant.sell_price !== 0 &&
+                      variant.available_qty !== null &&
+                      variant.available_qty >= 1
+                  )
+                  .sort((a, b) => {
+                    if (selectedOption === "Harga Tertinggi") {
+                      return b.sell_price - a.sell_price;
+                    } else if (selectedOption === "Harga Terendah") {
+                      return a.sell_price - b.sell_price;
+                    } else if (selectedOption === "Alphabet") {
+                      return a.item_name.localeCompare(b.item_name);
+                    } else if (selectedOption === "Product Terbaru") {
+                      return (
+                        new Date(b.last_modified) - new Date(a.last_modified)
+                      );
+                    }
+                    return 0;
+                  })
+                  .map((variant, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-y-5 items-center"
+                    >
+                      <Link to={`/product-detail/${variant.item_id}`}>
+                        {variant.parentThumbnail ? (
+                          <img
+                            src={variant.parentThumbnail}
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                          />
+                        ) : (
+                          <img
+                            src="/dummy-product.png"
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                          />
+                        )}
+                      </Link>
+                      <div className="flex flex-col md:text-center gap-y-2">
+                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                          {variant.item_name}
+                        </h2>
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                          Rp. {variant.sell_price.toLocaleString("id-ID")}
+                        </h2>
+                      </div>
+                    </div>
+                  ))}
+
+                {/* Sold Out Products */}
+                {Object.values(
+                  products
+                    .flatMap((item) => item.variants)
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
+                  .filter((variant) =>
+                    variant.item_name.toUpperCase().includes("ADIDAS")
+                  )
+                  .filter(
+                    (variant) =>
+                      variant.sell_price !== null &&
+                      variant.sell_price !== 0 &&
+                      (variant.available_qty === null ||
+                        variant.available_qty <= 0)
+                  )
+                  .map((variant, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-y-5 items-center"
+                    >
+                      <Link
+                        href="#"
+                        onClick={handleSoldOutClick}
+                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                      >
+                        {variant.parentThumbnail ? (
+                          <img
+                            src={variant.parentThumbnail}
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                          />
+                        ) : (
+                          <img
+                            src="/dummy-product.png"
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                          />
+                        )}
+                      </Link>
+                      <div className="flex flex-col text-center gap-y-2">
+                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
+                          {variant.item_name}
+                        </h2>
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
+                          Sold Out
+                        </h2>
+                      </div>
+                    </div>
+                  ))}
+              </>
+            ) : (
+              <p className="uppercase font-overpass font-bold text-xl">
+                {error ? `Login failed: ${error}` : "No products found"}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </>

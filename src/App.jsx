@@ -60,6 +60,7 @@ import On from "./routes/Client/FeaturesBrand/On";
 import Supreme from "./routes/Client/FeaturesBrand/Supreme";
 import WaterThePlant from "./routes/Client/FeaturesBrand/WaterThePlants";
 import Yeezy from "./routes/Client/FeaturesBrand/Yeezy";
+import AllBrandts from "./routes/Client/AllBrand-revamp";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -187,6 +188,7 @@ const App = () => {
               path="/featured/brand/watertheplants"
               element={<WaterThePlant />}
             />
+            <Route path="/allbrands-revamp" element={<AllBrandts />} />
             <Route path="/featured/brand/yeezy" element={<Yeezy />} />
             <Route path="/clothing/shirt" element={<Shirt />} />
             <Route path="/clothing/polo" element={<Polo />} />
