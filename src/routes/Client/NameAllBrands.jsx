@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { groupedBrandData } from "../../constans/allbrands";
 groupedBrandData;
 
-const AllBrandts = () => {
+const NameAllBrand = () => {
   return (
     <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center  overflow-x-hidden">
       <div className="px-4 py-4">
@@ -27,4 +27,4 @@ const AllBrandts = () => {
   );
 };
 
-export default AllBrandts;
+export default NameAllBrand;

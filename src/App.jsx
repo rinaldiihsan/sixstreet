@@ -11,7 +11,7 @@ import Footer from "./components/Footer";
 import Home from "./routes/Home";
 import Login from "./routes/Client/Login";
 import Register from "./routes/Client/Register";
-import AllBrand from "./routes/Client/AllBrand";
+// import AllBrand from "./routes/Client/AllBrand";
 import Tshirt from "./routes/Client/Clothing/Tshirt";
 import Shirt from "./routes/Client/Clothing/Shirt";
 import Polo from "./routes/Client/Clothing/Polo";
@@ -60,7 +60,7 @@ import On from "./routes/Client/FeaturesBrand/On";
 import Supreme from "./routes/Client/FeaturesBrand/Supreme";
 import WaterThePlant from "./routes/Client/FeaturesBrand/WaterThePlants";
 import Yeezy from "./routes/Client/FeaturesBrand/Yeezy";
-import AllBrandts from "./routes/Client/AllBrand-revamp";
+import NameAllBrand from "./routes/Client/NameAllBrands";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -176,7 +176,7 @@ const App = () => {
               element={<Login setIsLoggedIn={setIsLoggedIn} />}
             />
             <Route path="/register" element={<Register />} />
-            <Route path="/allbrands" element={<AllBrand />} />
+            {/* <Route path="/allbrands" element={<AllBrand />} /> */}
             <Route path="/featured/brand/adidas" element={<Adidas />} />
             <Route path="/featured/brand/converse" element={<Converse />} />
             <Route path="/featured/brand/jordan" element={<Jordan />} />
@@ -188,7 +188,7 @@ const App = () => {
               path="/featured/brand/watertheplants"
               element={<WaterThePlant />}
             />
-            <Route path="/allbrands-revamp" element={<AllBrandts />} />
+            <Route path="/allbrand" element={<NameAllBrand />} />
             <Route path="/featured/brand/yeezy" element={<Yeezy />} />
             <Route path="/clothing/shirt" element={<Shirt />} />
             <Route path="/clothing/polo" element={<Polo />} />

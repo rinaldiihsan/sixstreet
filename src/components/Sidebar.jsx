@@ -136,7 +136,7 @@ const Sidebar = ({
                   FLASH SALE
                 </Link>
                 <Link
-                  to="/allbrands-revamp"
+                  to="/allbrand"
                   className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase"
                   onClick={handleCloseSidebar}
                 >
