@@ -114,6 +114,19 @@ import OnBrand from './routes/Client/AllBrand/OnBrand';
 import Palmangels from './routes/Client/AllBrand/Palmangels';
 import Rickyisclown from './routes/Client/AllBrand/Rickyisclown';
 import Ripndip from './routes/Client/AllBrand/Ripndip';
+import Salvatore from './routes/Client/AllBrand/Salvatore';
+import Sixstreet from './routes/Client/AllBrand/Sixstreet';
+import Stayhoops from './routes/Client/AllBrand/Stayhoops';
+import Stussy from './routes/Client/AllBrand/Stussy';
+import SupremeBrand from './routes/Client/AllBrand/SupremeBrand';
+import Valentino from './routes/Client/AllBrand/Valentino';
+import VansBrand from './routes/Client/AllBrand/VansBrand';
+import Veja from './routes/Client/AllBrand/Veja';
+import Versace from './routes/Client/AllBrand/Versace';
+import Vlone from './routes/Client/AllBrand/Vlone';
+import Watertheplants from './routes/Client/AllBrand/Watertheplants';
+import YeezyBrand from './routes/Client/AllBrand/YeezyBrand';
+import Whocares from './routes/Client/AllBrand/Whocares';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -290,7 +303,22 @@ const App = () => {
             <Route path="/allbrand/ricky-is-clown" element={<Rickyisclown />} />
             <Route path="/allbrand/ripndip" element={<Ripndip />} />
             {/* S */}
-            
+            <Route path="/allbrand/salvatore-ferragamo" element={<Salvatore />} />
+            <Route path="/allbrand/sixstreet" element={<Sixstreet />} />
+            <Route path="/allbrand/stayhoops" element={<Stayhoops />} />
+            <Route path="/allbrand/stussy" element={<Stussy />} />
+            <Route path="/allbrand/supreme" element={<SupremeBrand />} />
+            {/* V */}
+            <Route path="/allbrand/valentino-garavani" element={<Valentino />} />
+            <Route path="/allbrand/vans" element={<VansBrand />} />
+            <Route path="/allbrand/veja" element={<Veja />} />
+            <Route path="/allbrand/versace" element={<Versace />} />
+            <Route path="/allbrand/vlone" element={<Vlone />} />
+            {/* W */}
+            <Route path="/allbrand/who-cares" element={<Whocares />} />
+            <Route path="/allbrand/water-the-plants" element={<Watertheplants />} />
+            {/* Y */}
+            <Route path="/allbrand/yeezy" element={<YeezyBrand />} />
 
             {/* Cloth */}
             <Route path="/clothing/shirt" element={<Shirt />} />
