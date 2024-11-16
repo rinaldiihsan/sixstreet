@@ -281,6 +281,16 @@ const App = () => {
             <Route path="/allbrand/new-balance" element={<NewbalanceBrand />} />
             <Route path="/allbrand/nike" element={<NikeBrand />} />
             <Route path="/allbrand/nudie-jeans" element={<Nudie />} />
+            {/* O */}
+            <Route path="/allbrand/off-white" element={<OffWhite />} />
+            <Route path="/allbrand/on" element={<OnBrand />} />
+            {/* P */}
+            <Route path="/allbrand/palm-angels" element={<Palmangels />} />
+            {/* R */}
+            <Route path="/allbrand/ricky-is-clown" element={<Rickyisclown />} />
+            <Route path="/allbrand/ripndip" element={<Ripndip />} />
+            {/* S */}
+            
 
             {/* Cloth */}
             <Route path="/clothing/shirt" element={<Shirt />} />
