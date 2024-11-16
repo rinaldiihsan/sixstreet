@@ -4,10 +4,9 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import HeroAdidas from '../../../assets/banner/Adidas.webp';
 import { motion } from 'framer-motion';
 
-const Adidas = () => {
+const AapeBrand = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Relevance');
   const [loginStatus, setLoginStatus] = useState(null);
@@ -16,6 +15,7 @@ const Adidas = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const fetchProducts = async (token) => {
     try {
@@ -111,6 +111,15 @@ const Adidas = () => {
     }, 3000);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const sidebarVariants = {
+    open: { x: 0, opacity: 1, transition: { duration: 0.2, ease: 'easeInOut' } },
+    closed: { x: '-100%', opacity: 0, transition: { duration: 0.2, ease: 'easeInOut' } },
+  };
+
   return (
     <>
       <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center overflow-x-hidden">
@@ -121,16 +130,41 @@ const Adidas = () => {
         )}
 
         <img
-          src={HeroAdidas} // Pastikan untuk mengganti dengan gambar hero Adidas
-          alt="Hero Adidas"
+          src="/" // Pastikan untuk mengganti dengan gambar hero AAPE
+          alt="Hero AAPE"
           className="w-full h-full md:h-auto mb-6"
         />
 
-        {/* Sort Options */}
+        {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
+            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+              <p className="font-overpass text-lg hidden md:block">Filter</p>
+              <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={toggleSidebar}>
+                <path d="M18.3335 5.41666H13.3335" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M4.99984 5.41666H1.6665" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M8.33317 8.33333C9.944 8.33333 11.2498 7.0275 11.2498 5.41667C11.2498 3.80584 9.944 2.5 8.33317 2.5C6.72234 2.5 5.4165 3.80584 5.4165 5.41667C5.4165 7.0275 6.72234 8.33333 8.33317 8.33333Z"
+                  stroke="#292D32"
+                  strokeWidth="1.5"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path d="M18.3333 14.5833H15" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6.6665 14.5833H1.6665" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M11.6667 17.5C13.2775 17.5 14.5833 16.1942 14.5833 14.5833C14.5833 12.9725 13.2775 11.6667 11.6667 11.6667C10.0558 11.6667 8.75 12.9725 8.75 14.5833C8.75 16.1942 10.0558 17.5 11.6667 17.5Z"
+                  stroke="#292D32"
+                  strokeWidth="1.5"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
             <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
-              <p className="font-overpass capitalize">{products.flatMap((item) => item.variants).filter((variant) => variant.item_name.toUpperCase().includes('ADIDAS')).length} Hasil</p>
+              <p className="font-overpass capitalize">{products.flatMap((item) => item.variants).filter((variant) => variant.item_name.toUpperCase().includes('AAPE')).length} Hasil</p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p className="font-overpass capitalize cursor-pointer" onClick={handleDropdownToggle}>
@@ -159,8 +193,52 @@ const Adidas = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-between gap-x-3">
-          <div className="w-[15%] border border-[#E5E5E5] flex flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto">
+        {isSidebarOpen && (
+          <motion.div
+            className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
+            initial="closed"
+            animate={isSidebarOpen ? 'open' : 'closed'}
+            variants={sidebarVariants}
+            transition={{ type: 'spring', stiffness: 100 }}
+          >
+            <button onClick={toggleSidebar} className="self-end text-xl font-bold mb-4">
+              ×
+            </button>
+            {/* Filter Brand */}
+            <div className="mb-6">
+              <h3 className="text-lg font-medium font-overpass">Brand</h3>
+              <ul className="mt-3 space-y-2">
+                <li className="flex items-center gap-x-2">
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="JORDAN" value="JORDAN" onChange={handleBrandChange} />
+                  <label className="font-overpass" htmlFor="JORDAN">
+                    JORDAN
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="OFFWHITE" value="OFFWHITE" onChange={handleBrandChange} />
+                  <label className="font-overpass" htmlFor="OFFWHITE">
+                    OFFWHITE
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="BAPE" value="BAPE" onChange={handleBrandChange} />
+                  <label className="font-overpass" htmlFor="BAPE">
+                    BAPE
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="OFFWHITE" value="OFFWHITE" onChange={handleBrandChange} />
+                  <label className="font-overpass" htmlFor="OFFWHITE">
+                    OFFWHITE
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </motion.div>
+        )}
+
+        <div className="w-full flex justify-between gap-x-3 overflow-x-hidden">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
             {/* Filter Size */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">Size</h3>
@@ -259,7 +337,7 @@ const Adidas = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) => variant.item_name.toUpperCase().includes('ADIDAS'))
+                  .filter((variant) => variant.item_name.toUpperCase().includes('AAPE'))
                   .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty !== null && variant.available_qty >= 1)
                   .sort((a, b) => {
                     if (selectedOption === 'Harga Tertinggi') {
@@ -300,7 +378,7 @@ const Adidas = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) => variant.item_name.toUpperCase().includes('ADIDAS'))
+                  .filter((variant) => variant.item_name.toUpperCase().includes('AAPE'))
                   .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && (variant.available_qty === null || variant.available_qty <= 0))
                   .map((variant, index) => (
                     <div key={index} className="flex flex-col gap-y-5 items-center">
@@ -328,4 +406,4 @@ const Adidas = () => {
   );
 };
 
-export default Adidas;
+export default AapeBrand;

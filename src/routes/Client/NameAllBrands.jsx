@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { groupedBrandData } from "../../constans/allbrands";
+import { Link } from 'react-router-dom';
+import { groupedBrandData } from '../../constans/allbrands';
 groupedBrandData;
 
 const NameAllBrand = () => {
@@ -11,11 +11,7 @@ const NameAllBrand = () => {
             <h2 className="text-2xl font-bold mb-4">#{letter}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {brands.map((brand) => (
-                <Link
-                  key={brand.path}
-                  to={brand.path}
-                  className="text-lg font-medium text-gray-400 hover:text-gray-500 transition-colors duration-300"
-                >
+                <Link key={brand.path} to={brand.path} className="text-lg font-medium text-gray-400 hover:text-gray-500 transition-colors duration-300">
                   {brand.name}
                 </Link>
               ))}

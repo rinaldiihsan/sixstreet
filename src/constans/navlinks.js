@@ -1,7 +1,7 @@
 export const featuredBrand = [
   {
     name: "All Brands",
-    path: "/allbrands",
+    path: "/allbrand",
   },
   {
     name: "Adidas",
