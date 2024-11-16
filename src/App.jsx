@@ -109,6 +109,11 @@ import Mschf from './routes/Client/AllBrand/Mschf';
 import NewbalanceBrand from './routes/Client/AllBrand/NewbalanceBrand';
 import NikeBrand from './routes/Client/AllBrand/NikeBrand';
 import Nudie from './routes/Client/AllBrand/Nudie';
+import OffWhite from './routes/Client/AllBrand/OffWhite';
+import OnBrand from './routes/Client/AllBrand/OnBrand';
+import Palmangels from './routes/Client/AllBrand/Palmangels';
+import Rickyisclown from './routes/Client/AllBrand/Rickyisclown';
+import Ripndip from './routes/Client/AllBrand/Ripndip';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
