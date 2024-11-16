@@ -96,6 +96,19 @@ import Hugoboss from './routes/Client/AllBrand/Hugoboss';
 import JordanBrand from './routes/Client/AllBrand/JordanBrand';
 import Kenzo from './routes/Client/AllBrand/Kenzo';
 import Kith from './routes/Client/AllBrand/Kith';
+import Lacoste from './routes/Client/AllBrand/Lacoste';
+import Laphont from './routes/Client/AllBrand/Laphont';
+import Lifework from './routes/Client/AllBrand/Lifework';
+import Louisvuitton from './routes/Client/AllBrand/Louisvuitton';
+import Marceloburlon from './routes/Client/AllBrand/Marceloburlon';
+import Marithegirbaud from './routes/Client/AllBrand/Marithegirbaud';
+import Mlb from './routes/Client/AllBrand/Mlb';
+import Mnml from './routes/Client/AllBrand/Mnml';
+import Moschino from './routes/Client/AllBrand/Moschino';
+import Mschf from './routes/Client/AllBrand/Mschf';
+import NewbalanceBrand from './routes/Client/AllBrand/NewbalanceBrand';
+import NikeBrand from './routes/Client/AllBrand/NikeBrand';
+import Nudie from './routes/Client/AllBrand/Nudie';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -247,6 +260,22 @@ const App = () => {
             {/* K */}
             <Route path="/allbrand/kenzo" element={<Kenzo />} />
             <Route path="/allbrand/kith" element={<Kith />} />
+            {/* L */}
+            <Route path="/allbrand/lacoste" element={<Lacoste />} />
+            <Route path="/allbrand/laphont-montreal" element={<Laphont />} />
+            <Route path="/allbrand/lifework" element={<Lifework />} />
+            <Route path="/allbrand/louis-vuitton" element={<Louisvuitton />} />
+            {/* M */}
+            <Route path="/allbrand/marcelo-burlon" element={<Marceloburlon />} />
+            <Route path="/allbrand/marithe-girbaud" element={<Marithegirbaud />} />
+            <Route path="/allbrand/mlb" element={<Mlb />} />
+            <Route path="/allbrand/mnml" element={<Mnml />} />
+            <Route path="/allbrand/moschino" element={<Moschino />} />
+            <Route path="/allbrand/mschf" element={<Mschf />} />
+            {/* N */}
+            <Route path="/allbrand/new-balance" element={<NewbalanceBrand />} />
+            <Route path="/allbrand/nike" element={<NikeBrand />} />
+            <Route path="/allbrand/nudie-jeans" element={<Nudie />} />
 
             {/* Cloth */}
             <Route path="/clothing/shirt" element={<Shirt />} />
