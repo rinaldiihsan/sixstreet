@@ -6,7 +6,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { motion } from 'framer-motion';
 
-const DoubleSchool = () => {
+const Kenzo = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Relevance');
   const [loginStatus, setLoginStatus] = useState(null);
@@ -130,8 +130,8 @@ const DoubleSchool = () => {
         )}
 
         <img
-          src="/" // Pastikan untuk mengganti dengan gambar hero DOUBLE SCHOOL
-          alt="Hero DOUBLE SCHOOL"
+          src="/" // Pastikan untuk mengganti dengan gambar hero KENZO
+          alt="Hero KENZO"
           className="w-full h-full md:h-auto mb-6"
         />
 
@@ -164,7 +164,7 @@ const DoubleSchool = () => {
               </svg>
             </div>
             <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
-              <p className="font-overpass capitalize">{products.flatMap((item) => item.variants).filter((variant) => variant.item_name.toUpperCase().includes('DOUBLE SCHOOL')).length} Hasil</p>
+              <p className="font-overpass capitalize">{products.flatMap((item) => item.variants).filter((variant) => variant.item_name.toUpperCase().includes('KENZO')).length} Hasil</p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p className="font-overpass capitalize cursor-pointer" onClick={handleDropdownToggle}>
@@ -337,7 +337,7 @@ const DoubleSchool = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) => variant.item_name.toUpperCase().includes('DOUBLE SCHOOL'))
+                  .filter((variant) => variant.item_name.toUpperCase().includes('KENZO'))
                   .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty !== null && variant.available_qty >= 1)
                   .sort((a, b) => {
                     if (selectedOption === 'Harga Tertinggi') {
@@ -378,7 +378,7 @@ const DoubleSchool = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) => variant.item_name.toUpperCase().includes('DOUBLE SCHOOL'))
+                  .filter((variant) => variant.item_name.toUpperCase().includes('KENZO'))
                   .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && (variant.available_qty === null || variant.available_qty <= 0))
                   .map((variant, index) => (
                     <div key={index} className="flex flex-col gap-y-5 items-center">
@@ -406,4 +406,4 @@ const DoubleSchool = () => {
   );
 };
 
-export default DoubleSchool;
+export default Kenzo;

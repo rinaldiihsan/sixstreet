@@ -77,6 +77,25 @@ import Bearbrick from './routes/Client/AllBrand/Bearbrick';
 import BetterGoods from './routes/Client/AllBrand/BetterGoods';
 import Billionare from './routes/Client/AllBrand/Billionare';
 import Burberry from './routes/Client/AllBrand/Burberry';
+import Christian from './routes/Client/AllBrand/Christian';
+import Coach from './routes/Client/AllBrand/Coach';
+import ConverseBrand from './routes/Client/AllBrand/ConverseBrand';
+import Cpfm from './routes/Client/AllBrand/Cpfm';
+import Crep from './routes/Client/AllBrand/Crep';
+import DoubleSchool from './routes/Client/AllBrand/DoubleSchool';
+import DrMartens from './routes/Client/AllBrand/DrMartens';
+import Fendi from './routes/Client/AllBrand/Fendi';
+import Fierdemoi from './routes/Client/AllBrand/Fierdemoi';
+import Fog from './routes/Client/AllBrand/Fog';
+import FogEssentials from './routes/Client/AllBrand/FogEssentials';
+import Fredperry from './routes/Client/AllBrand/Fredperry';
+import Givenchy from './routes/Client/AllBrand/Givenchy';
+import Gucci from './routes/Client/AllBrand/Gucci';
+import Hanaka from './routes/Client/AllBrand/Hanaka';
+import Hugoboss from './routes/Client/AllBrand/Hugoboss';
+import JordanBrand from './routes/Client/AllBrand/JordanBrand';
+import Kenzo from './routes/Client/AllBrand/Kenzo';
+import Kith from './routes/Client/AllBrand/Kith';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -202,7 +221,32 @@ const App = () => {
             <Route path="/allbrand/better-goods" element={<BetterGoods />} />
             <Route path="/allbrand/billionaire-boys-club" element={<Billionare />} />
             <Route path="/allbrand/burberry" element={<Burberry />} />
-            {/* c */}
+            {/* C */}
+            <Route path="/allbrand/christian-louboutin" element={<Christian />} />
+            <Route path="/allbrand/coach" element={<Coach />} />
+            <Route path="/allbrand/converse" element={<ConverseBrand />} />
+            <Route path="/allbrand/cpfm" element={<Cpfm />} />
+            <Route path="/allbrand/crep-protect" element={<Crep />} />
+            {/* D */}
+            <Route path="/allbrand/double-school" element={<DoubleSchool />} />
+            <Route path="/allbrand/dr-martens" element={<DrMartens />} />
+            {/* F */}
+            <Route path="/allbrand/fendi" element={<Fendi />} />
+            <Route path="/allbrand/fier-de-moi" element={<Fierdemoi />} />
+            <Route path="/allbrand/fear-of-god" element={<Fog />} />
+            <Route path="/allbrand/fear-of-god-essentials" element={<FogEssentials />} />
+            <Route path="/allbrand/fred-perry" element={<Fredperry />} />
+            {/* G */}
+            <Route path="/allbrand/givenchy" element={<Givenchy />} />
+            <Route path="/allbrand/gucci" element={<Gucci />} />
+            {/* H */}
+            <Route path="/allbrand/hanaka" element={<Hanaka />} />
+            <Route path="/allbrand/hugo-boss" element={<Hugoboss />} />
+            {/* J */}
+            <Route path="/allbrand/jordan" element={<JordanBrand />} />
+            {/* K */}
+            <Route path="/allbrand/kenzo" element={<Kenzo />} />
+            <Route path="/allbrand/kith" element={<Kith />} />
 
             {/* Cloth */}
             <Route path="/clothing/shirt" element={<Shirt />} />
