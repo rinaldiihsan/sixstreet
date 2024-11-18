@@ -369,66 +369,6 @@ const ShortsSixstreet = () => {
                 </li>
               </ul>
             </div>
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Categories</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand1"
-                  />
-                  <label className="font-overpass" htmlFor="brand1">
-                    Bags
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand2"
-                  />
-                  <label className="font-overpass" htmlFor="brand2">
-                    Hats
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand3"
-                  />
-                  <label className="font-overpass" htmlFor="brand3">
-                    Hoodie
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand4"
-                  />
-                  <label className="font-overpass" htmlFor="brand4">
-                    Socks
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand4"
-                  />
-                  <label className="font-overpass" htmlFor="brand4">
-                    T-Shirts
-                  </label>
-                </li>
-              </ul>
-            </div>
           </div>
           {/* Product */}
           <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
