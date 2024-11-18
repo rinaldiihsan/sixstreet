@@ -32,8 +32,6 @@ const HoodiesTops = () => {
       }
 
       const data = response.data;
-
-      // Menggabungkan thumbnail dari objek utama produk ke dalam variants
       const productsWithThumbnails = data.data.map((item) => {
         item.variants = item.variants.map((variant) => ({
           ...variant,
@@ -64,7 +62,6 @@ const HoodiesTops = () => {
 
     try {
       const response = await axios.post(`${ApiLogin}/loginjubelio`);
-
       const data = response.data;
 
       if (response.status === 200) {
@@ -80,7 +77,6 @@ const HoodiesTops = () => {
       setLoginStatus("error");
     }
   };
-
   useEffect(() => {
     loginAndFetchProducts();
   }, []);

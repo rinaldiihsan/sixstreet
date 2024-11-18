@@ -31,12 +31,11 @@ const SocksSixstreet = () => {
       }
 
       const data = response.data;
-
-      // Menggabungkan thumbnail dari objek utama produk ke dalam variants
       const productsWithThumbnails = data.data.map((item) => {
         item.variants = item.variants.map((variant) => ({
           ...variant,
           parentThumbnail: item.thumbnail,
+          last_modified: item.last_modified,
         }));
         return item;
       });
@@ -52,7 +51,7 @@ const SocksSixstreet = () => {
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const ApiLogin = import.meta.env.VITE_LOGIN_JUBELIO;
 
     if (!email || !password) {
       setError("Missing email or password in environment variables.");
@@ -61,19 +60,7 @@ const SocksSixstreet = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/login`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      const response = await axios.post(`${ApiLogin}/loginjubelio`);
       const data = response.data;
 
       if (response.status === 200) {
@@ -85,7 +72,7 @@ const SocksSixstreet = () => {
         setLoginStatus("error");
       }
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError(`An error occurred: ${error.message}`);
       setLoginStatus("error");
     }
   };
