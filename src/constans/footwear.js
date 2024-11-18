@@ -1,26 +1,30 @@
 export const Footwear = [
   {
-    name: "Sneakers",
-    path: "/footwear/sneakers",
+    name: 'Sneakers',
+    path: '/footwear/sneakers',
   },
   {
-    name: "Boots",
-    path: "/footwear/boots",
+    name: 'Boots',
+    path: '/footwear/boots',
   },
   {
-    name: "Loafers",
-    path: "/footwear/loafers",
+    name: 'Loafers',
+    path: '/footwear/loafers',
   },
   {
-    name: "Sandals",
-    path: "/footwear/sandals",
+    name: 'Slip On',
+    path: '/footwear/slip-on',
   },
   {
-    name: "Heals",
-    path: "/footwear/heals",
+    name: 'Sandals',
+    path: '/footwear/sandals',
   },
   {
-    name: "Socks",
-    path: "/footwear/Socks",
+    name: 'Heels',
+    path: '/footwear/heels',
+  },
+  {
+    name: 'Socks',
+    path: '/footwear/socks',
   },
 ];
