@@ -128,6 +128,17 @@ import Vlone from "./routes/Client/AllBrand/Vlone";
 import Watertheplants from "./routes/Client/AllBrand/Watertheplants";
 import YeezyBrand from "./routes/Client/AllBrand/YeezyBrand";
 import Whocares from "./routes/Client/AllBrand/Whocares";
+{
+  /* Six Street Component */
+}
+import HeadwearSixstreet from "./routes/Client/Sixstreet/HeadwearSixstreet";
+import HoodiesSixstreet from "./routes/Client/Sixstreet/HoodiesSixstreet";
+import JacketSixstreet from "./routes/Client/Sixstreet/JacketSixstreet";
+import LifestyleSixstreet from "./routes/Client/Sixstreet/LifestyleSixstreet";
+import ShirtSixstreet from "./routes/Client/Sixstreet/ShirtSixstreet";
+import ShortsSixstreet from "./routes/Client/Sixstreet/ShortsSixstreet";
+import SocksSixstreet from "./routes/Client/Sixstreet/SocksSixstreet";
+import SweatersSixstreet from "./routes/Client/Sixstreet/SweatersSixstreet";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -372,6 +383,19 @@ const App = () => {
             />
             {/* Y */}
             <Route path="/allbrand/yeezy" element={<YeezyBrand />} />
+
+            {/* Six Street Section */}
+            <Route path="/sixstreet/shirt" element={<ShirtSixstreet />} />
+            <Route path="/sixstreet/headwear" element={<HeadwearSixstreet />} />
+            <Route path="/sixstreet/hoodies" element={<HoodiesSixstreet />} />
+            <Route path="/sixstreet/jacket" element={<JacketSixstreet />} />
+            <Route
+              path="/sixstreet/lifestyle"
+              element={<LifestyleSixstreet />}
+            />
+            <Route path="/sixstreet/shorts" element={<ShortsSixstreet />} />
+            <Route path="/sixstreet/socks" element={<SocksSixstreet />} />
+            <Route path="/sixstreet/sweaters" element={<SweatersSixstreet />} />
 
             {/* Cloth */}
             <Route path="/clothing/shirt" element={<Shirt />} />

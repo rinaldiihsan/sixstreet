@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { featuredBrand } from "../constans/navlinks";
+import { featuredBrand } from "../constans/featured-brand";
+import { SixStreet } from "../constans/sixstreet";
+import { Top } from "../constans/tops";
+import { Bottom } from "../constans/bottoms";
+import { Footwear } from "../constans/footwear";
+import { Accessories } from "../constans/accessories";
 
 const Sidebar = ({
   sidebarOpen,
@@ -130,14 +135,14 @@ const Sidebar = ({
               <nav className="mt-5 px-8 space-y-2 w-full">
                 {/* Menu with Sub Menu */}
                 <ul className="space-y-2 w-full">
-                  {/* Sixstreet Menu */}
+                  {/* SixStreet Menu */}
                   <li>
                     <button
                       className="flex justify-between w-full"
                       onClick={() => toggleSubMenu("sixstreet")}
                     >
                       <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
-                        sixstreet
+                        Six Street
                       </span>
                       <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
                         {activeSubMenu === "sixstreet" ? "-" : "+"}
@@ -148,72 +153,39 @@ const Sidebar = ({
                         activeSubMenu === "sixstreet" ? "block" : "hidden"
                       } pl-4 space-y-1`}
                     >
-                      <li>
-                        <Link
-                          to="/sixstreet/tshirt"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          T-Shirt
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/sixstreet/shirt"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Shirt
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/sixstreet/jacket"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Jacket & Hoodie
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/sixstreet/pants"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Pants
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/sixstreet/hat"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Hat
-                        </Link>
-                      </li>
+                      {/* Sub Menu */}
+                      {SixStreet.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   </li>
-                  {/* Clothing Menu */}
+                  {/* Featured Brand Menu */}
                   <li>
                     <button
                       className="flex justify-between w-full"
-                      onClick={() => toggleSubMenu("clothing")}
+                      onClick={() => toggleSubMenu("featuredBrand")}
                     >
                       <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
                         Featured Brands
                       </span>
                       <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
-                        {activeSubMenu === "clothing" ? "-" : "+"}
+                        {activeSubMenu === "featuredBrand" ? "-" : "+"}
                       </span>
                     </button>
                     <ul
                       className={`${
-                        activeSubMenu === "clothing" ? "block" : "hidden"
+                        activeSubMenu === "featuredBrand" ? "block" : "hidden"
                       } pl-4 space-y-1`}
                     >
-                      {/* Featured Brand */}
+                      {/* Sub Menu */}
                       {featuredBrand.map((brand, index) => (
                         <li key={index}>
                           <Link
@@ -227,60 +199,100 @@ const Sidebar = ({
                       ))}
                     </ul>
                   </li>
-                  {/* Footware Menu */}
+                  {/* Tops Menu */}
                   <li>
                     <button
                       className="flex justify-between w-full"
-                      onClick={() => toggleSubMenu("footware")}
+                      onClick={() => toggleSubMenu("tops")}
                     >
                       <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
-                        footware
+                        Tops
                       </span>
                       <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
-                        {activeSubMenu === "footware" ? "-" : "+"}
+                        {activeSubMenu === "tops" ? "-" : "+"}
                       </span>
                     </button>
                     <ul
                       className={`${
-                        activeSubMenu === "footware" ? "block" : "hidden"
+                        activeSubMenu === "tops" ? "block" : "hidden"
                       } pl-4 space-y-1`}
                     >
-                      <li>
-                        <Link
-                          to="/footware/sneakers"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Sneakers
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/footware/sandals"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Sandals
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/footware/boots"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Boots
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/footware/slipon"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Slip On
-                        </Link>
-                      </li>
+                      {/*  Sub Menu */}
+                      {Top.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                  {/* Bottom Menu */}
+                  <li>
+                    <button
+                      className="flex justify-between w-full"
+                      onClick={() => toggleSubMenu("bottoms")}
+                    >
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
+                        Bottoms
+                      </span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
+                        {activeSubMenu === "bottoms" ? "-" : "+"}
+                      </span>
+                    </button>
+                    <ul
+                      className={`${
+                        activeSubMenu === "bottoms" ? "block" : "hidden"
+                      } pl-4 space-y-1`}
+                    >
+                      {/*  Sub Menu */}
+                      {Bottom.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                  {/* Footwear Menu */}
+                  <li>
+                    <button
+                      className="flex justify-between w-full"
+                      onClick={() => toggleSubMenu("footwear")}
+                    >
+                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
+                        Footwear
+                      </span>
+                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
+                        {activeSubMenu === "footwear" ? "-" : "+"}
+                      </span>
+                    </button>
+                    <ul
+                      className={`${
+                        activeSubMenu === "footwear" ? "block" : "hidden"
+                      } pl-4 space-y-1`}
+                    >
+                      {/*  Sub Menu */}
+                      {Footwear.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   </li>
                   {/* Accessories Menu */}
@@ -290,7 +302,7 @@ const Sidebar = ({
                       onClick={() => toggleSubMenu("accessories")}
                     >
                       <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
-                        accessories
+                        Accessories
                       </span>
                       <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
                         {activeSubMenu === "accessories" ? "-" : "+"}
@@ -301,90 +313,20 @@ const Sidebar = ({
                         activeSubMenu === "accessories" ? "block" : "hidden"
                       } pl-4 space-y-1`}
                     >
-                      <li>
-                        <Link
-                          to="/accessories/eyewear"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Eyewear
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/hats"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Hats
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/wallets"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Wallets & Card Holder
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/belts"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Belts
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/facemask"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Face Mask
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/jewelry"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Jewelry
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/bracelet"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Bracelet
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/necklace"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Necklace
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/accessories/bag"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Bag
-                        </Link>
-                      </li>
+                      {/*  Sub Menu */}
+                      {Accessories.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   </li>
-
                   {/* Collab Menu */}
                   <li>
                     <button

@@ -5,7 +5,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const ShirtSixstreet = () => {
+const HeadwearSixstreet = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("Relevance");
   const [loginStatus, setLoginStatus] = useState(null);
@@ -155,7 +155,7 @@ const ShirtSixstreet = () => {
             </div>
           </div>
         )}
-        <img src="/" alt="Hero Shirt" className="w-full h-auto mb-6" />
+        <img src="/" alt="Hero Headwear" className="w-full h-auto mb-6" />
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[72px] bg-white z-[997] py-4">
           <div className="flex flex-grow">
@@ -224,9 +224,7 @@ const ShirtSixstreet = () => {
                   products
                     .flatMap((item) => item.variants)
                     .filter((variant) =>
-                      variant.item_name
-                        .toLowerCase()
-                        .includes("sixstreet shirt")
+                      variant.item_name.toLowerCase().includes("sixstreet cap")
                     ).length
                 }{" "}
                 Hasil
@@ -445,7 +443,7 @@ const ShirtSixstreet = () => {
             ) : loginStatus === "success" &&
               products.some((item) =>
                 item.variants.some((variant) =>
-                  variant.item_name.toLowerCase().includes("sixstreet shirt")
+                  variant.item_name.toLowerCase().includes("sixstreet cap")
                 )
               ) ? (
               <>
@@ -453,7 +451,7 @@ const ShirtSixstreet = () => {
                 {products
                   .flatMap((item) => item.variants)
                   .filter((variant) =>
-                    variant.item_name.toLowerCase().includes("sixstreet shirt")
+                    variant.item_name.toLowerCase().includes("sixstreet cap")
                   )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
@@ -512,7 +510,7 @@ const ShirtSixstreet = () => {
                 {products
                   .flatMap((item) => item.variants)
                   .filter((variant) =>
-                    variant.item_name.toLowerCase().includes("sixstreet shirt")
+                    variant.item_name.toLowerCase().includes("sixstreet cap")
                   )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
@@ -575,4 +573,4 @@ const ShirtSixstreet = () => {
   );
 };
 
-export default ShirtSixstreet;
+export default HeadwearSixstreet;
