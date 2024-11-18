@@ -139,6 +139,15 @@ import ShirtSixstreet from "./routes/Client/Sixstreet/ShirtSixstreet";
 import ShortsSixstreet from "./routes/Client/Sixstreet/ShortsSixstreet";
 import SocksSixstreet from "./routes/Client/Sixstreet/SocksSixstreet";
 import SweatersSixstreet from "./routes/Client/Sixstreet/SweatersSixstreet";
+{
+  /* Tops Component */
+}
+import HoodiesTops from "./routes/Client/Tops/HoodiesTops";
+import JacketsTops from "./routes/Client/Tops/JacketsTops";
+import ShirtsTops from "./routes/Client/Tops/ShirtsTops";
+import TshirtsTops from "./routes/Client/Tops/TshirtsTops";
+import SweatersTops from "./routes/Client/Tops/SweatersTops";
+import PoloShirtsTops from "./routes/Client/Tops/PoloShirtsTops";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -396,6 +405,14 @@ const App = () => {
             <Route path="/sixstreet/shorts" element={<ShortsSixstreet />} />
             <Route path="/sixstreet/socks" element={<SocksSixstreet />} />
             <Route path="/sixstreet/sweaters" element={<SweatersSixstreet />} />
+
+            {/* Tops Section */}
+            <Route path="/tops/t-shirts" element={<TshirtsTops />} />
+            <Route path="/tops/shirts" element={<ShirtsTops />} />
+            <Route path="/tops/polo-shirts" element={<PoloShirtsTops />} />
+            <Route path="/tops/jackets" element={<JacketsTops />} />
+            <Route path="/tops/hoodies" element={<HoodiesTops />} />
+            <Route path="/tops/sweaters" element={<SweatersTops />} />
 
             {/* Cloth */}
             <Route path="/clothing/shirt" element={<Shirt />} />

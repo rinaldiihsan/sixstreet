@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { featuredBrand } from "../constans/featured-brand";
 import { SixStreet } from "../constans/sixstreet";
-import { Top } from "../constans/tops";
+import { Tops } from "../constans/tops";
 import { Bottom } from "../constans/bottoms";
 import { Footwear } from "../constans/footwear";
 import { Accessories } from "../constans/accessories";
@@ -218,7 +218,7 @@ const Sidebar = ({
                       } pl-4 space-y-1`}
                     >
                       {/*  Sub Menu */}
-                      {Top.map((brand, index) => (
+                      {Tops.map((brand, index) => (
                         <li key={index}>
                           <Link
                             to={brand.path}

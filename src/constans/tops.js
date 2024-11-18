@@ -1,26 +1,26 @@
-export const Top = [
+export const Tops = [
   {
     name: "T-Shirts",
-    path: "/top/t-shirts",
+    path: "/tops/t-shirts",
   },
   {
     name: "Shirts",
-    path: "/top/shirts",
+    path: "/tops/shirts",
   },
   {
     name: "Polo Shirts",
-    path: "/top/polo-shirts",
+    path: "/tops/polo-shirts",
   },
   {
     name: "Jackets",
-    path: "/top/jackets",
+    path: "/tops/jackets",
   },
   {
     name: "Hoodies",
-    path: "/top/hoodies",
+    path: "/tops/hoodies",
   },
   {
     name: "Sweaters",
-    path: "/top/sweaters",
+    path: "/tops/sweaters",
   },
 ];
