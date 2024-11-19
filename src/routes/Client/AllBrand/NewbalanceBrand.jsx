@@ -149,7 +149,16 @@ const NewbalanceBrand = () => {
           alt="Hero NEW BALANCE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          New Balance is an American footwear company known for its athletic
+          shoes and comfortable fit. Founded in 1906, New Balance has a long
+          history of producing high-quality athletic footwear for various sports
+          and activities. The brand is recognized for its innovative
+          technologies, durable construction, and commitment to providing a
+          personalized fit. New Balance has expanded its product line to include
+          apparel and accessories, while maintaining its reputation for comfort,
+          quality, and a classic American style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

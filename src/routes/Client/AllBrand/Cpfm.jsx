@@ -148,7 +148,15 @@ const Cpfm = () => {
           alt="Hero CACTUS PLANT FLEA MARKET"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          CPFM is a streetwear brand founded by Cynthia Lu in Los Angeles. Known
+          for its playful and irreverent designs, CPFM often incorporates pop
+          culture references, bold graphics, and a sense of humor into its
+          collections. The brand's products, which include apparel, accessories,
+          and collectibles, are highly sought after by streetwear enthusiasts
+          and collectors. CPFM has gained a reputation for its limited-edition
+          releases and collaborations with other brands and artists.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

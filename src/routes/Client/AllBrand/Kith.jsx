@@ -149,7 +149,17 @@ const Kith = () => {
           alt="Hero KITH"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Kith is a streetwear brand founded by Ronnie Fieg. Known for its
+          high-quality materials, limited-edition releases, and collaborations
+          with popular brands and artists, Kith has become a highly sought-after
+          brand in the streetwear community. The brand offers a wide range of
+          products, including apparel, footwear, and accessories, characterized
+          by a blend of classic American style and modern streetwear influences.
+          Kith's flagship stores and online releases often create a sense of
+          hype and exclusivity, making it a coveted brand among fashion
+          enthusiasts.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

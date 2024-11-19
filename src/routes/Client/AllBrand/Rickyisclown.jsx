@@ -149,7 +149,14 @@ const Rickyisclown = () => {
           alt="Hero RICKY IS CLOWN"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Ricky is Clown (RIC) is a bold clothing brand founded in 2014,
+          blending Hong Kong and Japanese street style with a playful twist.
+          Known for its vivid colors and humorous designs, the brand embraces
+          individuality and self-expression, reflecting Ricky's philosophy of
+          self-mockery and motivation, while celebrating the quirky and
+          imperfect sides in all of us.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

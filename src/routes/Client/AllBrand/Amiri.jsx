@@ -149,6 +149,15 @@ const Amiri = () => {
           alt="Hero AMIRI"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Amiri is a luxury streetwear brand founded by Mike Amiri in Los
+          Angeles. Known for its rock and roll-inspired aesthetic, Amiri offers
+          a range of menswear and womenswear collections, including denim,
+          leather jackets, and graphic tees. The brand is recognized for its
+          high-quality materials, distressed detailing, and rebellious attitude.
+          Amiri has gained a following among celebrities and fashion enthusiasts
+          for its edgy yet sophisticated style.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

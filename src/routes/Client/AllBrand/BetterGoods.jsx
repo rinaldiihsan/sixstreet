@@ -149,7 +149,14 @@ const BetterGoods = () => {
           alt="Hero BETTER GOODS"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Better Goods is a brand rooted in the new age of minimalist
+          philosophy, focusing on quality and honest choices in their garments.
+          Embracing slow-paced living, Better Goods challenges conventional
+          views on comfort and style, proving that sometimes, less truly is
+          more. This brand fits your style if you're all about refined
+          simplicity and authentic comfort.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

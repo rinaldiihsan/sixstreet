@@ -149,7 +149,16 @@ const Salvatore = () => {
           alt="Hero SALVATORE FERRAGAMO"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Salvatore Ferragamo is a luxury Italian fashion house founded by the
+          legendary shoemaker Salvatore Ferragamo. Known for its iconic gancio
+          logo and high-quality footwear, Ferragamo has become a global symbol
+          of luxury and elegance. The brand offers a wide range of products,
+          including clothing, accessories, and fragrances, characterized by a
+          blend of Italian craftsmanship, innovative design, and a focus on
+          quality. Ferragamo is often associated with luxury, glamour, and a
+          sense of timeless style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

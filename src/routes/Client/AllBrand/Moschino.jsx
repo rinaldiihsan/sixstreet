@@ -149,7 +149,14 @@ const Moschino = () => {
           alt="Hero MOSCHINO"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Moschino is an Italian luxury fashion house founded by Franco
+          Moschino. Known for its playful and irreverent designs, Moschino has
+          become a symbol of pop culture and fashion. The brand's collections
+          often feature bold colors, unexpected silhouettes, and satirical
+          elements. Moschino is associated with humor, creativity, and a sense
+          of fun, challenging traditional fashion norms.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

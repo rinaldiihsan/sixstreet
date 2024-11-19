@@ -149,7 +149,15 @@ const Vlone = () => {
           alt="Hero VLONE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          VLONE is a streetwear brand founded by A$AP Bari, a member of the A$AP
+          Mob collective. Known for its rebellious attitude, edgy designs, and
+          limited-edition releases, VLONE has become a highly sought-after brand
+          in the streetwear community. The brand's products often feature bold
+          graphics, provocative messaging, and a focus on exclusivity. VLONE has
+          gained a reputation for its underground appeal, rebellious spirit, and
+          ability to capture the essence of youth culture.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

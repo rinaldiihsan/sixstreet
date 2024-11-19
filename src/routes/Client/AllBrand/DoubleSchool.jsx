@@ -148,7 +148,14 @@ const DoubleSchool = () => {
           alt="Hero DOUBLE SCHOOL"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          DOUBLE SCHOOL is a tribute to 90’s culture, blending nostalgia with a
+          modern twist. Inspired by 90’s fashion, music, and more, DOUBLE SCHOOL
+          reimagines old-school vibes with a fresh, new-school edge. Offering
+          top-quality products at reasonable prices, DOUBLE SCHOOL celebrates
+          the individuality and creativity of the 90’s, connecting with today’s
+          generation through its unique style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

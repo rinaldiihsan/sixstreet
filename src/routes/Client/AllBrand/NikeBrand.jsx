@@ -149,7 +149,16 @@ const NikeBrand = () => {
           alt="Hero NIKE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Nike is a global sportswear and footwear company known for its iconic
+          swoosh logo and innovative products. Founded in 1964, Nike has become
+          a cultural phenomenon, associated with athleticism, performance, and a
+          rebellious spirit. The brand offers a wide range of products,
+          including apparel, footwear, and accessories, for various sports and
+          activities. Nike is known for its collaborations with athletes,
+          celebrities, and other brands, as well as its commitment to innovation
+          and sustainability.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

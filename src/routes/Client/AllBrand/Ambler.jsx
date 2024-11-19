@@ -149,6 +149,14 @@ const Ambler = () => {
           alt="Hero AMBLER"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          AMBLER is a streetwear brand from South Korea, brings fresh options to
+          your wardrobe with its signature ‘cute animal’ prints and appliqués.
+          Dive into their collection of boxy T-shirts, oversized outerwear, and
+          versatile bottoms, all in earthy tones like Midnight Navy, Khaki, and
+          Misty Grey. Inspired by nature and ethnic clothing, AMBLER adds a
+          unique, playful touch to every outfit.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

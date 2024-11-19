@@ -148,7 +148,16 @@ const JordanBrand = () => {
           alt="Hero JORDAN"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Jordan is a sportswear brand founded by Michael Jordan, the legendary
+          basketball player. Known for its iconic Jumpman logo and
+          high-performance basketball footwear, Jordan has become a global
+          symbol of athleticism and style. The brand offers a wide range of
+          products, including apparel, accessories, and footwear, inspired by
+          Jordan's legacy and his passion for the game. Jordan is often
+          associated with basketball culture, streetwear, and a sense of
+          athletic excellence.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

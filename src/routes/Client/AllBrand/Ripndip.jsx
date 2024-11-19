@@ -149,7 +149,17 @@ const Ripndip = () => {
           alt="Hero RIPNDIP"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Rip N Dip is a streetwear brand founded by Ryan Gabrial. Known for its
+          playful and irreverent designs featuring cats, the brand has become a
+          popular choice among streetwear enthusiasts. Rip N Dip offers a range
+          of apparel, accessories, and collectibles, characterized by bold
+          graphics, humorous slogans, and a sense of fun. The brand's products
+          are often limited-edition releases, adding to their desirability and
+          collectability. Rip N Dip has gained a reputation for its unique
+          style, underground appeal, and ability to capture the spirit of youth
+          culture.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

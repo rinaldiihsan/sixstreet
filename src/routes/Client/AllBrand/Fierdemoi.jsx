@@ -148,7 +148,14 @@ const Fierdemoi = () => {
           alt="Hero FIER DE MOI"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Fier de Moi, a new brand from Korea, is blowing up everywhere right
+          now! This brand has caught everyone’s attention with a fresh and
+          unique vibe. 'Fier de Moi' means 'proud of myself' in French, and the
+          brand often features Iris flower graphics, symbolizing self-pride and
+          individuality. Wear Fier de Moi and celebrate what makes you uniquely
+          you!
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

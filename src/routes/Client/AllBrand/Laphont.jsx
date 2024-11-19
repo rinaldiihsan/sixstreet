@@ -149,7 +149,13 @@ const Laphont = () => {
           alt="Hero LAPHONT MONTREAL"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Laphont Montreal is a brand from Montreal that offers unique items
+          like iconic bean bags for your room. Their most iconic piece is a
+          clock inspired by Salvador Dalí’s paintings, with 14-karat gold-plated
+          bronze. This brand is perfect for anyone who loves fashion that’s
+          unique and fresh.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

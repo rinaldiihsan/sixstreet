@@ -149,7 +149,13 @@ const Sixstreet = () => {
           alt="Hero SIXSTREET"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          SIXSTREET is an exclusive haven where street-luxury wear converges.
+          Aiming to be Indonesia’s finest luxury streetwear brand, SIXSTREET
+          blends sports, music, arts, serenity, and automotive cultures with
+          fashion. With a focus on modesty and simplicity, SIXSTREET represents
+          the epitome of sophisticated, high-end streetwear.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

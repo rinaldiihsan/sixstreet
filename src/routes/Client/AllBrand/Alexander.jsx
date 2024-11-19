@@ -149,6 +149,14 @@ const Alexander = () => {
           alt="Hero ALEXANDER MCQUEEN"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Alexander McQueen is a British luxury fashion house founded by the
+          renowned designer Alexander McQueen. Known for its dramatic and
+          theatrical designs, McQueen's collections often push the boundaries of
+          fashion with innovative silhouettes, intricate details, and bold
+          aesthetics. The brand is associated with high-quality craftsmanship,
+          avant-garde style, and a strong sense of individuality.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

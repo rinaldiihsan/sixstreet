@@ -149,7 +149,13 @@ const OnBrand = () => {
           alt="Hero ON CLOUD"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Swiss sports footwear company known for its innovative running shoes.
+          They focus on creating shoes with a unique CloudTec technology that
+          provides a soft landing and responsive push-off. On Running is
+          particularly popular among runners and athletes who prioritize comfort
+          and performance.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

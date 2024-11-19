@@ -149,7 +149,13 @@ const Jovem = () => {
           alt="Hero JOVEM"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Jovem is a fashion studio based in Jakarta, Indonesia, specializing in
+          leather and handcrafted products. Believing that youth is an energy
+          and attitude beyond age, Jovem’s creations, made in Magetan,
+          Indonesia, embody this limitless spirit. Elevate your style with
+          Jovem’s unique designs and embrace the boundless energy of youth.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -149,7 +149,13 @@ const Stayhoops = () => {
           alt="Hero STAYHOOPS"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Stayhoops is a brand that emerged in Bandung in late 2016,
+          specializing in innovative basketball socks that offer exceptional
+          comfort, style, and performance. With unique designs and top
+          materials, Stayhoops sets trends and delivers quality gear. Perfect
+          for players who want both style and top performance on the court.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -149,7 +149,15 @@ const Bearbrick = () => {
           alt="Hero BEARBRICK"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Bearbrick is a collectible toy figure produced by the Japanese company
+          Medicom Toy. The Bearbrick is a simple cube-shaped figure with a
+          bear-like face. It comes in various sizes and is often released in
+          limited editions and collaborations with popular brands, artists, and
+          franchises. Bearbricks have become highly sought-after by collectors
+          and have developed a significant following in the toy and streetwear
+          culture.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

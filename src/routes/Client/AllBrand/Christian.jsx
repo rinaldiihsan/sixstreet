@@ -149,7 +149,15 @@ const Christian = () => {
           alt="Hero CHRISTIAN LOUBOUTIN"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Christian Louboutin is a French luxury footwear designer renowned for
+          his signature red-soled high heels. Louboutin's shoes are known for
+          their elegance, femininity, and bold designs. His creations often
+          feature intricate details, exotic materials, and statement-making
+          silhouettes. Louboutin has become a symbol of luxury and glamour, and
+          his shoes are highly sought after by celebrities and fashion
+          enthusiasts worldwide.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

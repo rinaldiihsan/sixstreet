@@ -149,7 +149,17 @@ const Mschf = () => {
           alt="Hero MSCHF"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          MSCHF is a New York-based art collective known for its provocative and
+          unconventional projects. While not a traditional fashion brand, MSCHF
+          has gained attention in the fashion world for its limited-edition
+          releases and collaborations with popular brands and artists. Their
+          products often combine elements of streetwear, art, and social
+          commentary, challenging traditional notions of commerce and consumer
+          culture. MSCHF's releases are highly sought after by collectors and
+          streetwear enthusiasts, and their projects often generate significant
+          buzz and controversy.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

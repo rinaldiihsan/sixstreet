@@ -149,7 +149,16 @@ const Marceloburlon = () => {
           alt="Hero MARCELO BURLON"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Marcelo Burlon County of Milan is a fashion brand founded by Marcelo
+          Burlon, an Argentinian DJ and creative director. Known for its bold
+          prints, graphic designs, and streetwear-inspired aesthetic, Marcelo
+          Burlon has become a popular brand among fashion-forward individuals.
+          The brand offers a wide range of products, including clothing,
+          accessories, and footwear, characterized by a blend of urban
+          influences, tribal motifs, and a rebellious spirit. Marcelo Burlon is
+          often associated with music, art, and a sense of edgy fashion.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -149,7 +149,15 @@ const Fredperry = () => {
           alt="Hero FRED PERRY"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Fred Perry is a British fashion brand founded by the legendary tennis
+          player Fred Perry. Known for its iconic polo shirts, Fred Perry has
+          become a cultural icon, associated with British subcultures and music
+          scenes. The brand's polo shirts are characterized by their laurel
+          wreath logo and high-quality cotton fabric. Fred Perry has expanded
+          its product line to include other apparel, footwear, and accessories,
+          while maintaining its heritage and connection to British style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -148,7 +148,13 @@ const Crep = () => {
           alt="Hero CREP PROTECT"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Crep Protect is a brand specializing in sneaker care products. They
+          offer a range of cleaning, waterproofing, and protection solutions
+          designed to maintain the appearance and condition of sneakers. Crep
+          Protect's products are popular among sneaker enthusiasts and
+          collectors who want to keep their footwear looking its best.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

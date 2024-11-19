@@ -149,7 +149,15 @@ const Billionare = () => {
           alt="Hero BILLIONAIRE BOYS CLUB"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Billionaire Boys Club (BBC) is a streetwear brand founded by Pharrell
+          Williams and Nigo. Known for its luxurious and aspirational aesthetic,
+          BBC offers a range of apparel and accessories featuring bold graphics,
+          high-quality materials, and a focus on exclusivity. The brand's
+          designs often incorporate elements of pop culture, streetwear, and
+          luxury fashion. BBC has gained a loyal following among celebrities and
+          fashion enthusiasts for its unique style and premium quality.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

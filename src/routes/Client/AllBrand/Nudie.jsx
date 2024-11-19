@@ -149,7 +149,16 @@ const Nudie = () => {
           alt="Hero NUDIE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Nudie Jeans Co. is a Swedish denim brand known for its high-quality
+          jeans and sustainable practices. Founded in 2001, Nudie Jeans Co.
+          focuses on producing organic, fair-trade denim and encourages
+          customers to repair and recycle their jeans. The brand's jeans are
+          characterized by their raw denim, selvedge construction, and unique
+          washes. Nudie Jeans Co. has gained a reputation for its commitment to
+          sustainability, ethical production, and a focus on quality
+          craftsmanship.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

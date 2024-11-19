@@ -149,7 +149,13 @@ const Whocares = () => {
           alt="Hero WHO CARES"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Whocares is a brand that represents rebellion and a playful attitude,
+          pushing the boundaries of fashion. With a focus on boldness,
+          adventure, and freedom, Whocares challenges the limits of what’s
+          possible. This brand is perfect for those who dare to be different and
+          live without limits.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -149,7 +149,17 @@ const Palmangels = () => {
           alt="Hero PALM ANGELS"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Palm Angels is a streetwear brand founded by Francesco Ragazzi, the
+          creative director of Palm Angels, a Los Angeles-based skate team.
+          Known for its Palm Tree motif and blend of streetwear and luxury
+          elements, Palm Angels has become a popular brand among fashion
+          enthusiasts. The brand offers a wide range of products, including
+          apparel, footwear, and accessories, characterized by a blend of
+          Californian vibes, high-quality materials, and a rebellious spirit.
+          Palm Angels is often associated with skate culture, luxury streetwear,
+          and a sense of edgy style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

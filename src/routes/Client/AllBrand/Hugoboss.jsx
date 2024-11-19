@@ -149,7 +149,15 @@ const Hugoboss = () => {
           alt="Hero HUGO BOSS"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Hugo Boss is a German luxury fashion house known for its tailored
+          suits and formalwear. Founded in 1924, Hugo Boss has become a global
+          symbol of elegance and sophistication. The brand offers a wide range
+          of products, including clothing, accessories, and fragrances,
+          characterized by a blend of classic tailoring, modern design, and a
+          focus on quality. Hugo Boss is often associated with business attire,
+          formal events, and a sense of refined style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

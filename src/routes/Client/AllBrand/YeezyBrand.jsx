@@ -149,7 +149,17 @@ const YeezyBrand = () => {
           alt="Hero YEEZY"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Yeezy is a footwear and apparel brand founded by Kanye West in
+          collaboration with Adidas. Known for its innovative designs,
+          futuristic aesthetics, and limited-edition releases, Yeezy has become
+          a highly sought-after brand in the streetwear and fashion communities.
+          The brand's products, which often feature unique silhouettes, bold
+          colors, and unconventional materials, have gained a cult following.
+          Yeezy's collaborations with Adidas have resulted in some of the most
+          popular and coveted sneakers in recent years, driving significant hype
+          and resale value.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

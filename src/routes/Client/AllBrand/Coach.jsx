@@ -149,7 +149,15 @@ const Coach = () => {
           alt="Hero COACH"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Coach is an American luxury fashion brand known for its leather goods
+          and accessories. Founded in 1941, Coach has a long history of crafting
+          quality handbags, wallets, and other leather items. The brand's
+          designs often feature classic American style, timeless elegance, and a
+          focus on craftsmanship. Coach has expanded its offerings to include
+          apparel, footwear, and fragrance, while maintaining its reputation for
+          quality and luxury.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

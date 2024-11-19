@@ -148,7 +148,17 @@ const Fog = () => {
           alt="Hero FEAR OF GOD"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Fear of God is a luxury streetwear brand founded by Jerry Lorenzo.
+          Known for its elevated and spiritual aesthetic, Fear of God offers a
+          range of menswear and womenswear collections characterized by
+          oversized silhouettes, luxurious fabrics, and a focus on quality
+          craftsmanship. The brand's designs often incorporate religious
+          imagery, minimalist details, and a sense of elevated streetwear. Fear
+          of God has gained a reputation for its innovative approach to fashion
+          and its ability to blend streetwear elements with a more refined and
+          sophisticated aesthetic.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

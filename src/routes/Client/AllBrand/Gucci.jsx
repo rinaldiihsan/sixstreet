@@ -149,7 +149,16 @@ const Gucci = () => {
           alt="Hero GUCCI"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+            Aape is a Japanese streetwear brand founded by BAPE, a popular
+            Japanese streetwear label. Aape offers a more affordable and
+            accessible line of clothing and accessories inspired by BAPE's
+            signature style. Known for its playful designs, bold graphics, and
+            iconic Baby Milo character, Aape has gained a strong following among
+            streetwear enthusiasts.
+          </h1>
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

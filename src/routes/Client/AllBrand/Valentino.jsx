@@ -149,7 +149,16 @@ const Valentino = () => {
           alt="Hero VALENTINO GARAVANI"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Valentino Garavani is a luxury Italian fashion house founded by
+          Valentino Clemente Ludovico Garavani. Known for its elegant and
+          feminine designs, Valentino Garavani has become a global symbol of
+          luxury and sophistication. The brand offers a wide range of products,
+          including clothing, accessories, and fragrances, characterized by a
+          blend of Italian craftsmanship, innovative design, and a focus on
+          quality. Valentino Garavani is often associated with red-carpet
+          glamour, bridal couture, and a sense of timeless elegance.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

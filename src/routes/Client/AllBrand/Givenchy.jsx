@@ -149,7 +149,16 @@ const Givenchy = () => {
           alt="Hero GIVENCHY"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Givenchy is a French luxury fashion house founded by Hubert de
+          Givenchy. Known for its elegant and sophisticated designs, Givenchy
+          has become a global symbol of luxury and style. The brand offers a
+          wide range of products, including clothing, accessories, and
+          fragrances, characterized by a blend of Parisian chic and modern
+          elegance. Givenchy is associated with iconic designs, such as the
+          Audrey Hepburn "Little Black Dress" and the Antigona bag, and
+          continues to be a leading force in the fashion industry.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

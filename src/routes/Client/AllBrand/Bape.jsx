@@ -149,7 +149,15 @@ const Bape = () => {
           alt="Hero BAPE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Bape, also known as A Bathing Ape, is a Japanese streetwear brand
+          founded by Tomoaki Chitose. Known for its playful and iconic designs,
+          Bape has become a global streetwear phenomenon. The brand is
+          characterized by its bold graphics, camouflage patterns, and the Baby
+          Milo character. Bape offers a wide range of products, including
+          apparel, accessories, and footwear, often featuring limited-edition
+          releases and collaborations with other brands and artists.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

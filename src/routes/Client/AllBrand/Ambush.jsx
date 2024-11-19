@@ -149,6 +149,15 @@ const Ambush = () => {
           alt="Hero AMBUSH"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Ambush is a Japanese fashion brand founded by Yoon Ahn and Verbal.
+          Known for its edgy and experimental designs, Ambush blends streetwear
+          and high fashion elements. The brand offers a range of jewelry,
+          accessories, and apparel, often featuring bold silhouettes, unique
+          materials, and unexpected collaborations. Ambush has gained a
+          reputation for its innovative approach to design and its ability to
+          capture the spirit of contemporary urban culture.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

@@ -149,7 +149,16 @@ const Veja = () => {
           alt="Hero VEJA"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Veja is a French footwear and accessories brand founded in 2004. Known
+          for its commitment to sustainability and ethical production, Veja has
+          gained a reputation for creating stylish and eco-friendly products.
+          The brand's shoes are made with organic cotton, natural rubber,
+          leather, and recycled plastic bottles, sourced from fair trade
+          suppliers. Veja's designs are characterized by a minimalist aesthetic,
+          clean lines, and a focus on comfort. The brand has become a popular
+          choice for consumers seeking sustainable and stylish footwear options.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

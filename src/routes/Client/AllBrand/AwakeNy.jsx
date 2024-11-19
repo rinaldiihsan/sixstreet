@@ -149,7 +149,13 @@ const AwakeNy = () => {
           alt="Hero AWAKE NY"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Awake NY is a streetwear brand founded by Angelo Baque in New York
+          City. Known for its minimalist aesthetic and bold graphics, Awake NY
+          offers a range of apparel and accessories. The brand is inspired by
+          Baque's experiences growing up in New York and his passion for
+          skateboarding.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

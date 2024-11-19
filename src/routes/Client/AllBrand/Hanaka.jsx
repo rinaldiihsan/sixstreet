@@ -149,7 +149,13 @@ const Hanaka = () => {
           alt="Hero HANAKA"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Hanaka Classic, a top local fashion brand in Bali, was founded in 2013
+          with a ‘Clean, Classic, and Simple’ approach. Known for its
+          high-quality, minimalist clothing, their shirts are perfect for both
+          working from home and casual outings. Available in a range of colors
+          from neutral to bold, Hanaka Classic combines comfort with style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

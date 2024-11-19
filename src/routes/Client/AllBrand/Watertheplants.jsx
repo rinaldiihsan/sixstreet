@@ -149,7 +149,14 @@ const Watertheplants = () => {
           alt="Hero WATER THE PLANT"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          WATER THE PLANT, founded in 2020, is a lifestyle brand that spreads
+          positive energy and promotes self-care and self-growth. With fun
+          graphics, smiley icons, and bright colors, the brand inspires and
+          supports a new generation in reaching their goals and dreams. This
+          brand is perfect for anyone looking to embrace positivity and uplift
+          their everyday life.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -149,7 +149,16 @@ const Mlb = () => {
           alt="Hero MLB"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          MLB Korea is a South Korean fashion brand that focuses on
+          baseball-inspired apparel and accessories. It is a subsidiary of the
+          American Major League Baseball (MLB) and offers a range of products
+          featuring MLB team logos, colors, and designs. MLB Korea has gained
+          popularity among young people in South Korea for its trendy and casual
+          style. The brand's products often incorporate elements of streetwear
+          and contemporary fashion, making them appealing to a wide range of
+          consumers.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

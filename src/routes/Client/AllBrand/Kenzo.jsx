@@ -149,7 +149,15 @@ const Kenzo = () => {
           alt="Hero KENZO"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Kenzo is a French fashion house founded by Kenzo Takada. Known for its
+          vibrant colors, bold prints, and eclectic designs, Kenzo has become a
+          symbol of global fashion. The brand offers a wide range of products,
+          including clothing, accessories, and fragrances, characterized by a
+          blend of East Asian influences, Parisian chic, and a playful spirit.
+          Kenzo is often associated with creativity, individuality, and a sense
+          of fun.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

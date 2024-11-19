@@ -149,7 +149,16 @@ const Versace = () => {
           alt="Hero VERSACE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Versace is an Italian luxury fashion house founded by Gianni Versace.
+          Known for its bold designs, opulent aesthetics, and iconic Medusa
+          logo, Versace has become a global symbol of luxury and glamour. The
+          brand offers a wide range of products, including clothing,
+          accessories, and fragrances, characterized by a blend of Italian
+          craftsmanship, innovative design, and a focus on opulence. Versace is
+          often associated with luxury, glamour, and a sense of power and
+          extravagance.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

@@ -149,7 +149,15 @@ const Burberry = () => {
           alt="Hero BURBERRY"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Burberry is a British luxury fashion house known for its iconic trench
+          coats and signature plaid pattern. Founded in 1856, Burberry has a
+          long history of creating timeless and elegant clothing. The brand
+          offers a wide range of products, including apparel, accessories, and
+          fragrances, characterized by a blend of tradition and modernity.
+          Burberry is associated with British heritage, quality craftsmanship,
+          and a sophisticated aesthetic.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

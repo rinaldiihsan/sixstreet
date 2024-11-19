@@ -149,6 +149,13 @@ const Adlv = () => {
           alt="Hero ADLV"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          ADLV is a South Korean streetwear brand known for its playful designs,
+          bold graphics, and oversized silhouettes. The brand often incorporates
+          pop culture references and trendy aesthetics into its collections.
+          ADLV has gained popularity among young fashion enthusiasts for its
+          affordable prices and unique style.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

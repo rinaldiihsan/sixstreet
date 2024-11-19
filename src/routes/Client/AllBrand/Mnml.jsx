@@ -149,6 +149,15 @@ const Mnml = () => {
           alt="Hero MNML"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          MNML LA is a streetwear brand based in Los Angeles, California. Known
+          for its minimalist aesthetic and focus on essential pieces, MNML LA
+          offers a range of apparel and accessories characterized by clean
+          lines, neutral colors, and high-quality materials. The brand's designs
+          are often inspired by contemporary streetwear trends and a minimalist
+          approach to fashion. MNML LA has gained a following among individuals
+          who appreciate simplicity, quality, and a timeless aesthetic.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

@@ -148,7 +148,15 @@ const Fendi = () => {
           alt="Hero FENDI"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Fendi is a luxury Italian fashion house founded by Adele and Edoardo
+          Fendi in 1925. Known for its fur and leather goods, Fendi has become a
+          global symbol of luxury and sophistication. The brand's designs are
+          often characterized by bold colors, playful patterns, and a focus on
+          craftsmanship. Fendi's iconic Baguette bag has become a fashion
+          statement, and the brand continues to innovate with its collections,
+          pushing the boundaries of luxury and style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

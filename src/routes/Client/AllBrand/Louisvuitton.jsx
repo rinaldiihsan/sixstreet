@@ -149,7 +149,15 @@ const Louisvuitton = () => {
           alt="Hero LOUIS VOUITON"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Louis Vuitton is a French luxury fashion house founded in 1854. Known
+          for its iconic monogram canvas and monogrammed bags, Louis Vuitton has
+          become a global symbol of luxury and prestige. The brand offers a wide
+          range of products, including clothing, accessories, and footwear,
+          characterized by a blend of classic design, innovative materials, and
+          a focus on craftsmanship. Louis Vuitton is often associated with
+          luxury travel, high-end fashion, and a sense of timeless elegance.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

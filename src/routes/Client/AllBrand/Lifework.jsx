@@ -149,7 +149,14 @@ const Lifework = () => {
           alt="Hero LIFEWORK"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Lifework is a streetwear brand from Seoul, Korea, launched in 2018.
+          Known for its unique blend of cultures and couture, Lifework offers a
+          standout, modern style with oversized T-shirts, hoodies, urban
+          silhouettes, sneakers, and bold accessories like sunglasses. Their
+          distinctive French bulldog logo pops on their pieces. If you're all
+          about a fresh, edgy style, Lifework is perfect for you!
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

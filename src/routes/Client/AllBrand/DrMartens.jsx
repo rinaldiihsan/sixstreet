@@ -148,7 +148,15 @@ const DrMartens = () => {
           alt="Hero DR MARTENS"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Dr. Martens is a British footwear company known for its iconic Doc
+          Martens boots. The brand was founded in 1960 and is famous for its
+          durable, comfortable, and distinctive boots made with Goodyear welted
+          construction. Dr. Martens boots have become a cultural icon,
+          associated with punk rock, grunge, and alternative fashion. They are
+          popular among musicians, artists, and individuals who value style,
+          durability, and comfort.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

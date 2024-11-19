@@ -149,7 +149,15 @@ const ConverseBrand = () => {
           alt="Hero CONVERSE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Converse is an American footwear company known for its iconic Chuck
+          Taylor All Stars sneakers. Founded in 1908, Converse has become a
+          cultural icon, symbolizing youth, rebellion, and self-expression. The
+          Chuck Taylor All Stars are recognized for their simple design, durable
+          construction, and versatility. Converse has expanded its product line
+          to include other footwear styles, apparel, and accessories, while
+          maintaining its heritage and connection to popular culture.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

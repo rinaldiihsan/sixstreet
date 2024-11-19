@@ -149,7 +149,16 @@ const VansBrand = () => {
           alt="Hero VANS"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Vans is an American footwear company known for its iconic skate shoes,
+          such as the classic Old Skool and Sk8-Hi. Founded in 1966, Vans has
+          become a cultural icon, associated with skateboarding, music, and
+          youth culture. The brand offers a wide range of footwear, apparel, and
+          accessories, characterized by a blend of classic design, modern
+          trends, and a focus on individuality. Vans has gained a reputation for
+          its durability, comfort, and ability to capture the spirit of youth
+          culture.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

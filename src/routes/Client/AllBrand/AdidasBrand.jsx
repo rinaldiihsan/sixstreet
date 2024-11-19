@@ -149,6 +149,13 @@ const AdidasBrand = () => {
           alt="Hero ADIDAS"
           className="w-full h-full md:h-auto mb-6"
         />
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Adidas is a global sportswear company founded in Germany. Known for
+          its iconic three-stripe logo and innovative footwear, Adidas offers a
+          wide range of products for athletes and sports enthusiasts. The brand
+          is associated with high-performance sports equipment, collaborations
+          with popular figures and brands, and a commitment to sustainability.
+        </h1>
 
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">

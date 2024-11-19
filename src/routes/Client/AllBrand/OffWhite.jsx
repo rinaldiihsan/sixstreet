@@ -149,7 +149,16 @@ const OffWhite = () => {
           alt="Hero OFF WHITE"
           className="w-full h-full md:h-auto mb-6"
         />
-
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Off-White is a streetwear brand founded by Virgil Abloh, a renowned
+          DJ, artist, and designer. Known for its deconstructed aesthetic, bold
+          graphics, and industrial-inspired elements, Off-White has become a
+          global fashion phenomenon. The brand offers a wide range of products,
+          including apparel, footwear, and accessories, characterized by a blend
+          of high-fashion and streetwear influences. Off-White is often
+          associated with innovation, creativity, and a sense of rebellious
+          style.
+        </h1>
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

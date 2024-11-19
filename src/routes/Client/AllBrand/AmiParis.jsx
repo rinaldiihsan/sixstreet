@@ -150,6 +150,14 @@ const AmiParis = () => {
           className="w-full h-full md:h-auto mb-6"
         />
 
+        <h1 className="text-center text-xs font-overpass lg:max-w-7xl  md:block md:text-base">
+          Ami Paris is a French fashion brand founded in 2011 by Alexandre
+          Mattiussi. Known for its Parisian-inspired casual chic style, Ami
+          Paris offers a range of menswear and womenswear collections. The brand
+          is recognized for its clean lines, minimalist aesthetic, and signature
+          "Ami" heart logo.
+        </h1>
+
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
