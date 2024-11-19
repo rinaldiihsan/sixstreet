@@ -204,30 +204,6 @@ const Sidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, userId }
                       </li>
                     </ul>
                   </li>
-                  {/* Collectible Item */}
-                  <li>
-                    <button className="flex justify-between w-full" onClick={() => toggleSubMenu('collectible')}>
-                      <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">collectible</span>
-                      <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">{activeSubMenu === 'collectible' ? '-' : '+'}</span>
-                    </button>
-                    <ul className={`${activeSubMenu === 'collectible' ? 'block' : 'hidden'} pl-4 space-y-1`}>
-                      <li>
-                        <Link to="/collectible/figure" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
-                          Figure
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/collectible/toys" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
-                          Toys
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/collectible/miniature" className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]" onClick={handleCloseSidebar}>
-                          Miniature
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
                   {/* Comunnity Menu */}
                   <li>
                     <button className="flex justify-between w-full" onClick={() => toggleSubMenu('comunnity')}>

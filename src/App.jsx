@@ -9,14 +9,11 @@ import CryptoJS from 'crypto-js';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './routes/Home';
+
+// Auth Component
 import Login from './routes/Client/Login';
 import Register from './routes/Client/Register';
-import Tshirt from './routes/Client/Clothing/Tshirt';
-import Shirt from './routes/Client/Clothing/Shirt';
-import Polo from './routes/Client/Clothing/Polo';
-import Jacket from './routes/Client/Clothing/Jacket';
-import Pants from './routes/Client/Clothing/Pants';
-import Jeans from './routes/Client/Clothing/Jeans';
+// End Auth Component
 
 // Footware Component
 import Sneakers from './routes/Client/Footware/Sneakers';
@@ -25,35 +22,58 @@ import Boots from './routes/Client/Footware/Boots';
 import Slipon from './routes/Client/Footware/Slipon';
 // End Footware Component
 
+// Accessories Component
 import Eyewear from './routes/Client/Accessories/Eyewear';
-import Hats from './routes/Client/Accessories/Hats';
 import Wallets from './routes/Client/Accessories/Wallets';
 import Belts from './routes/Client/Accessories/Belts';
-import Facemask from './routes/Client/Accessories/Facemask';
 import Bag from './routes/Client/Accessories/Bag';
-import TshirtSixstreet from './routes/Client/Sixstreet/TshirtSixstreet';
+import Headwear from './routes/Client/Accessories/Headwear';
+import Jewelry from './routes/Client/Accessories/Jewelry';
+import Collectibles from './routes/Client/Accessories/Collectibles';
+// End Accessories Component
+
+// Collaboration Component
 import Wukong from './routes/Client/Collaboration/Wukong';
 import Jameson from './routes/Client/Collaboration/Jameson';
+// End Collaboration Component
+
+// Product Detail Component
 import ProductDetail from './routes/Client/ProductDetail/ProductDetail';
+// End Product Detail Component
+
+// Order Component
 import Checkout from './routes/Client/ProductDetail/Checkout';
+import FinishTransaction from './routes/Client/FinishTransaction';
+import OrderDetail from './routes/Client/OrderDetail';
+import OrderHistory from './routes/Client/OrderHistory';
+// End Order Component
+
+// Profile Component
 import Profile from './routes/Client/Profile';
+// End Profile Component
+
+// News Component
 import NewsDetail from './routes/Client/newsDetail/NewsDetail';
+// End News Component
+
+import NotFound from './routes/Client/NotFound';
+
+// Import Admin Component
 import { CartProvider } from './components/CartContext';
 import AdminNavbar from './components/Admin/AdminNavbar';
 import DashboardAdmin from './routes/Admin/DashboardAdmin/DashboardAdmin';
 import UserManagement from './routes/Admin/User/UserManagement';
 import TambahDataUser from './routes/Admin/User/TambahDataUser';
-import NotFound from './routes/Client/NotFound';
 import NotFoundAdmin from './routes/Admin/NotFoundAdmin';
 import NewsManagement from './routes/Admin/News/NewsManagement';
 import NewsManagementDetail from './routes/Admin/News/NewsManagementDetail';
 import TambahNews from './routes/Admin/News/TambahNews';
-import OrderHistory from './routes/Client/OrderHistory';
-import OrderDetail from './routes/Client/OrderDetail';
 import TransactionManagement from './routes/Admin/Transaction/TransactionManagement';
-import FinishTransaction from './routes/Client/FinishTransaction';
 import MultiLink from './routes/Client/MultiLink';
 import Lock from './routes/Client/Lock/Lock';
+// End Import Admin Component
+
+// Featured Brand Component
 import Adidas from './routes/Client/FeaturesBrand/Adidas';
 import Converse from './routes/Client/FeaturesBrand/Converse';
 import Jordan from './routes/Client/FeaturesBrand/Jordan';
@@ -63,6 +83,9 @@ import On from './routes/Client/FeaturesBrand/On';
 import Supreme from './routes/Client/FeaturesBrand/Supreme';
 import WaterThePlant from './routes/Client/FeaturesBrand/WaterThePlants';
 import Yeezy from './routes/Client/FeaturesBrand/Yeezy';
+// End Featured Brand Component
+
+// All Brand Component
 import NameAllBrand from './routes/Client/NameAllBrands';
 import AapeBrand from './routes/Client/AllBrand/AapeBrand';
 import AdidasBrand from './routes/Client/AllBrand/AdidasBrand';
@@ -132,9 +155,10 @@ import Vlone from './routes/Client/AllBrand/Vlone';
 import Watertheplants from './routes/Client/AllBrand/Watertheplants';
 import YeezyBrand from './routes/Client/AllBrand/YeezyBrand';
 import Whocares from './routes/Client/AllBrand/Whocares';
-{
-  /* Six Street Component */
-}
+// End All Brand Component
+
+// Six Street Component
+import TshirtSixstreet from './routes/Client/Sixstreet/TshirtSixstreet';
 import HeadwearSixstreet from './routes/Client/Sixstreet/HeadwearSixstreet';
 import HoodiesSixstreet from './routes/Client/Sixstreet/HoodiesSixstreet';
 import JacketSixstreet from './routes/Client/Sixstreet/JacketSixstreet';
@@ -143,9 +167,9 @@ import ShirtSixstreet from './routes/Client/Sixstreet/ShirtSixstreet';
 import ShortsSixstreet from './routes/Client/Sixstreet/ShortsSixstreet';
 import SocksSixstreet from './routes/Client/Sixstreet/SocksSixstreet';
 import SweatersSixstreet from './routes/Client/Sixstreet/SweatersSixstreet';
-{
-  /* Tops Component */
-}
+// End Six Street Component
+
+// Tops Component
 import HoodiesTops from './routes/Client/Tops/HoodiesTops';
 import JacketsTops from './routes/Client/Tops/JacketsTops';
 import ShirtsTops from './routes/Client/Tops/ShirtsTops';
@@ -153,6 +177,14 @@ import TshirtsTops from './routes/Client/Tops/TshirtsTops';
 import SweatersTops from './routes/Client/Tops/SweatersTops';
 import PoloShirtsTops from './routes/Client/Tops/PoloShirtsTops';
 import Socks from './routes/Client/Footware/Socks';
+// End Tops Component
+
+// Bottoms Component
+import JeansBottoms from './routes/Client/Bottoms/JeansBottoms';
+import TrouserBottom from './routes/Client/Bottoms/TrouserBottom';
+import ShortBottom from './routes/Client/Bottoms/ShortBottom';
+import SweatpantsBottom from './routes/Client/Bottoms/SweatpantsBottom';
+// End Bottoms Component
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -242,6 +274,8 @@ const App = () => {
           <Navbar userId={userId} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           <Routes>
             <Route path="/" element={<Home />} />
+
+            {/* Auth */}
             <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
             <Route path="/register" element={<Register />} />
 
@@ -348,6 +382,7 @@ const App = () => {
             <Route path="/allbrand/yeezy" element={<YeezyBrand />} />
 
             {/* Six Street Section */}
+            <Route path="/sixstreet/tshirt" element={<TshirtSixstreet />} />
             <Route path="/sixstreet/shirt" element={<ShirtSixstreet />} />
             <Route path="/sixstreet/headwear" element={<HeadwearSixstreet />} />
             <Route path="/sixstreet/hoodies" element={<HoodiesSixstreet />} />
@@ -365,13 +400,6 @@ const App = () => {
             <Route path="/tops/hoodies" element={<HoodiesTops />} />
             <Route path="/tops/sweaters" element={<SweatersTops />} />
 
-            {/* Cloth */}
-            <Route path="/clothing/shirt" element={<Shirt />} />
-            <Route path="/clothing/polo" element={<Polo />} />
-            <Route path="/clothing/jacket" element={<Jacket />} />
-            <Route path="/clothing/pants" element={<Pants />} />
-            <Route path="/clothing/jeans" element={<Jeans />} />
-
             {/* Footwear */}
             <Route path="/footwear/sneakers" element={<Sneakers />} />
             <Route path="/footwear/sandals" element={<Sandals />} />
@@ -379,23 +407,41 @@ const App = () => {
             <Route path="/footwear/slip-on" element={<Slipon />} />
             <Route path="/footwear/socks" element={<Socks />} />
 
+            {/* Bottoms */}
+            <Route path="/bottom/jeans" element={<JeansBottoms />} />
+            <Route path="/bottom/trouser" element={<TrouserBottom />} />
+            <Route path="/bottom/shorts" element={<ShortBottom />} />
+            <Route path="/bottom/sweatpants" element={<SweatpantsBottom />} />
+
             {/* Accessories */}
             <Route path="/accessories/eyewear" element={<Eyewear />} />
-            <Route path="/accessories/hats" element={<Hats />} />
-            <Route path="/accessories/wallets" element={<Wallets />} />
-            <Route path="/accessories/belts" element={<Belts />} />
-            <Route path="/accessories/facemask" element={<Facemask />} />
+            <Route path="/accessories/wallets-cardholders" element={<Wallets />} />
+            <Route path="/accessories/belt" element={<Belts />} />
             <Route path="/accessories/bag" element={<Bag />} />
-            <Route path="/sixstreet/tshirt" element={<TshirtSixstreet />} />
+            <Route path="/accessories/headwear" element={<Headwear />} />
+            <Route path="/accessories/jewelry" element={<Jewelry />} />
+            <Route path="/accessories/collectibles" element={<Collectibles />} />
+
+            {/* Collaboration */}
             <Route path="/collaboration/wukong" element={<Wukong />} />
             <Route path="/collaboration/jameson" element={<Jameson />} />
+
+            {/* Product Detail */}
             <Route path="/product-detail/:itemId" element={<ProductDetail userId={userId} isLoggedIn={isLoggedIn} />} />
+
+            {/* Order */}
             <Route path="/checkout/:user_id/:transaction_uuid" element={<Checkout isLoggedIn={isLoggedIn} />} />
             <Route path="/thank-you" element={<FinishTransaction />} />
             <Route path="/order-detail/:user_id/:transaction_uuid" element={<OrderDetail isLoggedIn={isLoggedIn} />} />
             <Route path="/order-history" element={<OrderHistory />} />
+
+            {/* Profile */}
             <Route path="/profile/:id" element={<Profile isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
+
+            {/* News */}
             <Route path="/news/:judulberita" element={<NewsDetail />} />
+
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
