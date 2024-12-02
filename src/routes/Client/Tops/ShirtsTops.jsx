@@ -5,6 +5,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { motion } from "framer-motion";
+import assetBannerShirts from "../../../assets/banner/shirts.webp";
 
 const ShirtsTops = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -150,7 +151,7 @@ const ShirtsTops = () => {
           </div>
         )}
         <img
-          src="/"
+          src={assetBannerShirts}
           alt="Hero Shirt"
           className="w-full h-full md:h-auto mb-6"
         />
