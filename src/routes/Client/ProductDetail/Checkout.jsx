@@ -9,13 +9,12 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const rajaOngkirUrl = import.meta.env.VITE_RAJA_ONGKIR;
-  const rajaOngkirKey = import.meta.env.VITE_RAJA_ONGKIR_API_KEY;
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedExpedition, setSelectedExpedition] = useState('');
   const [selectedProvider, setSelectedProvider] = useState('');
   const [shippingCosts, setShippingCosts] = useState([]);
+  const [totalWithShipping, setTotalWithShipping] = useState(0);
 
   const expeditionOptions = [
     { value: 'jne', label: 'JNE' },
@@ -29,11 +28,7 @@ const Checkout = () => {
 
   const fetchCities = async () => {
     try {
-      const response = await axios.get(`${rajaOngkirUrl}/city`, {
-        headers: {
-          key: rajaOngkirKey,
-        },
-      });
+      const response = await axios.get(`${backendUrl}/rajacity`);
       setCities(response.data.rajaongkir.results);
     } catch (error) {
       console.error('Error fetching cities:', error);
@@ -51,23 +46,28 @@ const Checkout = () => {
 
   const calculateShipping = async (cityId, courier) => {
     try {
-      const response = await axios.post(
-        `${rajaOngkirUrl}/cost`,
-        {
-          origin: '153',
-          destination: cityId,
-          weight: 1000,
-          courier: courier,
-        },
-        {
-          headers: {
-            key: rajaOngkirKey,
-          },
-        }
-      );
+      const response = await axios.post(`${backendUrl}/rajacost`, {
+        origin: '278',
+        destination: cityId,
+        weight: 1000,
+        courier: courier,
+      });
       setShippingCosts(response.data.rajaongkir.results[0].costs);
     } catch (error) {
       console.error('Error calculating shipping:', error);
+    }
+  };
+
+  const updateTotalWithShipping = (shippingCost) => {
+    const subtotal = transactionData.reduce((acc, transaction) => acc + transaction.total, 0);
+    setTotalWithShipping(subtotal + shippingCost);
+  };
+
+  const handleProviderChange = (e) => {
+    const service = shippingCosts.find((s) => s.service === e.target.value);
+    setSelectedProvider(e.target.value);
+    if (service) {
+      updateTotalWithShipping(service.cost[0].value);
     }
   };
 
@@ -131,7 +131,7 @@ const Checkout = () => {
       name: transactionData[0].name,
       address: transactionData[0].address,
       items: items,
-      total: transactionData.reduce((acc, transaction) => acc + transaction.total, 0),
+      total: totalWithShipping, // Menggunakan total yang sudah termasuk ongkir
     };
 
     try {
@@ -175,47 +175,43 @@ const Checkout = () => {
   const total = transactionData.length > 0 ? transactionData[0].total : 0;
 
   return (
-    <div className="flex justify-center items-center h-screen bg-white my-[5rem] md:my-0">
+    <div className="flex justify-center items-center h-screen bg-white my-[5rem] lg:my-[7rem]">
       {transactionData.length > 0 ? (
         <div className="bg-white p-8 shadow-md mx-3 md:max-w-[50rem] w-full space-y-10">
-          <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">Transaction Detail</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">Detail Transaksi</h2>
           <div className="flex flex-col space-y-4">
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Transaction Date</p>
+              <p className="font-overpass font-semibold">Tanggal Transaksi</p>
               <p className="font-overpass md:text-end">{formatDate(transactionData[0].createdAt)}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">ID Transaction</p>
+              <p className="font-overpass font-semibold">ID Transaksi</p>
               <p className="font-overpass md:text-end">{transaction_uuid}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Product Name</p>
+              <p className="font-overpass font-semibold">Nama Produk</p>
               <p className="font-overpass md:text-end">{productNames}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Product Size</p>
+              <p className="font-overpass font-semibold">Ukuran Produk</p>
               <p className="font-overpass md:text-end">{productSizes}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Quantity</p>
+              <p className="font-overpass font-semibold">Jumlah</p>
               <p className="font-overpass md:text-end">{quantities}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Total</p>
+              <p className="font-overpass font-semibold">Total Pembelian</p>
               <p className="font-overpass md:text-end">{formatCurrency(total)}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Customer Name</p>
+              <p className="font-overpass font-semibold">Nama Penerima</p>
               <p className="font-overpass md:text-end">{transactionData[0].name}</p>
-            </div>
-            <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">Detail Address</p>
-              <p className="font-overpass md:text-end">{transactionData[0].address}</p>
             </div>
 
             {/* City Selection */}
             <div className="flex flex-col md:flex-row justify-between">
-              <p className="font-overpass font-semibold">City</p>
+              <p className="font-overpass font-semibold">Kota Tujuan</p>
               <select
                 value={selectedCity}
                 onChange={(e) => {
@@ -226,7 +222,7 @@ const Checkout = () => {
                 }}
                 className="font-overpass md:text-end p-2 border rounded"
               >
-                <option value="">Select City</option>
+                <option value="">Pilih kota tujuan</option>
                 {cities.map((city) => (
                   <option key={city.city_id} value={city.city_id}>
                     {city.type} {city.city_name}
@@ -238,11 +234,11 @@ const Checkout = () => {
             {/* Expedition Section */}
             {selectedCity && (
               <div className="border p-4 rounded-lg space-y-4">
-                <h3 className="font-overpass font-bold text-lg">Expedition Selection</h3>
+                <h3 className="font-overpass font-bold text-lg">Pilihan Ekspedisi</h3>
                 <div className="flex flex-col md:flex-row justify-between">
-                  <p className="font-overpass font-semibold">Select Expedition</p>
+                  <p className="font-overpass font-semibold">Pilih Ekspedisi</p>
                   <select value={selectedExpedition} onChange={handleExpeditionChange} className="font-overpass md:text-end p-2 border rounded">
-                    <option value="">Select an expedition</option>
+                    <option value="">Pilih ekspedisi</option>
                     {expeditionOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -256,11 +252,11 @@ const Checkout = () => {
             {/* Provider Section */}
             {selectedExpedition && shippingCosts.length > 0 && (
               <div className="border p-4 rounded-lg space-y-4">
-                <h3 className="font-overpass font-bold text-lg">Shipping Service</h3>
+                <h3 className="font-overpass font-bold text-lg">Layanan Pengiriman</h3>
                 <div className="flex flex-col md:flex-row justify-between">
-                  <p className="font-overpass font-semibold">Select Service</p>
-                  <select value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)} className="font-overpass md:text-end p-2 border rounded">
-                    <option value="">Select a service</option>
+                  <p className="font-overpass font-semibold">Pilih Layanan</p>
+                  <select value={selectedProvider} onChange={handleProviderChange} className="font-overpass md:text-end p-2 border rounded">
+                    <option value="">Pilih layanan</option>
                     {shippingCosts.map((service) => (
                       <option key={service.service} value={service.service}>
                         {service.service} - {formatCurrency(service.cost[0].value)}
@@ -270,6 +266,28 @@ const Checkout = () => {
                 </div>
               </div>
             )}
+
+            {selectedProvider && (
+              <div className="space-y-4 border-t pt-4">
+                <div className="flex flex-col md:flex-row justify-between">
+                  <p className="font-overpass font-semibold">Subtotal Produk</p>
+                  <p className="font-overpass md:text-end">{formatCurrency(total)}</p>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between">
+                  <p className="font-overpass font-semibold">Biaya Pengiriman</p>
+                  <p className="font-overpass md:text-end">{formatCurrency(shippingCosts.find((s) => s.service === selectedProvider)?.cost[0].value || 0)}</p>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between font-bold">
+                  <p className="font-overpass">Total Pembayaran</p>
+                  <p className="font-overpass md:text-end">{formatCurrency(totalWithShipping)}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col md:flex-row justify-between">
+              <p className="font-overpass font-semibold">Detail Alamat</p>
+              <p className="font-overpass md:text-end">{transactionData[0].address}</p>
+            </div>
 
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Status</p>
@@ -282,11 +300,11 @@ const Checkout = () => {
             disabled={!selectedCity || !selectedExpedition || !selectedProvider}
             className={`w-full py-2 px-4 rounded font-overpass capitalize ${!selectedCity || !selectedExpedition || !selectedProvider ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
           >
-            Pay for this item
+            Bayar Sekarang
           </button>
         </div>
       ) : (
-        <p>No transaction details available.</p>
+        <p>Data transaksi tidak tersedia.</p>
       )}
     </div>
   );
