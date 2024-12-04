@@ -452,7 +452,12 @@ const ShirtsTops = () => {
                     .filter((item) =>
                       [18198, 18209].includes(item.item_category_id)
                     )
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -492,7 +497,7 @@ const ShirtsTops = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
@@ -523,7 +528,12 @@ const ShirtsTops = () => {
                     .filter((item) =>
                       [18198, 18209].includes(item.item_category_id)
                     )
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -550,7 +560,7 @@ const ShirtsTops = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
+                        href={`/product-detail/${variant.item_group_id}`}
                         onClick={handleSoldOutClick}
                         className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
                       >
