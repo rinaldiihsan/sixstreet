@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const Checkout = () => {
   const { user_id, transaction_uuid } = useParams();
   const [transactionData, setTransactionData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [cities, setCities] = useState([]);
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedExpedition, setSelectedExpedition] = useState('');
-  const [selectedProvider, setSelectedProvider] = useState('');
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedExpedition, setSelectedExpedition] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
   const [shippingCosts, setShippingCosts] = useState([]);
   const [totalWithShipping, setTotalWithShipping] = useState(0);
 
   const expeditionOptions = [
-    { value: 'jne', label: 'JNE' },
-    { value: 'tiki', label: 'Tiki' },
-    { value: 'pos', label: 'Pos Indonesia' },
+    { value: "jne", label: "JNE" },
+    { value: "tiki", label: "Tiki" },
+    { value: "pos", label: "Pos Indonesia" },
   ];
 
   useEffect(() => {
@@ -31,14 +31,14 @@ const Checkout = () => {
       const response = await axios.get(`${backendUrl}/rajacity`);
       setCities(response.data.rajaongkir.results);
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error("Error fetching cities:", error);
     }
   };
 
   const handleExpeditionChange = (e) => {
     const expedition = e.target.value;
     setSelectedExpedition(expedition);
-    setSelectedProvider('');
+    setSelectedProvider("");
     if (selectedCity) {
       calculateShipping(selectedCity, expedition);
     }
@@ -47,19 +47,22 @@ const Checkout = () => {
   const calculateShipping = async (cityId, courier) => {
     try {
       const response = await axios.post(`${backendUrl}/rajacost`, {
-        origin: '278',
+        origin: "278",
         destination: cityId,
         weight: 1000,
         courier: courier,
       });
       setShippingCosts(response.data.rajaongkir.results[0].costs);
     } catch (error) {
-      console.error('Error calculating shipping:', error);
+      console.error("Error calculating shipping:", error);
     }
   };
 
   const updateTotalWithShipping = (shippingCost) => {
-    const subtotal = transactionData.reduce((acc, transaction) => acc + transaction.total, 0);
+    const subtotal = transactionData.reduce(
+      (acc, transaction) => acc + transaction.total,
+      0
+    );
     setTotalWithShipping(subtotal + shippingCost);
   };
 
@@ -74,15 +77,18 @@ const Checkout = () => {
   useEffect(() => {
     const fetchTransaction = async () => {
       try {
-        const token = Cookies.get('accessToken');
-        const response = await axios.get(`${backendUrl}/transaction/${user_id}/${transaction_uuid}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const token = Cookies.get("accessToken");
+        const response = await axios.get(
+          `${backendUrl}/transaction/${user_id}/${transaction_uuid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setTransactionData(response.data);
       } catch (err) {
-        setError('Failed to fetch transaction data.');
+        setError("Failed to fetch transaction data.");
       } finally {
         setLoading(false);
       }
@@ -92,11 +98,11 @@ const Checkout = () => {
   }, [user_id, transaction_uuid, backendUrl]);
 
   useEffect(() => {
-    const snapScript = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
     const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.src = snapScript;
-    script.setAttribute('data-client-key', clientKey);
+    script.setAttribute("data-client-key", clientKey);
     script.async = true;
 
     document.body.appendChild(script);
@@ -106,16 +112,18 @@ const Checkout = () => {
   }, []);
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
   };
 
   const formatDate = (date) => {
-    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'full' }).format(new Date(date));
+    return new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(
+      new Date(date)
+    );
   };
 
   const handlePayment = async () => {
@@ -135,7 +143,7 @@ const Checkout = () => {
     };
 
     try {
-      const token = Cookies.get('accessToken');
+      const token = Cookies.get("accessToken");
       const response = await axios.post(`${backendUrl}/payment`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -145,44 +153,54 @@ const Checkout = () => {
       if (window.snap && response.data.token) {
         window.snap.pay(response.data.token, {
           onSuccess: function (result) {
-            console.log('Payment success:', result);
-            navigate('/thank-you');
+            console.log("Payment success:", result);
+            navigate("/thank-you");
           },
           onPending: function (result) {
-            console.log('Payment pending:', result);
+            console.log("Payment pending:", result);
           },
           onError: function (result) {
-            console.error('Payment error:', result);
+            console.error("Payment error:", result);
           },
           onClose: function () {
-            console.log('Payment closed');
+            console.log("Payment closed");
           },
         });
       } else {
-        console.error('Snap not available or token missing');
+        console.error("Snap not available or token missing");
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error("Checkout error:", error);
     }
   };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  const productNames = transactionData.map((transaction) => transaction.product_name).join(', ');
-  const productSizes = transactionData.map((transaction) => transaction.product_size).join(', ');
-  const quantities = transactionData.map((transaction) => transaction.quantity).join(', ');
+  const productNames = transactionData
+    .map((transaction) => transaction.product_name)
+    .join(", ");
+  const productSizes = transactionData
+    .map((transaction) => transaction.product_size)
+    .join(", ");
+  const quantities = transactionData
+    .map((transaction) => transaction.quantity)
+    .join(", ");
   const total = transactionData.length > 0 ? transactionData[0].total : 0;
 
   return (
     <div className="flex justify-center items-center h-screen bg-white my-[5rem] lg:my-[7rem]">
       {transactionData.length > 0 ? (
         <div className="bg-white p-8 shadow-md mx-3 md:max-w-[50rem] w-full space-y-10">
-          <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">Detail Transaksi</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">
+            Detail Transaksi
+          </h2>
           <div className="flex flex-col space-y-4">
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Tanggal Transaksi</p>
-              <p className="font-overpass md:text-end">{formatDate(transactionData[0].createdAt)}</p>
+              <p className="font-overpass md:text-end">
+                {formatDate(transactionData[0].createdAt)}
+              </p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">ID Transaksi</p>
@@ -202,11 +220,15 @@ const Checkout = () => {
             </div>
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Total Pembelian</p>
-              <p className="font-overpass md:text-end">{formatCurrency(total)}</p>
+              <p className="font-overpass md:text-end">
+                {formatCurrency(total)}
+              </p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Nama Penerima</p>
-              <p className="font-overpass md:text-end">{transactionData[0].name}</p>
+              <p className="font-overpass md:text-end">
+                {transactionData[0].name}
+              </p>
             </div>
 
             {/* City Selection */}
@@ -234,10 +256,16 @@ const Checkout = () => {
             {/* Expedition Section */}
             {selectedCity && (
               <div className="border p-4 rounded-lg space-y-4">
-                <h3 className="font-overpass font-bold text-lg">Pilihan Ekspedisi</h3>
+                <h3 className="font-overpass font-bold text-lg">
+                  Pilihan Ekspedisi
+                </h3>
                 <div className="flex flex-col md:flex-row justify-between">
                   <p className="font-overpass font-semibold">Pilih Ekspedisi</p>
-                  <select value={selectedExpedition} onChange={handleExpeditionChange} className="font-overpass md:text-end p-2 border rounded">
+                  <select
+                    value={selectedExpedition}
+                    onChange={handleExpeditionChange}
+                    className="font-overpass md:text-end p-2 border rounded"
+                  >
                     <option value="">Pilih ekspedisi</option>
                     {expeditionOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -252,14 +280,21 @@ const Checkout = () => {
             {/* Provider Section */}
             {selectedExpedition && shippingCosts.length > 0 && (
               <div className="border p-4 rounded-lg space-y-4">
-                <h3 className="font-overpass font-bold text-lg">Layanan Pengiriman</h3>
+                <h3 className="font-overpass font-bold text-lg">
+                  Layanan Pengiriman
+                </h3>
                 <div className="flex flex-col md:flex-row justify-between">
                   <p className="font-overpass font-semibold">Pilih Layanan</p>
-                  <select value={selectedProvider} onChange={handleProviderChange} className="font-overpass md:text-end p-2 border rounded">
+                  <select
+                    value={selectedProvider}
+                    onChange={handleProviderChange}
+                    className="font-overpass md:text-end p-2 border rounded"
+                  >
                     <option value="">Pilih layanan</option>
                     {shippingCosts.map((service) => (
                       <option key={service.service} value={service.service}>
-                        {service.service} - {formatCurrency(service.cost[0].value)}
+                        {service.service} -{" "}
+                        {formatCurrency(service.cost[0].value)}
                       </option>
                     ))}
                   </select>
@@ -271,34 +306,53 @@ const Checkout = () => {
               <div className="space-y-4 border-t pt-4">
                 <div className="flex flex-col md:flex-row justify-between">
                   <p className="font-overpass font-semibold">Subtotal Produk</p>
-                  <p className="font-overpass md:text-end">{formatCurrency(total)}</p>
+                  <p className="font-overpass md:text-end">
+                    {formatCurrency(total)}
+                  </p>
                 </div>
                 <div className="flex flex-col md:flex-row justify-between">
-                  <p className="font-overpass font-semibold">Biaya Pengiriman</p>
-                  <p className="font-overpass md:text-end">{formatCurrency(shippingCosts.find((s) => s.service === selectedProvider)?.cost[0].value || 0)}</p>
+                  <p className="font-overpass font-semibold">
+                    Biaya Pengiriman
+                  </p>
+                  <p className="font-overpass md:text-end">
+                    {formatCurrency(
+                      shippingCosts.find((s) => s.service === selectedProvider)
+                        ?.cost[0].value || 0
+                    )}
+                  </p>
                 </div>
                 <div className="flex flex-col md:flex-row justify-between font-bold">
                   <p className="font-overpass">Total Pembayaran</p>
-                  <p className="font-overpass md:text-end">{formatCurrency(totalWithShipping)}</p>
+                  <p className="font-overpass md:text-end">
+                    {formatCurrency(totalWithShipping)}
+                  </p>
                 </div>
               </div>
             )}
 
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Detail Alamat</p>
-              <p className="font-overpass md:text-end">{transactionData[0].address}</p>
+              <p className="font-overpass md:text-end">
+                {transactionData[0].address}
+              </p>
             </div>
 
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Status</p>
-              <p className="font-overpass md:text-end">{transactionData[0].status}</p>
+              <p className="font-overpass md:text-end">
+                {transactionData[0].status}
+              </p>
             </div>
           </div>
 
           <button
             onClick={handlePayment}
             disabled={!selectedCity || !selectedExpedition || !selectedProvider}
-            className={`w-full py-2 px-4 rounded font-overpass capitalize ${!selectedCity || !selectedExpedition || !selectedProvider ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+            className={`w-full py-2 px-4 rounded font-overpass capitalize ${
+              !selectedCity || !selectedExpedition || !selectedProvider
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#333333] text-white hover:bg-[#444444]"
+            }`}
           >
             Bayar Sekarang
           </button>
