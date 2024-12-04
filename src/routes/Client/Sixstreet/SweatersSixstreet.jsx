@@ -377,13 +377,21 @@ const SweatersSixstreet = () => {
               ) ? (
               <>
                 {/* Produk yang tersedia */}
-                {products
-                  .flatMap((item) => item.variants)
-                  .filter((variant) =>
-                    variant.item_name
-                      .toLowerCase()
-                      .includes("sixstreet sweater")
-                  )
+                {Object.values(
+                  products
+                    .flatMap((item) => item.variants)
+                    .filter((variant) =>
+                      variant.item_name
+                        .toLowerCase()
+                        .includes("sixstreet sweate")
+                    )
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
                       variant.item_name.toLowerCase(),
@@ -438,13 +446,21 @@ const SweatersSixstreet = () => {
                     </div>
                   ))}
                 {/* Produk yang habis */}
-                {products
-                  .flatMap((item) => item.variants)
-                  .filter((variant) =>
-                    variant.item_name
-                      .toLowerCase()
-                      .includes("sixstreet sweater")
-                  )
+                {Object.values(
+                  products
+                    .flatMap((item) => item.variants)
+                    .filter((variant) =>
+                      variant.item_name
+                        .toLowerCase()
+                        .includes("sixstreet sweater")
+                    )
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
                       variant.item_name.toLowerCase(),
@@ -462,22 +478,18 @@ const SweatersSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link
-                        href="#"
-                        onClick={handleSoldOutClick}
-                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
-                      >
+                      <Link to={`/product-detail/${variant.item_id}`}>
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         )}
                       </Link>

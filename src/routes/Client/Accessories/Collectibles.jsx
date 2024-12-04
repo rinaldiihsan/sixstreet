@@ -442,6 +442,10 @@ const Collectibles = () => {
                       return uniqueVariants;
                     }, {})
                 )
+                  .filter(
+                    (variant) =>
+                      variant.item_name !== "ADIDAS Samba OG Cloud White PS"
+                  )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
                       variant.item_name,
@@ -511,6 +515,11 @@ const Collectibles = () => {
                       return uniqueVariants;
                     }, {})
                 )
+                  .filter(
+                    (variant) =>
+                      variant.item_name !== "ADIDAS Samba OG Cloud White PS"
+                  )
+
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
                       variant.item_name,

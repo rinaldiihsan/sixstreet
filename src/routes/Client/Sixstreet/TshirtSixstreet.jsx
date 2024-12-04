@@ -363,11 +363,19 @@ const TshirtSixstreet = () => {
               ) ? (
               <>
                 {/* Produk yang tersedia */}
-                {products
-                  .flatMap((item) => item.variants)
-                  .filter((variant) =>
-                    variant.item_name.toLowerCase().includes("sixstreet tee")
-                  )
+                {Object.values(
+                  products
+                    .flatMap((item) => item.variants)
+                    .filter((variant) =>
+                      variant.item_name.toLowerCase().includes("sixstreet tee")
+                    )
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
                       variant.item_name.toLowerCase(),
@@ -422,11 +430,19 @@ const TshirtSixstreet = () => {
                     </div>
                   ))}
                 {/* Produk yang habis */}
-                {products
-                  .flatMap((item) => item.variants)
-                  .filter((variant) =>
-                    variant.item_name.toLowerCase().includes("sixstreet tee")
-                  )
+                {Object.values(
+                  products
+                    .flatMap((item) => item.variants)
+                    .filter((variant) =>
+                      variant.item_name.toLowerCase().includes("sixstreet tee")
+                    )
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
                       variant.item_name.toLowerCase(),
@@ -444,18 +460,18 @@ const TshirtSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to="/product-detail/">
-                        {variant.thumbnail ? (
+                      <Link to={`/product-detail/${variant.item_id}`}>
+                        {variant.parentThumbnail ? (
                           <img
-                            src={variant.thumbnail}
+                            src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[30rem]"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[30rem]"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         )}
                       </Link>
