@@ -17,17 +17,20 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
   const [availableQuantities, setAvailableQuantities] = useState({});
   const [productImage, setProductImage] = useState(null);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [productSkus, setProductSkus] = useState([]);
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
+  const [selectedSku, setSelectedSku] = useState(null);
 
   const stripHtmlTags = (str) => {
     return str.replace(/<\/?[^>]+(>|$)/g, "");
   };
 
-  const fetchProduct = async (token) => {
+  const fetchProductGroup = async (token) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(
+      // Fetch basic info first
+      const groupResponse = await axios.get(
         `${apiUrl}/inventory/catalog/for-listing/${itemId}`,
         {
           headers: {
@@ -37,34 +40,67 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
         }
       );
 
-      if (response.status === 200) {
-        const productData = response.data[0];
+      if (groupResponse.status === 200 && groupResponse.data.length > 0) {
+        const productData = groupResponse.data[0];
+
+        // Set basic product info
+        if (productData.images && productData.images.length > 0) {
+          setProductImage(productData.images[0].thumbnail);
+        }
+
         setProduct({
-          ...productData,
-          description: stripHtmlTags(productData.description),
-          variations: [productData.group_variations[0]],
-          product_skus: productData.variations.map((variant) => ({
-            item_id: variant.item_id,
-            variation_values: variant.variation_values,
-            sell_price: variant.sell_price,
-            end_qty: 1, // Sesuaikan dengan field yang sesuai
-          })),
+          item_group_name: productData.item_group_name,
+          description: stripHtmlTags(productData.description || ""),
         });
 
-        setSelectedSize(productData.group_variations[0].values[0]);
-        setProductImage(productData.images[0].thumbnail);
+        // Get item_id from variations and fetch SKU details
+        if (productData.variations && productData.variations.length > 0) {
+          const itemId = productData.variations[0].item_id;
 
-        const quantities = {};
-        productData.variations.forEach((variant) => {
-          quantities[variant.variation_values[0].value] = 1; // Sesuaikan dengan field quantity yang sesuai
-        });
-        setAvailableQuantities(quantities);
+          // Fetch SKU details
+          const skuResponse = await axios.get(
+            `${apiUrl}/inventory/items/${itemId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (skuResponse.status === 200) {
+            const skuData = skuResponse.data;
+            console.log("SKU Data:", skuData); // Debugging
+
+            // Set SKUs and quantities
+            if (skuData.product_skus && skuData.product_skus.length > 0) {
+              setProductSkus(skuData.product_skus);
+
+              // Set available quantities
+              const quantities = {};
+              skuData.product_skus.forEach((sku) => {
+                if (sku.variation_values && sku.variation_values[0]) {
+                  quantities[sku.variation_values[0].value] = sku.end_qty;
+                }
+              });
+              setAvailableQuantities(quantities);
+
+              // Set initial size and selected SKU
+              const firstSku = skuData.product_skus[0];
+              if (firstSku.variation_values && firstSku.variation_values[0]) {
+                setSelectedSize(firstSku.variation_values[0].value);
+                setSelectedSku(firstSku);
+              }
+            }
+          }
+        }
       }
     } catch (error) {
-      console.error("Error fetching product:", error);
+      console.error("Error fetching product data:", error);
       setError("Failed to fetch product details");
     }
   };
+
   const loginAndFetchProduct = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
@@ -78,13 +114,12 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
 
     try {
       const response = await axios.post(`${ApiLogin}/loginjubelio`);
-
       const data = response.data;
 
       if (response.status === 200) {
         Cookies.set("pos_token", data.token, { expires: 1 });
         setLoginStatus("success");
-        fetchProduct(data.token);
+        await fetchProductGroup(data.token);
       } else {
         setError(data.message);
         setLoginStatus("error");
@@ -105,13 +140,36 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
 
   useEffect(() => {
     if (availableQuantities[selectedSize]) {
-      setQuantity(availableQuantities[selectedSize] > 0 ? 1 : 0);
+      setQuantity(1);
     }
   }, [selectedSize, availableQuantities]);
 
   const handleSizeChange = (e) => {
-    setSelectedSize(e.target.value);
+    const newSize = e.target.value;
+    console.log("Changing size to:", newSize); // Debugging
+    setSelectedSize(newSize);
+
+    // Find matching SKU
+    const sku = productSkus.find(
+      (sku) => sku?.variation_values?.[0]?.value === newSize
+    );
+    console.log("Found SKU:", sku); // Debugging
+
+    if (sku) {
+      setSelectedSku(sku);
+      setQuantity(1); // Reset quantity when size changes
+    }
   };
+
+  // Update useEffect untuk set initial selectedSku
+  useEffect(() => {
+    if (productSkus.length > 0 && selectedSize) {
+      const sku = productSkus.find(
+        (sku) => sku.variation_values[0].value === selectedSize
+      );
+      setSelectedSku(sku);
+    }
+  }, [productSkus, selectedSize]);
 
   const handleQuantityChange = (e) => {
     setQuantity(parseInt(e.target.value));
@@ -126,20 +184,43 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     }).format(price);
   };
 
+  const getCurrentPrice = () => {
+    const selectedSku = productSkus?.find(
+      (sku) => sku?.variation_values?.[0]?.value === selectedSize
+    );
+    return selectedSku ? formatPrice(selectedSku.sell_price) : "-";
+  };
+
   const handleAddToCart = async () => {
     if (!isLoggedIn) {
       setShowLoginPopup(true);
       return;
     }
 
-    const selectedSku = product.product_skus.find(
-      (sku) => sku.variation_values[0].value === selectedSize
+    const selectedSku = productSkus?.find(
+      (sku) => sku?.variation_values?.[0]?.value === selectedSize
     );
 
-    // Validasi kuantitas
-    if (quantity > availableQuantities[selectedSize]) {
+    if (!selectedSku) {
+      toast.error("SKU tidak ditemukan", {
+        position: "top-right",
+        autoClose: 1500,
+      });
+      return;
+    }
+
+    const productToCart = {
+      product_id: selectedSku.item_id,
+      quantity,
+      price: selectedSku.sell_price,
+      name: product.item_group_name,
+      size: selectedSize,
+    };
+
+    // Validasi kuantitas menggunakan end_qty
+    if (quantity > selectedSku.end_qty) {
       toast.error(
-        `Kuantitas melebihi stok yang tersedia (${availableQuantities[selectedSize]})`,
+        `Kuantitas melebihi stok yang tersedia (${selectedSku.end_qty})`,
         {
           position: "top-right",
           autoClose: 1500,
@@ -156,14 +237,6 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
       return;
     }
 
-    const productToCart = {
-      product_id: selectedSku.item_id,
-      quantity,
-      price: selectedSku.sell_price,
-      name: product.item_group_name,
-      size: selectedSize,
-    };
-
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const token = Cookies.get("accessToken");
@@ -175,21 +248,12 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
 
       if (existingItem) {
         const newQuantity = existingItem.quantity + productToCart.quantity;
-        // Validasi jumlah total
         if (newQuantity > availableQuantities[selectedSize]) {
           toast.error(
             `Total kuantitas melebihi stok yang tersedia (${availableQuantities[selectedSize]})`,
             {
               position: "top-right",
               autoClose: 1500,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              progress: undefined,
-              limit: 1,
-              className:
-                "font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg",
             }
           );
           return;
@@ -198,11 +262,8 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
         const response = await axios.put(
           `${backendUrl}/cart/${userId}/${existingItem.id}`,
           {
-            product_id: productToCart.product_id,
+            ...productToCart,
             quantity: newQuantity,
-            price: productToCart.price,
-            name: productToCart.name,
-            size: productToCart.size,
           },
           {
             headers: {
@@ -217,14 +278,6 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
           toast.success("Produk diperbarui di keranjang", {
             position: "top-right",
             autoClose: 1500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            limit: 1,
-            className:
-              "font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg",
           });
         }
       } else {
@@ -244,14 +297,6 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
           toast.success("Produk ditambahkan ke keranjang", {
             position: "top-right",
             autoClose: 1500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            limit: 1,
-            className:
-              "font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg",
           });
         }
       }
@@ -260,14 +305,6 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
       toast.error("Gagal menambahkan produk ke keranjang", {
         position: "top-right",
         autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        limit: 1,
-        className:
-          "font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg",
       });
     }
   };
@@ -288,36 +325,33 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     return renderSkeleton();
   }
 
-  if (!product) {
+  if (!product || !productSkus || productSkus.length === 0) {
+    console.log("Loading state:", { product, productSkus }); // Untuk debugging
     return renderSkeleton();
   }
-
-  const handleLoginClick = () => {
-    setShowLoginPopup(false);
-    navigate("/login");
-  };
 
   return (
     <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
       <div className="w-full flex flex-col lg:flex-row mb-6 gap-x-11 justify-center space-y-5 lg:space-y-0">
         <img
           src={productImage || "/dummy-product.png"}
-          alt={product.item_group_name}
-          className="w-[28rem] lg:w-[40rem] lg:h-[40rem] "
+          alt={product?.item_group_name}
+          className="w-[28rem] lg:w-[40rem] lg:h-[40rem]"
         />
-        {/* Desc */}
         <div className="lg:w-[40rem] flex flex-col gap-y-3">
           <div>
             <h1 className="text-xl lg:text-3xl font-bold font-overpass text-[#333333] uppercase">
-              {product.item_group_name}
+              {product?.item_group_name}
             </h1>
             <p className="text-lg font-semibold font-overpass text-[#333333]">
-              {formatPrice(product.product_skus[0].sell_price)}
+              {getCurrentPrice()}
             </p>
           </div>
           <p className="text-sm font-overpass whitespace-pre-wrap text-justify">
-            {product.description}
+            {product?.description}
           </p>
+
+          {/* Size Selection */}
           <div className="w-full flex justify-between items-center">
             <p className="text-lg font-semibold font-overpass text-[#333333]">
               Select A Size
@@ -327,13 +361,15 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
               onChange={handleSizeChange}
               className="bg-[#ffffff] text-[#333333] font-bold py-2 px-8 focus:outline-none focus:shadow-outline font-overpass text-sm"
             >
-              {product.variations[0].values.map((size, index) => (
-                <option key={index} value={size}>
-                  {size}
+              {productSkus?.map((sku, index) => (
+                <option key={index} value={sku.variation_values[0].value}>
+                  {sku.variation_values[0].value}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Quantity Selection */}
           <div className="w-full flex justify-between items-center">
             <p className="text-lg font-semibold font-overpass text-[#333333]">
               Quantity
@@ -343,13 +379,12 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
               onChange={handleQuantityChange}
               className="bg-[#ffffff] text-[#333333] font-bold py-2 px-8 focus:outline-none focus:shadow-outline font-overpass text-sm"
             >
-              {[...Array(availableQuantities[selectedSize] || 1).keys()].map(
-                (qty) => (
-                  <option key={qty + 1} value={qty + 1}>
-                    {qty + 1}
+              {selectedSku &&
+                [...Array(selectedSku.end_qty)].map((_, idx) => (
+                  <option key={idx + 1} value={idx + 1}>
+                    {idx + 1}
                   </option>
-                )
-              )}
+                ))}
             </select>
           </div>
           <button
@@ -366,6 +401,8 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
           </Link>
         </div>
       </div>
+
+      {/* Login Popup */}
       {showLoginPopup && (
         <div className="fixed inset-0 z-[99991] flex items-center justify-center bg-black bg-opacity-50 px-5">
           <div className="bg-white p-6">
