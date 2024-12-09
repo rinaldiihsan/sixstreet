@@ -346,6 +346,11 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     return renderSkeleton();
   }
 
+  const handleLoginClick = () => {
+    setShowLoginPopup(false);
+    navigate("/login");
+  };
+
   return (
     <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
       <div className="w-full flex flex-col lg:flex-row mb-6 gap-x-11 justify-center space-y-5 lg:space-y-0">

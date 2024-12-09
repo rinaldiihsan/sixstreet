@@ -97,6 +97,14 @@ const Supreme = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleSoldOutClick = (e) => {
+    e.preventDefault();
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   return (
     <>
       <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center overflow-x-hidden">
@@ -189,7 +197,12 @@ const Supreme = () => {
               {/* Available Products */}
               {Object.values(
                 products
-                  .flatMap((item) => item.variants)
+                  .flatMap((item) => ({
+                    ...item.variants[0],
+                    item_group_id: item.item_group_id,
+                    parentThumbnail: item.thumbnail,
+                    last_modified: item.last_modified,
+                  }))
                   .reduce((uniqueVariants, variant) => {
                     if (!uniqueVariants[variant.item_name]) {
                       uniqueVariants[variant.item_name] = variant;
@@ -226,7 +239,7 @@ const Supreme = () => {
                     key={index}
                     className="flex flex-col gap-y-5 items-center"
                   >
-                    <Link to={`/product-detail/${variant.item_id}`}>
+                    <Link to={`/product-detail/${variant.item_group_id}`}>
                       {variant.parentThumbnail ? (
                         <img
                           src={variant.parentThumbnail}
@@ -255,7 +268,12 @@ const Supreme = () => {
               {/* Sold Out Products */}
               {Object.values(
                 products
-                  .flatMap((item) => item.variants)
+                  .flatMap((item) => ({
+                    ...item.variants[0],
+                    item_group_id: item.item_group_id,
+                    parentThumbnail: item.thumbnail,
+                    last_modified: item.last_modified,
+                  }))
                   .reduce((uniqueVariants, variant) => {
                     if (!uniqueVariants[variant.item_name]) {
                       uniqueVariants[variant.item_name] = variant;

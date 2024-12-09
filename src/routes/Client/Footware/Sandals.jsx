@@ -438,7 +438,12 @@ const Sandals = () => {
                     .filter((item) =>
                       [7545, 17895, 1013].includes(item.item_category_id)
                     )
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -478,7 +483,7 @@ const Sandals = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
@@ -509,7 +514,12 @@ const Sandals = () => {
                     .filter((item) =>
                       [7545, 17895, 1013].includes(item.item_category_id)
                     )
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -536,7 +546,7 @@ const Sandals = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
+                        href={`/product-detail/${variant.item_group_id}`}
                         onClick={handleSoldOutClick}
                         className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
                       >
@@ -544,18 +554,18 @@ const Sandals = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
                       <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold  md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
+                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">

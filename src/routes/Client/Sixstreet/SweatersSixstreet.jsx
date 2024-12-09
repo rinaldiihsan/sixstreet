@@ -379,7 +379,12 @@ const SweatersSixstreet = () => {
                 {/* Produk yang tersedia */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name
                         .toLowerCase()
@@ -420,7 +425,7 @@ const SweatersSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to="/product-detail/">
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.thumbnail ? (
                           <img
                             src={variant.thumbnail}
@@ -448,7 +453,12 @@ const SweatersSixstreet = () => {
                 {/* Produk yang habis */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name
                         .toLowerCase()
@@ -478,18 +488,22 @@ const SweatersSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link
+                        href="#"
+                        onClick={handleSoldOutClick}
+                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                      >
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
