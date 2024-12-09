@@ -6,6 +6,9 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { toast } from "react-toastify";
 import { useCart } from "../../../components/CartContext";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const ProductDetail = ({ userId, isLoggedIn }) => {
   const { itemId } = useParams();
@@ -21,6 +24,8 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
   const [selectedSku, setSelectedSku] = useState(null);
+  const [productImages, setProductImages] = useState([]);
+  const [slider, setSlider] = useState(null);
 
   const stripHtmlTags = (str) => {
     return str.replace(/<\/?[^>]+(>|$)/g, "");
@@ -42,10 +47,11 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
 
       if (groupResponse.status === 200 && groupResponse.data.length > 0) {
         const productData = groupResponse.data[0];
-
+        console.log("Product image detail:", productData); // Debugging
         // Set basic product info
         if (productData.images && productData.images.length > 0) {
           setProductImage(productData.images[0].thumbnail);
+          setProductImages(productData.images);
         }
 
         setProduct({
@@ -70,7 +76,6 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
 
           if (skuResponse.status === 200) {
             const skuData = skuResponse.data;
-            console.log("SKU Data:", skuData); // Debugging
 
             // Set SKUs and quantities
             if (skuData.product_skus && skuData.product_skus.length > 0) {
@@ -99,6 +104,18 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
       console.error("Error fetching product data:", error);
       setError("Failed to fetch product details");
     }
+  };
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    adaptiveHeight: true,
   };
 
   const loginAndFetchProduct = async () => {
@@ -326,18 +343,45 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
   }
 
   if (!product || !productSkus || productSkus.length === 0) {
-    console.log("Loading state:", { product, productSkus }); // Untuk debugging
     return renderSkeleton();
   }
 
   return (
     <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
       <div className="w-full flex flex-col lg:flex-row mb-6 gap-x-11 justify-center space-y-5 lg:space-y-0">
-        <img
-          src={productImage || "/dummy-product.png"}
-          alt={product?.item_group_name}
-          className="w-[28rem] lg:w-[40rem] lg:h-[40rem]"
-        />
+        <div className="w-[28rem] lg:w-[40rem] relative flex flex-col gap-y-4">
+          {/* Main Slider */}
+          <div className="w-full">
+            <Slider ref={setSlider} {...settings}>
+              {productImages.map((image, index) => (
+                <div key={image.group_image_id}>
+                  <img
+                    src={image.url}
+                    alt={`${product?.item_group_name} - ${index + 1}`}
+                    className="w-[28rem] h-[28rem] lg:w-[40rem] lg:h-[40rem] object-cover"
+                  />
+                </div>
+              ))}
+            </Slider>
+          </div>
+
+          {/* Thumbnails */}
+          <div className="grid grid-cols-6 gap-2 mt-4 px-2">
+            {productImages.map((image, index) => (
+              <div
+                key={`thumb-${image.group_image_id}`}
+                className="cursor-pointer rounded overflow-hidden border-2 hover:border-gray-400"
+                onClick={() => slider?.slickGoTo(index)}
+              >
+                <img
+                  src={image.thumbnail}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-20 object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="lg:w-[40rem] flex flex-col gap-y-3">
           <div>
             <h1 className="text-xl lg:text-3xl font-bold font-overpass text-[#333333] uppercase">

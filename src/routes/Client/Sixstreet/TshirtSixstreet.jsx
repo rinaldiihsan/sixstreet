@@ -14,6 +14,7 @@ const TshirtSixstreet = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   const fetchProducts = async (token) => {
     try {
@@ -123,9 +124,25 @@ const TshirtSixstreet = () => {
     );
   };
 
+  const handleSoldOutClick = (e) => {
+    e.preventDefault();
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   return (
     <>
       <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center">
+        {showAlert && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[999]">
+            <div className="bg-red-100 border border-red-500 text-red-500 px-8 py-3 rounded-lg shadow-lg">
+              Maaf, produk ini sedang tidak tersedia (Sold Out)
+            </div>
+          </div>
+        )}
+
         <img
           src="/hero-tshirt.png"
           alt="Hero Tshirt"
@@ -365,7 +382,12 @@ const TshirtSixstreet = () => {
                 {/* Produk yang tersedia */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name.toLowerCase().includes("sixstreet tee")
                     )
@@ -404,7 +426,7 @@ const TshirtSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to="/product-detail/">
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.thumbnail ? (
                           <img
                             src={variant.thumbnail}
@@ -432,7 +454,12 @@ const TshirtSixstreet = () => {
                 {/* Produk yang habis */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name.toLowerCase().includes("sixstreet tee")
                     )
@@ -460,18 +487,22 @@ const TshirtSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link
+                        href="#"
+                        onClick={handleSoldOutClick}
+                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                      >
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
