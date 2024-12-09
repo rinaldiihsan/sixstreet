@@ -361,7 +361,7 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
               {productImages.map((image, index) => (
                 <div key={image.group_image_id}>
                   <img
-                    src={image.url}
+                    src={image.url == null ? "/dummy-product.png" : image.url}
                     alt={`${product?.item_group_name} - ${index + 1}`}
                     className="w-[28rem] h-[28rem] lg:w-[40rem] lg:h-[40rem] object-cover"
                   />
@@ -379,7 +379,11 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
                 onClick={() => slider?.slickGoTo(index)}
               >
                 <img
-                  src={image.thumbnail}
+                  src={
+                    image.thumbnail == null
+                      ? "/dummy-product.png"
+                      : image.thumbnail
+                  }
                   alt={`Thumbnail ${index + 1}`}
                   className="w-full h-20 object-cover"
                 />
