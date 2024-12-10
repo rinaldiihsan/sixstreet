@@ -18,6 +18,42 @@ const TshirtSixstreet = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200 && response.data.length > 0) {
+        const productData = response.data[0];
+        return {
+          groupId: group_id,
+          thumbnail: productData?.images?.[0]?.thumbnail || null,
+          images: productData?.images || [],
+        };
+      }
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      // Return default values instead of throwing error
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
+
   const fetchProducts = async (token) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
@@ -29,67 +65,49 @@ const TshirtSixstreet = () => {
       });
 
       if (response.status === 200) {
-        const data = response.data.data;
-        // Filter hanya produk sixstreet tee
+        const data = response.data.data || [];
+
+        // Filter sixstreet products safely
         const sixstreetProducts = data.filter((item) =>
-          item.variants.some((variant) =>
-            variant.item_name.toLowerCase().includes("sixstreet tee")
+          item?.variants?.some((variant) =>
+            variant?.item_name?.toLowerCase().includes("sixstreet tee")
           )
         );
 
-        // Ambil unique item_group_ids
+        // Get unique group ids safely
         const uniqueGroupIds = [
-          ...new Set(sixstreetProducts.map((item) => item.item_group_id)),
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
         ];
 
-        // Fetch thumbnail untuk setiap group_id
-        const groupDetails = await Promise.all(
-          uniqueGroupIds.map(async (groupId) => {
-            try {
-              const groupResponse = await axios.get(
-                `${apiUrl}/inventory/catalog/for-listing/${groupId}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-
-              if (
-                groupResponse.status === 200 &&
-                groupResponse.data.length > 0
-              ) {
-                return {
-                  groupId,
-                  thumbnail: groupResponse.data[0].images[0]?.thumbnail,
-                  images: groupResponse.data[0].images,
-                };
-              }
-              return null;
-            } catch (error) {
-              console.error(`Error fetching group ${groupId}:`, error);
-              return null;
-            }
-          })
+        // Fetch thumbnails with error handling
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
         );
 
-        // Combine data
+        // Process results safely
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        // Combine data safely
         const productsWithThumbnails = sixstreetProducts.map((item) => {
-          const groupDetail = groupDetails.find(
-            (g) => g?.groupId === item.item_group_id
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
           );
           return {
             ...item,
-            thumbnail: groupDetail?.thumbnail,
-            images: groupDetail?.images,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
           };
         });
 
         setProducts(productsWithThumbnails);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -503,16 +521,20 @@ const TshirtSixstreet = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link to={`/product-detail/${item.item_group_id}`}>
-                        {item.thumbnail ? (
+                        {item?.thumbnail ? (
                           <img
                             src={item.thumbnail}
-                            alt={item.item_name}
+                            alt={item?.item_name || "Product Image"}
                             className="w-[30rem] object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/dummy-product.png";
+                            }}
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
-                            alt={item.item_name}
+                            alt={item?.item_name || "Product Image"}
                             className="w-[30rem] object-cover"
                           />
                         )}
