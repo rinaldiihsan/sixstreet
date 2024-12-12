@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
+import { motion } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const HoodiesSixstreet = () => {
@@ -15,6 +16,7 @@ const HoodiesSixstreet = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const fetchProducts = async (token) => {
     try {
@@ -124,6 +126,23 @@ const HoodiesSixstreet = () => {
     );
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const sidebarVariants = {
+    open: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.2, ease: "easeInOut" },
+    },
+    closed: {
+      x: "-100%",
+      opacity: 0,
+      transition: { duration: 0.2, ease: "easeInOut" },
+    },
+  };
+
   const handleSoldOutClick = (e) => {
     e.preventDefault();
     setShowAlert(true);
@@ -144,16 +163,17 @@ const HoodiesSixstreet = () => {
         )}
         <img src="/" alt="Hero Hoodie" className="w-full h-auto mb-6" />
         {/* Filter  */}
-        <div className="w-full flex justify-between mb-6 sticky top-[72px] bg-white z-[997] py-4">
+        <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[17rem] px-10 py-5 gap-x-14">
-              <p className="font-overpass text-lg">Filter</p>
+            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+              <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
                 height="24"
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={toggleSidebar}
               >
                 <path
                   d="M18.3335 5.41666H13.3335"
@@ -205,22 +225,21 @@ const HoodiesSixstreet = () => {
                 />
               </svg>
             </div>
-            <div className="border-t border-b border-[#E5E5E5] flex-grow flex items-center px-10 py-5">
+            <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
               <p className="font-overpass capitalize">
                 {
                   products
-                    .flatMap((item) => item.variants)
-                    .filter((variant) =>
-                      variant.item_name
-                        .toLowerCase()
-                        .includes("sixstreet hoodie")
-                    ).length
+                    .filter((item) =>
+                      [5472, 999, 1013, 12780, 12803].includes(
+                        item.item_category_id
+                      )
+                    )
+                    .flatMap((item) => item.variants).length
                 }{" "}
                 Hasil
               </p>
             </div>
-
-            <div className="relative border border-[#E5E5E5] flex items-center justify-center w-[25rem] px-10 py-5 gap-x-5">
+            <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p
                 className="font-overpass capitalize cursor-pointer"
                 onClick={handleDropdownToggle}
@@ -249,6 +268,12 @@ const HoodiesSixstreet = () => {
                   </p>
                   <p
                     className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
+                    onClick={() => handleOptionSelect("Product Terbaru")}
+                  >
+                    Product Terbaru
+                  </p>
+                  <p
+                    className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
                     onClick={() => handleOptionSelect("Alphabet")}
                   >
                     Alphabet
@@ -258,9 +283,9 @@ const HoodiesSixstreet = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-between gap-x-3">
+        <div className="w-full flex justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">
@@ -295,67 +320,83 @@ const HoodiesSixstreet = () => {
                 </li>
               </ul>
             </div>
-            {/* Filter Size */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Size</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price1"
-                  />
-                  <label className="font-overpass" htmlFor="price1">
-                    S
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price2"
-                  />
-                  <label className="font-overpass" htmlFor="price2">
-                    M
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price3"
-                  />
-                  <label className="font-overpass" htmlFor="price3">
-                    L
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price4"
-                  />
-                  <label className="font-overpass" htmlFor="price4">
-                    XL
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price4"
-                  />
-                  <label className="font-overpass" htmlFor="price4">
-                    XXL
-                  </label>
-                </li>
-              </ul>
-            </div>
+            {isSidebarOpen && (
+              <motion.div
+                className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
+                initial="closed"
+                animate={isSidebarOpen ? "open" : "closed"}
+                variants={sidebarVariants}
+                transition={{ type: "spring", stiffness: 100 }}
+              >
+                <button
+                  onClick={toggleSidebar}
+                  className="self-end text-xl font-bold mb-4"
+                >
+                  ×
+                </button>
+                {/* Filter Size */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium font-overpass">Size</h3>
+                  <ul className="mt-3 space-y-2">
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price1"
+                      />
+                      <label className="font-overpass" htmlFor="price1">
+                        S
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price2"
+                      />
+                      <label className="font-overpass" htmlFor="price2">
+                        M
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price3"
+                      />
+                      <label className="font-overpass" htmlFor="price3">
+                        L
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price4"
+                      />
+                      <label className="font-overpass" htmlFor="price4">
+                        XL
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price4"
+                      />
+                      <label className="font-overpass" htmlFor="price4">
+                        XXL
+                      </label>
+                    </li>
+                  </ul>
+                </div>
+              </motion.div>
+            )}
           </div>
           {/* Product */}
           <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
