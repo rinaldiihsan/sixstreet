@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
+import { motion } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const TshirtSixstreet = () => {
@@ -14,6 +15,44 @@ const TshirtSixstreet = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200 && response.data.length > 0) {
+        const productData = response.data[0];
+        return {
+          groupId: group_id,
+          thumbnail: productData?.images?.[0]?.thumbnail || null,
+          images: productData?.images || [],
+        };
+      }
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      // Return default values instead of throwing error
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
 
   const fetchProducts = async (token) => {
     try {
@@ -25,28 +64,54 @@ const TshirtSixstreet = () => {
         },
       });
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter sixstreet products safely
+        const sixstreetProducts = data.filter((item) =>
+          item?.variants?.some((variant) =>
+            variant?.item_name?.toLowerCase().includes("sixstreet tee")
+          )
+        );
+
+        // Get unique group ids safely
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        // Fetch thumbnails with error handling
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        // Process results safely
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        // Combine data safely
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+          return {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+        });
+
+        setProducts(productsWithThumbnails);
       }
-
-      const data = response.data;
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-          last_modified: item.last_modified,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
   };
-
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
@@ -123,25 +188,59 @@ const TshirtSixstreet = () => {
     );
   };
 
+  const handleSoldOutClick = (e) => {
+    e.preventDefault();
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const sidebarVariants = {
+    open: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.2, ease: "easeInOut" },
+    },
+    closed: {
+      x: "-100%",
+      opacity: 0,
+      transition: { duration: 0.2, ease: "easeInOut" },
+    },
+  };
+
   return (
     <>
       <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center">
+        {showAlert && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[999]">
+            <div className="bg-red-100 border border-red-500 text-red-500 px-8 py-3 rounded-lg shadow-lg">
+              Maaf, produk ini sedang tidak tersedia (Sold Out)
+            </div>
+          </div>
+        )}
+
         <img
           src="/hero-tshirt.png"
           alt="Hero Tshirt"
-          className="w-full h-auto mb-6"
+          className="w-full h-full md:h-auto mb-6"
         />
         {/* Filter  */}
-        <div className="w-full flex justify-between mb-6 sticky top-[72px] bg-white z-[997] py-4">
+        <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[17rem] px-10 py-5 gap-x-14">
-              <p className="font-overpass text-lg">Filter</p>
+            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+              <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
                 height="24"
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={toggleSidebar}
               >
                 <path
                   d="M18.3335 5.41666H13.3335"
@@ -193,20 +292,21 @@ const TshirtSixstreet = () => {
                 />
               </svg>
             </div>
-            <div className="border-t border-b border-[#E5E5E5] flex-grow flex items-center px-10 py-5">
+            <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
               <p className="font-overpass capitalize">
                 {
                   products
-                    .flatMap((item) => item.variants)
-                    .filter((variant) =>
-                      variant.item_name.toLowerCase().includes("sixstreet tee")
-                    ).length
+                    .filter((item) =>
+                      [5472, 999, 1013, 12780, 12803].includes(
+                        item.item_category_id
+                      )
+                    )
+                    .flatMap((item) => item.variants).length
                 }{" "}
                 Hasil
               </p>
             </div>
-
-            <div className="relative border border-[#E5E5E5] flex items-center justify-center w-[25rem] px-10 py-5 gap-x-5">
+            <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p
                 className="font-overpass capitalize cursor-pointer"
                 onClick={handleDropdownToggle}
@@ -235,6 +335,12 @@ const TshirtSixstreet = () => {
                   </p>
                   <p
                     className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
+                    onClick={() => handleOptionSelect("Product Terbaru")}
+                  >
+                    Product Terbaru
+                  </p>
+                  <p
+                    className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
                     onClick={() => handleOptionSelect("Alphabet")}
                   >
                     Alphabet
@@ -244,9 +350,9 @@ const TshirtSixstreet = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-between gap-x-3">
+        <div className="w-full flex justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">
@@ -281,67 +387,83 @@ const TshirtSixstreet = () => {
                 </li>
               </ul>
             </div>
-            {/* Filter Size */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Size</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price1"
-                  />
-                  <label className="font-overpass" htmlFor="price1">
-                    S
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price2"
-                  />
-                  <label className="font-overpass" htmlFor="price2">
-                    M
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price3"
-                  />
-                  <label className="font-overpass" htmlFor="price3">
-                    L
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price4"
-                  />
-                  <label className="font-overpass" htmlFor="price4">
-                    XL
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price4"
-                  />
-                  <label className="font-overpass" htmlFor="price4">
-                    XXL
-                  </label>
-                </li>
-              </ul>
-            </div>
+            {isSidebarOpen && (
+              <motion.div
+                className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
+                initial="closed"
+                animate={isSidebarOpen ? "open" : "closed"}
+                variants={sidebarVariants}
+                transition={{ type: "spring", stiffness: 100 }}
+              >
+                <button
+                  onClick={toggleSidebar}
+                  className="self-end text-xl font-bold mb-4"
+                >
+                  ×
+                </button>
+                {/* Filter Size */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium font-overpass">Size</h3>
+                  <ul className="mt-3 space-y-2">
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price1"
+                      />
+                      <label className="font-overpass" htmlFor="price1">
+                        S
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price2"
+                      />
+                      <label className="font-overpass" htmlFor="price2">
+                        M
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price3"
+                      />
+                      <label className="font-overpass" htmlFor="price3">
+                        L
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price4"
+                      />
+                      <label className="font-overpass" htmlFor="price4">
+                        XL
+                      </label>
+                    </li>
+                    <li className="flex items-center gap-x-2">
+                      <input
+                        type="checkbox"
+                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                        name="price"
+                        id="price4"
+                      />
+                      <label className="font-overpass" htmlFor="price4">
+                        XXL
+                      </label>
+                    </li>
+                  </ul>
+                </div>
+              </motion.div>
+            )}
           </div>
           {/* Product */}
           <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
@@ -365,66 +487,64 @@ const TshirtSixstreet = () => {
                 {/* Produk yang tersedia */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
-                    .filter((variant) =>
-                      variant.item_name.toLowerCase().includes("sixstreet tee")
+                    .filter((item) =>
+                      item.variants.some((variant) =>
+                        variant.item_name
+                          .toLowerCase()
+                          .includes("sixstreet tee")
+                      )
                     )
-                    .reduce((uniqueVariants, variant) => {
-                      if (!uniqueVariants[variant.item_name]) {
-                        uniqueVariants[variant.item_name] = variant;
+                    .map((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      thumbnail: item.thumbnail,
+                      images: item.images,
+                      last_modified: item.last_modified,
+                    }))
+                    .reduce((uniqueItems, item) => {
+                      if (!uniqueItems[item.item_name]) {
+                        uniqueItems[item.item_name] = item;
                       }
-                      return uniqueVariants;
+                      return uniqueItems;
                     }, {})
                 )
-                  .filter((variant) =>
+                  .filter((item) =>
                     isProductMatchSelectedBrands(
-                      variant.item_name.toLowerCase(),
+                      item.item_name.toLowerCase(),
                       selectedBrands,
                       selectedSizes
                     )
                   )
-                  .filter(
-                    (variant) =>
-                      variant.sell_price !== null &&
-                      variant.sell_price !== 0 &&
-                      variant.available_qty > 0
-                  )
-                  .sort((a, b) => {
-                    if (selectedOption === "Harga Tertinggi") {
-                      return b.sell_price - a.sell_price;
-                    } else if (selectedOption === "Harga Terendah") {
-                      return a.sell_price - b.sell_price;
-                    } else if (selectedOption === "Alphabet") {
-                      return a.item_name.localeCompare(b.item_name);
-                    }
-                    return 0;
-                  })
-                  .map((variant, index) => (
+                  .map((item, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to="/product-detail/">
-                        {variant.thumbnail ? (
+                      <Link to={`/product-detail/${item.item_group_id}`}>
+                        {item?.thumbnail ? (
                           <img
-                            src={variant.thumbnail}
-                            alt={variant.item_name}
-                            className="w-[30rem]"
+                            src={item.thumbnail}
+                            alt={item?.item_name || "Product Image"}
+                            className="w-[30rem] object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/dummy-product.png";
+                            }}
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[30rem]"
+                            alt={item?.item_name || "Product Image"}
+                            className="w-[30rem] object-cover"
                           />
                         )}
                       </Link>
                       <div className="flex flex-col text-center gap-y-2">
                         <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem]">
-                          {variant.item_name}
+                          {item.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-xl">
-                          Rp. {variant.sell_price.toLocaleString("id-ID")}
+                          Rp. {item.sell_price.toLocaleString("id-ID")}
                         </h2>
                       </div>
                     </div>
@@ -432,7 +552,12 @@ const TshirtSixstreet = () => {
                 {/* Produk yang habis */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name.toLowerCase().includes("sixstreet tee")
                     )
@@ -460,18 +585,22 @@ const TshirtSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link
+                        href="#"
+                        onClick={handleSoldOutClick}
+                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                      >
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>

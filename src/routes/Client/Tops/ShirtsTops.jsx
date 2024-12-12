@@ -79,6 +79,83 @@ const ShirtsTops = () => {
     }
   };
 
+  const fetchProductGroup = async (token) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${itemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const productData = response.data[0];
+        setProductImage(productData.images[0].thumbnail);
+
+        // Store basic product info
+        setProduct({
+          item_group_name: productData.item_group_name,
+          description: stripHtmlTags(productData.description),
+          variations: [productData.group_variations[0]],
+        });
+
+        // Set initial size
+        if (productData.group_variations[0]?.values?.length > 0) {
+          setSelectedSize(productData.group_variations[0].values[0]);
+        }
+
+        // Get all item_ids from variations
+        const itemIds = productData.variations.map(
+          (variant) => variant.item_id
+        );
+
+        // Fetch details for each SKU
+        const skusPromises = itemIds.map((id) => fetchSkuDetails(token, id));
+        const skusData = await Promise.all(skusPromises);
+
+        // Filter out any null responses and set the SKUs
+        const validSkus = skusData.filter((sku) => sku !== null);
+        setProductSkus(validSkus);
+
+        // Update available quantities
+        const quantities = {};
+        validSkus.forEach((sku) => {
+          if (sku.variation_values && sku.variation_values[0]) {
+            quantities[sku.variation_values[0].value] = sku.available_qty || 0;
+          }
+        });
+        setAvailableQuantities(quantities);
+      }
+    } catch (error) {
+      console.error("Error fetching product group:", error);
+      setError("Failed to fetch product details");
+    }
+  };
+
+  const fetchSkuDetails = async (token, itemId) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(`${apiUrl}/inventory/items/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error fetching SKU details for item ${itemId}:`, error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     loginAndFetchProducts();
   }, []);
@@ -452,7 +529,12 @@ const ShirtsTops = () => {
                     .filter((item) =>
                       [18198, 18209].includes(item.item_category_id)
                     )
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -492,7 +574,7 @@ const ShirtsTops = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
@@ -523,7 +605,12 @@ const ShirtsTops = () => {
                     .filter((item) =>
                       [18198, 18209].includes(item.item_category_id)
                     )
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -550,7 +637,7 @@ const ShirtsTops = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
+                        href={`/product-detail/${variant.item_group_id}`}
                         onClick={handleSoldOutClick}
                         className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
                       >

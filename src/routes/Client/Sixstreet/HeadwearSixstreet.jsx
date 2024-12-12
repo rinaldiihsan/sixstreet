@@ -377,7 +377,12 @@ const HeadwearSixstreet = () => {
                 {/* Produk yang tersedia */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name.toLowerCase().includes("sixstreet cap")
                     )
@@ -416,7 +421,7 @@ const HeadwearSixstreet = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${variant.item_id}`}>
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
@@ -444,7 +449,12 @@ const HeadwearSixstreet = () => {
                 {/* Produk yang habis */}
                 {Object.values(
                   products
-                    .flatMap((item) => item.variants)
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
                     .filter((variant) =>
                       variant.item_name.toLowerCase().includes("sixstreet cap")
                     )
