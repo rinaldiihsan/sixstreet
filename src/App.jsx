@@ -33,6 +33,7 @@ import Bag from "./routes/Client/Accessories/Bag";
 import Headwear from "./routes/Client/Accessories/Headwear";
 import Jewelry from "./routes/Client/Accessories/Jewelry";
 import Collectibles from "./routes/Client/Accessories/Collectibles";
+import SocksAcc from "./routes/Client/Accessories/SocksAcc";
 // End Accessories Component
 
 // Collaboration Component
@@ -486,6 +487,7 @@ const App = () => {
               path="/accessories/collectibles"
               element={<Collectibles />}
             />
+            <Route path="/accessories/socks" element={<SocksAcc />} />
 
             {/* Collaboration */}
             <Route path="/collaboration/wukong" element={<Wukong />} />
