@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import assetHeroHeadwear from "../../../assets/banner/Headwear (2).webp";
 
 const HeadwearSixstreet = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -142,7 +143,11 @@ const HeadwearSixstreet = () => {
             </div>
           </div>
         )}
-        <img src="/" alt="Hero Headwear" className="w-full h-auto mb-6" />
+        <img
+          src={assetHeroHeadwear}
+          alt="Hero Headwear"
+          className="w-full h-auto mb-6"
+        />
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[72px] bg-white z-[997] py-4">
           <div className="flex flex-grow">
