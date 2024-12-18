@@ -1,20 +1,20 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const SidebarFilter = ({
+function SidebarFilterBrand({
   isSidebarOpen, // Terima dari props
   toggleSidebar, // Terima dari props
-  handleBrandChange,
+  handleCatagoryChange,
   handleSizeChange,
-  selectedBrands,
+  selectedCatagory,
   selectedSizes,
-}) => {
-  // Data filter
-  const brands = [
-    { id: "PALM_ANGELS", label: "PALM ANGELS" },
-    { id: "OFFWHITE", label: "OFFWHITE" },
-    { id: "NIKE", label: "NIKE" },
-    { id: "ADIDAS", label: "ADIDAS" },
+}) {
+  const catagory = [
+    { id: "BAGS", label: "Bags" },
+    { id: "HATS", label: "Hats" },
+    { id: "HOODIE", label: "Hoodie" },
+    { id: "SOCKS", label: "Socks" },
+    { id: "T_SHIRTS", label: "T-Shirts" },
   ];
 
   const sizes = [
@@ -38,8 +38,8 @@ const SidebarFilter = ({
               value={option.label}
               onChange={onChange}
               checked={
-                title === "Brand"
-                  ? selectedBrands.includes(option.label)
+                title === "Catagory"
+                  ? selectedCatagory.includes(option.label)
                   : selectedSizes.includes(option.label)
               }
             />
@@ -57,9 +57,9 @@ const SidebarFilter = ({
       {/* Desktop Sidebar */}
       <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
         <FilterSection
-          title="Brand"
-          options={brands}
-          onChange={handleBrandChange}
+          title="Catagory"
+          options={catagory}
+          onChange={handleCatagoryChange}
         />
         <FilterSection
           title="Size"
@@ -87,9 +87,9 @@ const SidebarFilter = ({
             ×
           </button>
           <FilterSection
-            title="Brand"
-            options={brands}
-            onChange={handleBrandChange}
+            title="Catagory"
+            options={catagory}
+            onChange={handleCatagoryChange}
           />
           <FilterSection
             title="Size"
@@ -100,6 +100,6 @@ const SidebarFilter = ({
       )}
     </>
   );
-};
+}
 
-export default SidebarFilter;
+export default SidebarFilterBrand;
