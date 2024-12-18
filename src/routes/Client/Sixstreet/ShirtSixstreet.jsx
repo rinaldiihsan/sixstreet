@@ -5,6 +5,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import assetHeroShirts from "../../../assets/banner/shirts.webp";
 
 const ShirtSixstreet = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -161,7 +162,11 @@ const ShirtSixstreet = () => {
             </div>
           </div>
         )}
-        <img src="/" alt="Hero Shirt" className="w-full h-auto mb-6" />
+        <img
+          src={assetHeroShirts}
+          alt="Hero Shirt"
+          className="w-full h-auto mb-6"
+        />
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">

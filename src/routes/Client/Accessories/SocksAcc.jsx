@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
-import { motion } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
-import assetHeroTshirt from "../../../assets/banner/t-shirts.webp";
+import { motion } from "framer-motion";
+import assetBannerSocks from "../../../assets/banner/Socks.webp";
 
-const TshirtSixstreet = () => {
+const SocksAcc = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("Relevance");
   const [loginStatus, setLoginStatus] = useState(null);
@@ -15,45 +15,8 @@ const TshirtSixstreet = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const [showAlert, setShowAlert] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const fetchProductGroup = async (token, group_id) => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(
-        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200 && response.data.length > 0) {
-        const productData = response.data[0];
-        return {
-          groupId: group_id,
-          thumbnail: productData?.images?.[0]?.thumbnail || null,
-          images: productData?.images || [],
-        };
-      }
-      return {
-        groupId: group_id,
-        thumbnail: null,
-        images: [],
-      };
-    } catch (error) {
-      // Return default values instead of throwing error
-      return {
-        groupId: group_id,
-        thumbnail: null,
-        images: [],
-      };
-    }
-  };
+  const [showAlert, setShowAlert] = useState(false);
 
   const fetchProducts = async (token) => {
     try {
@@ -65,54 +28,30 @@ const TshirtSixstreet = () => {
         },
       });
 
-      if (response.status === 200) {
-        const data = response.data.data || [];
-
-        // Filter sixstreet products safely
-        const sixstreetProducts = data.filter((item) =>
-          item?.variants?.some((variant) =>
-            variant?.item_name?.toLowerCase().includes("sixstreet tee")
-          )
-        );
-
-        // Get unique group ids safely
-        const uniqueGroupIds = [
-          ...new Set(
-            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
-          ),
-        ];
-
-        // Fetch thumbnails with error handling
-        const groupDetails = await Promise.allSettled(
-          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
-        );
-
-        // Process results safely
-        const validGroupDetails = groupDetails
-          .filter((result) => result.status === "fulfilled")
-          .map((result) => result.value)
-          .filter(Boolean);
-
-        // Combine data safely
-        const productsWithThumbnails = sixstreetProducts.map((item) => {
-          const groupDetail = validGroupDetails.find(
-            (g) => g?.groupId === item?.item_group_id
-          );
-          return {
-            ...item,
-            thumbnail: groupDetail?.thumbnail || null,
-            images: groupDetail?.images || [],
-          };
-        });
-
-        setProducts(productsWithThumbnails);
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch products");
       }
+
+      const data = response.data;
+
+      // Menggabungkan thumbnail dari objek utama produk ke dalam variants
+      const productsWithThumbnails = data.data.map((item) => {
+        item.variants = item.variants.map((variant) => ({
+          ...variant,
+          parentThumbnail: item.thumbnail,
+          last_modified: item.last_modified,
+        }));
+        return item;
+      });
+
+      setProducts(productsWithThumbnails);
     } catch (error) {
-      setProducts([]);
+      console.error("Error fetching products:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
@@ -126,6 +65,7 @@ const TshirtSixstreet = () => {
 
     try {
       const response = await axios.post(`${ApiLogin}/loginjubelio`);
+
       const data = response.data;
 
       if (response.status === 200) {
@@ -171,30 +111,11 @@ const TshirtSixstreet = () => {
     );
   };
 
-  const handleSizeChange = (event) => {
-    const { checked, value } = event.target;
-    setSelectedSizes((prevSizes) =>
-      checked
-        ? [...prevSizes, value]
-        : prevSizes.filter((size) => size !== value)
-    );
-  };
-
   const isProductMatchSelectedBrands = (productName, selectedBrands) => {
     if (selectedBrands.length === 0) return true;
-
-    // Cek setiap brand yang dipilih
     return selectedBrands.some((brand) =>
       productName.toLowerCase().includes(brand.toLowerCase())
     );
-  };
-
-  const handleSoldOutClick = (e) => {
-    e.preventDefault();
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
   };
 
   const toggleSidebar = () => {
@@ -214,9 +135,17 @@ const TshirtSixstreet = () => {
     },
   };
 
+  const handleSoldOutClick = (e) => {
+    e.preventDefault();
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   return (
     <>
-      <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center">
+      <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center overflow-x-hidden">
         {showAlert && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[999]">
             <div className="bg-red-100 border border-red-500 text-red-500 px-8 py-3 rounded-lg shadow-lg">
@@ -224,10 +153,9 @@ const TshirtSixstreet = () => {
             </div>
           </div>
         )}
-
         <img
-          src={assetHeroTshirt}
-          alt="Hero Tshirt"
+          src={assetBannerSocks}
+          alt="Hero Socks"
           className="w-full h-full md:h-auto mb-6"
         />
         {/* Filter  */}
@@ -298,9 +226,7 @@ const TshirtSixstreet = () => {
                 {
                   products
                     .filter((item) =>
-                      [5472, 999, 1013, 12780, 12803].includes(
-                        item.item_category_id
-                      )
+                      [24806, 24807].includes(item.item_category_id)
                     )
                     .flatMap((item) => item.variants).length
                 }{" "}
@@ -356,21 +282,19 @@ const TshirtSixstreet = () => {
           <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">
-                Collaborations
-              </h3>
+              <h3 className="text-lg font-medium font-overpass">Brand</h3>
               <ul className="mt-3 space-y-2">
                 <li className="flex items-center gap-x-2">
                   <input
                     type="checkbox"
                     className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
                     name="brand"
-                    id="AAPE"
-                    value="WUKONG"
+                    id="JORDAN"
+                    value="JORDAN"
                     onChange={handleBrandChange}
                   />
-                  <label className="font-overpass" htmlFor="WUKONG">
-                    WUKONG
+                  <label className="font-overpass" htmlFor="JORDAN">
+                    JORDAN
                   </label>
                 </li>
                 <li className="flex items-center gap-x-2">
@@ -378,193 +302,174 @@ const TshirtSixstreet = () => {
                     type="checkbox"
                     className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
                     name="brand"
-                    id="AAPE"
-                    value="JAMESON"
+                    id="OFFWHITE"
+                    value="OFFWHITE"
                     onChange={handleBrandChange}
                   />
-                  <label className="font-overpass" htmlFor="JAMESON">
-                    JAMESON
+                  <label className="font-overpass" htmlFor="OFFWHITE">
+                    OFFWHITE
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="NIKE"
+                    value="NIKE"
+                    onChange={handleBrandChange}
+                  />
+                  <label className="font-overpass" htmlFor="NIKE">
+                    NIKE
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="ADIDAS"
+                    value="ADIDAS"
+                    onChange={handleBrandChange}
+                  />
+                  <label className="font-overpass" htmlFor="ADIDAS">
+                    ADIDAS
+                  </label>
+                </li>
+                <li className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                    name="brand"
+                    id="NEW BALANCE"
+                    value="NEW BALANCE"
+                    onChange={handleBrandChange}
+                  />
+                  <label className="font-overpass" htmlFor="NEW BALANCE">
+                    NEW BALANCE
                   </label>
                 </li>
               </ul>
             </div>
-            {isSidebarOpen && (
-              <motion.div
-                className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
-                initial="closed"
-                animate={isSidebarOpen ? "open" : "closed"}
-                variants={sidebarVariants}
-                transition={{ type: "spring", stiffness: 100 }}
-              >
-                <button
-                  onClick={toggleSidebar}
-                  className="self-end text-xl font-bold mb-4"
-                >
-                  ×
-                </button>
-                {/* Filter Size */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium font-overpass">Size</h3>
-                  <ul className="mt-3 space-y-2">
-                    <li className="flex items-center gap-x-2">
-                      <input
-                        type="checkbox"
-                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                        name="price"
-                        id="price1"
-                      />
-                      <label className="font-overpass" htmlFor="price1">
-                        S
-                      </label>
-                    </li>
-                    <li className="flex items-center gap-x-2">
-                      <input
-                        type="checkbox"
-                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                        name="price"
-                        id="price2"
-                      />
-                      <label className="font-overpass" htmlFor="price2">
-                        M
-                      </label>
-                    </li>
-                    <li className="flex items-center gap-x-2">
-                      <input
-                        type="checkbox"
-                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                        name="price"
-                        id="price3"
-                      />
-                      <label className="font-overpass" htmlFor="price3">
-                        L
-                      </label>
-                    </li>
-                    <li className="flex items-center gap-x-2">
-                      <input
-                        type="checkbox"
-                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                        name="price"
-                        id="price4"
-                      />
-                      <label className="font-overpass" htmlFor="price4">
-                        XL
-                      </label>
-                    </li>
-                    <li className="flex items-center gap-x-2">
-                      <input
-                        type="checkbox"
-                        className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                        name="price"
-                        id="price4"
-                      />
-                      <label className="font-overpass" htmlFor="price4">
-                        XXL
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-              </motion.div>
-            )}
           </div>
+
+          {isSidebarOpen && (
+            <motion.div
+              className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
+              initial="closed"
+              animate={isSidebarOpen ? "open" : "closed"}
+              variants={sidebarVariants}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              <button
+                onClick={toggleSidebar}
+                className="self-end text-xl font-bold mb-4"
+              >
+                ×
+              </button>
+              {/* Filter Brand */}
+              <div className="mb-6">
+                <h3 className="text-lg font-medium font-overpass">Brand</h3>
+                <ul className="mt-3 space-y-2">
+                  <li className="flex items-center gap-x-2">
+                    <input
+                      type="checkbox"
+                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                      name="brand"
+                      id="JORDAN"
+                      value="JORDAN"
+                      onChange={handleBrandChange}
+                    />
+                    <label className="font-overpass" htmlFor="JORDAN">
+                      JORDAN
+                    </label>
+                  </li>
+                  <li className="flex items-center gap-x-2">
+                    <input
+                      type="checkbox"
+                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                      name="brand"
+                      id="OFFWHITE"
+                      value="OFFWHITE"
+                      onChange={handleBrandChange}
+                    />
+                    <label className="font-overpass" htmlFor="OFFWHITE">
+                      OFFWHITE
+                    </label>
+                  </li>
+                  <li className="flex items-center gap-x-2">
+                    <input
+                      type="checkbox"
+                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                      name="brand"
+                      id="NIKE"
+                      value="NIKE"
+                      onChange={handleBrandChange}
+                    />
+                    <label className="font-overpass" htmlFor="NIKE">
+                      NIKE
+                    </label>
+                  </li>
+                  <li className="flex items-center gap-x-2">
+                    <input
+                      type="checkbox"
+                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                      name="brand"
+                      id="ADIDAS"
+                      value="ADIDAS"
+                      onChange={handleBrandChange}
+                    />
+                    <label className="font-overpass" htmlFor="ADIDAS">
+                      ADIDAS
+                    </label>
+                  </li>
+                  <li className="flex items-center gap-x-2">
+                    <input
+                      type="checkbox"
+                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                      name="brand"
+                      id="NEW BALANCE"
+                      value="NEW BALANCE"
+                      onChange={handleBrandChange}
+                    />
+                    <label className="font-overpass" htmlFor="NEW BALANCE">
+                      NEW BALANCE
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+          )}
+
           {/* Product */}
-          <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
+          <div className="w-full md:w-[85%] grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
-                  <Skeleton className="w-[30rem] h-[30rem]" />
-                  <div className="flex flex-col text-center gap-y-2">
-                    <Skeleton className="text-xl md:w-[24rem]" />
-                    <Skeleton className="text-xl" />
+                  <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
+                  <div className="flex flex-col text-center gap-y-2 w-full">
+                    <Skeleton className=" md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
+                    <Skeleton className="md:text-xl" />
                   </div>
                 </div>
               ))
             ) : loginStatus === "success" &&
               products.some((item) =>
-                item.variants.some((variant) =>
-                  variant.item_name.toLowerCase().includes("sixstreet tee")
-                )
+                [24806, 24807].includes(item.item_category_id)
               ) ? (
               <>
-                {/* Available Products (Stock > 1) */}
+                {/* Produk yang tersedia */}
                 {Object.values(
                   products
                     .filter((item) =>
-                      item.variants.some(
-                        (variant) =>
-                          variant.item_name
-                            .toLowerCase()
-                            .includes("sixstreet tee") &&
-                          variant.available_qty > 1 // Check for stock > 1
-                      )
+                      [24806, 24807].includes(item.item_category_id)
                     )
-                    .map((item) => ({
-                      ...item.variants[0],
-                      item_group_id: item.item_group_id,
-                      thumbnail: item.thumbnail,
-                      images: item.images,
-                      last_modified: item.last_modified,
-                    }))
-                    .reduce((uniqueItems, item) => {
-                      if (!uniqueItems[item.item_name]) {
-                        uniqueItems[item.item_name] = item;
-                      }
-                      return uniqueItems;
-                    }, {})
-                )
-                  .filter((item) =>
-                    isProductMatchSelectedBrands(
-                      item.item_name.toLowerCase(),
-                      selectedBrands,
-                      selectedSizes
-                    )
-                  )
-                  .map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col gap-y-5 items-center"
-                    >
-                      <Link to={`/product-detail/${item.item_group_id}`}>
-                        {item?.thumbnail ? (
-                          <img
-                            src={item.thumbnail}
-                            alt={item?.item_name || "Product Image"}
-                            className="w-[30rem] object-cover"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "/dummy-product.png";
-                            }}
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={item?.item_name || "Product Image"}
-                            className="w-[30rem] object-cover"
-                          />
-                        )}
-                      </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem]">
-                          {item.item_name}
-                        </h2>
-                        <h2 className="uppercase font-overpass text-xl">
-                          Rp. {item.sell_price.toLocaleString("id-ID")}
-                        </h2>
-                      </div>
-                    </div>
-                  ))}
-
-                {/* Sold Out or Low Stock Products (Stock <= 1) */}
-                {Object.values(
-                  products
                     .flatMap((item) => ({
                       ...item.variants[0],
                       item_group_id: item.item_group_id,
                       parentThumbnail: item.thumbnail,
                       last_modified: item.last_modified,
                     }))
-                    .filter((variant) =>
-                      variant.item_name.toLowerCase().includes("sixstreet tee")
-                    )
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -574,7 +479,7 @@ const TshirtSixstreet = () => {
                 )
                   .filter((variant) =>
                     isProductMatchSelectedBrands(
-                      variant.item_name.toLowerCase(),
+                      variant.item_name,
                       selectedBrands
                     )
                   )
@@ -582,7 +487,84 @@ const TshirtSixstreet = () => {
                     (variant) =>
                       variant.sell_price !== null &&
                       variant.sell_price !== 0 &&
-                      variant.available_qty <= 1 // Changed from <= 0 to <= 1
+                      variant.available_qty !== null &&
+                      variant.available_qty >= 1
+                  )
+                  .sort((a, b) => {
+                    if (selectedOption === "Harga Tertinggi") {
+                      return b.sell_price - a.sell_price;
+                    } else if (selectedOption === "Harga Terendah") {
+                      return a.sell_price - b.sell_price;
+                    } else if (selectedOption === "Alphabet") {
+                      return a.item_name.localeCompare(b.item_name);
+                    } else if (selectedOption === "Product Terbaru") {
+                      return (
+                        new Date(b.last_modified) - new Date(a.last_modified)
+                      );
+                    }
+                    return 0;
+                  })
+                  .map((variant, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-y-5 items-center"
+                    >
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
+                        {variant.parentThumbnail ? (
+                          <img
+                            src={variant.parentThumbnail}
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                          />
+                        ) : (
+                          <img
+                            src="/dummy-product.png"
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
+                          />
+                        )}
+                      </Link>
+                      <div className="flex flex-col text-center gap-y-2">
+                        <h2 className="uppercase font-overpass font-extrabold  md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                          {variant.item_name}
+                        </h2>
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                          Rp. {variant.sell_price.toLocaleString()}
+                        </h2>
+                      </div>
+                    </div>
+                  ))}
+                {/* Produk yang habis */}
+                {Object.values(
+                  products
+                    .filter((item) =>
+                      [24806, 24807].includes(item.item_category_id)
+                    )
+                    .flatMap((item) => ({
+                      ...item.variants[0],
+                      item_group_id: item.item_group_id,
+                      parentThumbnail: item.thumbnail,
+                      last_modified: item.last_modified,
+                    }))
+                    .reduce((uniqueVariants, variant) => {
+                      if (!uniqueVariants[variant.item_name]) {
+                        uniqueVariants[variant.item_name] = variant;
+                      }
+                      return uniqueVariants;
+                    }, {})
+                )
+                  .filter((variant) =>
+                    isProductMatchSelectedBrands(
+                      variant.item_name,
+                      selectedBrands
+                    )
+                  )
+                  .filter(
+                    (variant) =>
+                      variant.sell_price !== null &&
+                      variant.sell_price !== 0 &&
+                      (variant.available_qty === null ||
+                        variant.available_qty <= 0)
                   )
                   .map((variant, index) => (
                     <div
@@ -613,9 +595,7 @@ const TshirtSixstreet = () => {
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-xl text-red-600">
-                          {variant.available_qty === 1
-                            ? "Last Stock"
-                            : "Sold Out"}
+                          Sold Out
                         </h2>
                       </div>
                     </div>
@@ -635,4 +615,4 @@ const TshirtSixstreet = () => {
   );
 };
 
-export default TshirtSixstreet;
+export default SocksAcc;
