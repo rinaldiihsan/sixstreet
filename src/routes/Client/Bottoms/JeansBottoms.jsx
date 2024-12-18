@@ -565,10 +565,10 @@ const JeansBottoms = () => {
                         )}
                       </Link>
                       <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem] text-red-600">
+                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl text-red-600">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
                           Sold Out
                         </h2>
                       </div>
