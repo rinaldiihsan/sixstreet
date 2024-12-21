@@ -234,12 +234,12 @@ const ShirtSixstreet = () => {
               <p className="font-overpass capitalize">
                 {
                   products
-                    .filter((item) =>
-                      [5472, 999, 1013, 12780, 12803].includes(
-                        item.item_category_id
-                      )
-                    )
-                    .flatMap((item) => item.variants).length
+                    .flatMap((item) => item.variants)
+                    .filter((variant) =>
+                      variant.item_name
+                        .toUpperCase()
+                        .includes("SIXSTREET SHIRT")
+                    ).length
                 }{" "}
                 Hasil
               </p>

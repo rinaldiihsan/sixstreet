@@ -351,7 +351,7 @@ const TshirtSixstreet = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-between md:gap-x-3 overflow-x-hidden">
+        <div className="w-full flex items-center justify-center lg:justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
           <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
             {/* Filter Brand */}
