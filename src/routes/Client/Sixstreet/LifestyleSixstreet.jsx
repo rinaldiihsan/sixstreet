@@ -16,6 +16,7 @@ const LifestyleSixstreet = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const fetchProducts = async (token) => {
     try {
@@ -106,7 +107,9 @@ const LifestyleSixstreet = () => {
         : prevState.filter((brand) => brand !== value)
     );
   };
-
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
   const handleSizeChange = (event) => {
     const { checked, value } = event.target;
     setSelectedSizes((prevSizes) =>
@@ -149,16 +152,17 @@ const LifestyleSixstreet = () => {
           className="w-full h-auto mb-6"
         />
         {/* Filter  */}
-        <div className="w-full flex justify-between mb-6 sticky top-[72px] bg-white z-[997] py-4">
+        <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[17rem] px-10 py-5 gap-x-14">
-              <p className="font-overpass text-lg">Filter</p>
+            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+              <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
                 height="24"
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={toggleSidebar}
               >
                 <path
                   d="M18.3335 5.41666H13.3335"
@@ -210,20 +214,19 @@ const LifestyleSixstreet = () => {
                 />
               </svg>
             </div>
-            <div className="border-t border-b border-[#E5E5E5] flex-grow flex items-center px-10 py-5">
+            <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
               <p className="font-overpass capitalize">
                 {
                   products
                     .flatMap((item) => item.variants)
                     .filter((variant) =>
-                      variant.item_name.toLowerCase().includes("sixstreet l/s")
+                      variant.item_name.toUpperCase().includes("SIXSTREET TEE")
                     ).length
                 }{" "}
                 Hasil
               </p>
             </div>
-
-            <div className="relative border border-[#E5E5E5] flex items-center justify-center w-[25rem] px-10 py-5 gap-x-5">
+            <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p
                 className="font-overpass capitalize cursor-pointer"
                 onClick={handleDropdownToggle}
@@ -249,6 +252,12 @@ const LifestyleSixstreet = () => {
                     onClick={() => handleOptionSelect("Harga Terendah")}
                   >
                     Harga Terendah
+                  </p>
+                  <p
+                    className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
+                    onClick={() => handleOptionSelect("Product Terbaru")}
+                  >
+                    Product Terbaru
                   </p>
                   <p
                     className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
