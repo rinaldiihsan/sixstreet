@@ -70,7 +70,6 @@ const Profile = () => {
       setAddresses(response.data.addresses || []);
     } catch (error) {
       console.error('Error fetching addresses:', error);
-      toast.error('Gagal memuat daftar alamat');
     }
   };
 
@@ -101,17 +100,12 @@ const Profile = () => {
   const handleAddAddress = async (addressData) => {
     try {
       const accessToken = Cookies.get('accessToken');
-      console.log('Token:', accessToken); // Check token
-      console.log('Address Data being sent:', addressData); // Check data yang akan dikirim
-
       const response = await axios.post(`${backendUrl}/addAddress/${id}`, addressData, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
       });
-
-      console.log('Response from server:', response.data); // Check response dari server
 
       if (response.status === 200 || response.status === 201) {
         await fetchAddresses();
