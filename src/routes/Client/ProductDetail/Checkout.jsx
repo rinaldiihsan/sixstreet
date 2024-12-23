@@ -4,8 +4,10 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { expeditionOptions } from '../../../constans/expedition';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const { user_id, transaction_uuid } = useParams();
   const [transactionData, setTransactionData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,7 +115,6 @@ const Checkout = () => {
         courier: courier,
       });
       setShippingCosts(response.data.rajaongkir.results[0].costs);
-      toast.success('Biaya pengiriman berhasil dihitung');
     } catch (error) {
       console.error('Error calculating shipping:', error);
       toast.error('Gagal menghitung biaya pengiriman');
