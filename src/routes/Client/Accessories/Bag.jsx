@@ -199,7 +199,7 @@ const Bag = () => {
                 Hasil
               </p>
             </div>
-            <div className="relative border border-[#E5E5E5] flex items-center justify-center w-[25rem] px-10 py-5 gap-x-5">
+            <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p
                 className="font-overpass capitalize cursor-pointer"
                 onClick={handleDropdownToggle}
@@ -225,6 +225,12 @@ const Bag = () => {
                     onClick={() => handleOptionSelect("Harga Terendah")}
                   >
                     Harga Terendah
+                  </p>
+                  <p
+                    className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
+                    onClick={() => handleOptionSelect("Product Terbaru")}
+                  >
+                    Product Terbaru
                   </p>
                   <p
                     className="font-overpass px-10 py-5 hover:bg-gray-200 cursor-pointer"
@@ -400,7 +406,7 @@ const Bag = () => {
             </div>
           </div>
           {/* Product */}
-          <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
+          <div className="w-full md:w-[85%] grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
@@ -468,21 +474,28 @@ const Bag = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[30rem]"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[30rem]"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem]">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
+                                       line-clamp-2 break-words text-center
+                                       w-full max-w-[10rem] 
+                                       mobileS:max-w-[10.5rem] 
+                                       mobile:max-w-[11.5rem] 
+                                       md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
                           Rp. {variant.sell_price.toLocaleString("id-ID")}
                         </h2>
                       </div>
@@ -531,21 +544,28 @@ const Bag = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem] text-red-600">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg
+                                       line-clamp-2 break-words text-center text-red-600
+                                       w-full max-w-[10rem]
+                                       mobileS:max-w-[10.5rem]
+                                       mobile:max-w-[11.5rem]
+                                       md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl text-red-600">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
                           Sold Out
                         </h2>
                       </div>

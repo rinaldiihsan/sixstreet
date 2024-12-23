@@ -383,9 +383,9 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
   };
 
   return (
-    <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
+    <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center overflow-x-hidden">
       <div className="w-full flex flex-col lg:flex-row mb-6 gap-x-11 justify-center space-y-5 lg:space-y-0">
-        <div className="w-[28rem] lg:w-[40rem] relative flex flex-col gap-y-4">
+        <div className="w-full lg:w-[40rem] relative flex flex-col gap-y-4">
           {/* Main Slider */}
           <div className="w-full">
             <Slider ref={setSlider} {...settings}>

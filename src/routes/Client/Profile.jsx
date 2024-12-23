@@ -1,84 +1,66 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import Cookies from "js-cookie";
+// Profile.jsx
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import EditUserForm from '../../components/User/Profile/EditUserForm';
+import AddressForm from '../../components/User/Profile/AddressForm';
+import UserDetails from '../../components/User/Profile/UserDetails';
+import AddressList from '../../components/User/Profile/AddressList';
+import AccordionSection from '../../components/User/Profile/AccordionSection';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { id } = useParams();
+
+  // State Management
   const [userData, setUserData] = useState(null);
   const [addresses, setAddresses] = useState([]);
-  const [activeSubMenu, setActiveSubMenu] = useState(null);
+  const [activeSection, setActiveSection] = useState(null);
+
+  // Form Display States
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [showEditAddressForm, setShowEditAddressForm] = useState(false);
   const [editAddressId, setEditAddressId] = useState(null);
-  const [formData, setFormData] = useState({
-    address: "",
-    kelurahan: "",
-    kecamatan: "",
-    kabupatenKota: "",
-    provinsi: "",
-    negara: "",
-    kodePos: "",
-  });
 
+  // Form Data States
   const [formUser, setFormUser] = useState({
-    email: "",
-    username: "",
-    no_hp: "",
-    birthday: "",
+    email: '',
+    username: '',
+    no_hp: '',
+    birthday: '',
   });
 
-  const toggleSubMenu = (subMenu) => {
-    setActiveSubMenu(activeSubMenu === subMenu ? null : subMenu);
+  // API Calls
+  const fetchUserData = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.get(`${backendUrl}/detail/${id}`, {
+        headers,
+      });
+      setUserData(response.data.message);
+
+      // Pre-fill user form data
+      setFormUser({
+        email: response.data.message.email,
+        username: response.data.message.username,
+        no_hp: response.data.message.no_hp,
+        birthday: response.data.message.birthday,
+      });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      toast.error('Gagal memuat data pengguna');
+    }
   };
-
-  const toggleAddAddressForm = () => {
-    setShowAddAddressForm(!showAddAddressForm);
-  };
-
-  const toggleEditUserForm = () => {
-    setShowEditUserForm(!showEditUserForm);
-  };
-
-  const toggleEditAddressForm = (addressId) => {
-    setEditAddressId(addressId);
-    setShowEditAddressForm(true);
-  };
-
-  const toggleCloseEditAddressForm = () => {
-    setShowEditAddressForm(false);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleChangeUser = (e) => {
-    const { name, value } = e.target;
-    setFormUser({
-      ...formUser,
-      [name]: value,
-    });
-  };
-
-  useEffect(() => {
-    setActiveSubMenu(null);
-  }, []);
-
-  useEffect(() => {
-    fetchUserData();
-    fetchAddresses();
-  }, [id]);
 
   const fetchAddresses = async () => {
     try {
-      const accessToken = Cookies.get("accessToken");
+      const accessToken = Cookies.get('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -87,597 +69,165 @@ const Profile = () => {
       });
       setAddresses(response.data.addresses || []);
     } catch (error) {
-      console.error("Error fetching addresses:", error);
-      setAddresses([]);
+      console.error('Error fetching addresses:', error);
+      toast.error('Gagal memuat daftar alamat');
     }
   };
 
-  const fetchUserData = async () => {
+  // Event Handlers
+  const toggleSection = (section) => {
+    setActiveSection(activeSection === section ? null : section);
+  };
+
+  const handleEditUser = async (userData) => {
     try {
-      const accessToken = Cookies.get("accessToken");
+      const accessToken = Cookies.get('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       };
-      const response = await axios.get(`${backendUrl}/detail/${id}`, {
-        headers,
+
+      await axios.put(`${backendUrl}/update/${id}`, userData, { headers });
+
+      await fetchUserData();
+      setShowEditUserForm(false);
+      toast.success('Profil berhasil diperbarui');
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Gagal memperbarui profil');
+    }
+  };
+
+  const handleAddAddress = async (addressData) => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      console.log('Token:', accessToken); // Check token
+      console.log('Address Data being sent:', addressData); // Check data yang akan dikirim
+
+      const response = await axios.post(`${backendUrl}/addAddress/${id}`, addressData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       });
-      setUserData(response.data.message);
+
+      console.log('Response from server:', response.data); // Check response dari server
+
+      if (response.status === 200 || response.status === 201) {
+        await fetchAddresses();
+        setShowAddAddressForm(false);
+        toast.success('Alamat berhasil ditambahkan');
+      }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error('Full error object:', error); // Detailed error logging
+      console.error('Error response data:', error.response?.data); // Check error response
+      toast.error(error.response?.data?.message || 'Gagal menambahkan alamat');
     }
   };
 
-  const handleAddAddress = async (e) => {
-    e.preventDefault();
+  const handleEditAddress = async (addressData) => {
     try {
-      const accessToken = Cookies.get("accessToken");
+      const accessToken = Cookies.get('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       };
-      const {
-        address,
-        kelurahan,
-        kecamatan,
-        kabupatenKota,
-        provinsi,
-        negara,
-        kodePos,
-      } = formData;
-      const combinedAddress = `${address}, ${kelurahan}, ${kecamatan}, ${kabupatenKota}, ${provinsi}, ${negara}, ${kodePos}`;
-      const requestData = {
-        address: combinedAddress,
-      };
-      await axios.post(`${backendUrl}/addAddress/${id}`, requestData, {
-        headers,
-      });
-      fetchAddresses();
-      toggleAddAddressForm();
-    } catch (error) {
-      console.error("Error adding address:", error);
-    }
-  };
 
-  const handleEditUser = async (e) => {
-    e.preventDefault();
-    try {
-      const accessToken = Cookies.get("accessToken");
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      };
-      const { email, username, no_hp, birthday } = formUser;
-      const requestData = {
-        email,
-        username,
-        no_hp,
-        birthday,
-      };
-      await axios.put(`${backendUrl}/update/${id}`, requestData, { headers });
-      fetchUserData();
-      toggleEditUserForm();
-    } catch (error) {
-      console.error("Error updating user:", error);
-    }
-  };
+      await axios.put(`${backendUrl}/updateAddress/${id}/${editAddressId}`, addressData, { headers });
 
-  const handleEditAddress = async (e) => {
-    e.preventDefault();
-    try {
-      const accessToken = Cookies.get("accessToken");
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      };
-      const {
-        address,
-        kelurahan,
-        kecamatan,
-        kabupatenKota,
-        provinsi,
-        negara,
-        kodePos,
-      } = formData;
-      const combinedAddress = `${address}, ${kelurahan}, ${kecamatan}, ${kabupatenKota}, ${provinsi}, ${negara}, ${kodePos}`;
-      const requestData = {
-        newAddress: combinedAddress,
-      };
-      await axios.put(
-        `${backendUrl}/updateAddress/${id}/${editAddressId}`,
-        requestData,
-        { headers }
-      );
-      fetchAddresses();
+      await fetchAddresses();
       setShowEditAddressForm(false);
+      toast.success('Alamat berhasil diperbarui');
     } catch (error) {
-      console.error("Error updating address:", error);
+      console.error('Error updating address:', error);
+      toast.error('Gagal memperbarui alamat');
     }
   };
 
+  const handleDeleteAddress = async (addressId) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
+      try {
+        const accessToken = Cookies.get('accessToken');
+        const headers = {
+          Authorization: `Bearer ${accessToken}`,
+        };
+
+        await axios.delete(`${backendUrl}/deleteAddress/${id}/${addressId}`, { headers });
+
+        await fetchAddresses();
+        toast.success('Alamat berhasil dihapus');
+      } catch (error) {
+        console.error('Error deleting address:', error);
+        toast.error('Gagal menghapus alamat');
+      }
+    }
+  };
+
+  const setDefaultAddress = async (addressId) => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      await axios.put(`${backendUrl}/setDefaultAddress/${id}/${addressId}`, {}, { headers });
+
+      await fetchAddresses();
+      toast.success('Alamat utama berhasil diperbarui');
+    } catch (error) {
+      console.error('Error setting default address:', error);
+      toast.error('Gagal mengatur alamat utama');
+    }
+  };
+
+  // useEffect Hooks
+  useEffect(() => {
+    if (id) {
+      fetchUserData();
+      fetchAddresses();
+    }
+  }, [id]);
+
+  // Loading State
   if (!userData) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#333]"></div>
+      </div>
+    );
   }
 
-  const formatDate = (date) => {
-    return new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(
-      new Date(date)
-    );
-  };
-
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
-      <h1 className="font-garamond">silahkan isi</h1>
-      <div className="bg-white p-8 shadow-md mx-3 md:max-w-md w-full space-y-2">
-        <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">
-          My Account
-        </h2>
-        <ul className="space-y-2 w-full border border-gray-200 px-8 py-3 flex flex-col justify-center">
-          <li>
-            <button
-              className="flex justify-between w-full mb-2"
-              onClick={() => toggleSubMenu("accountDetails")}
-            >
-              <span className="block text-lg font-garamond font-bold text-gray-800 hover:text-gray-900">
-                Account Details
-              </span>
-              <span className="block text-xl font-garamond font-bold text-gray-800 hover:text-gray-900">
-                {activeSubMenu === "accountDetails" ? "-" : "+"}
-              </span>
-            </button>
-            <ul
-              className={`${
-                activeSubMenu === "accountDetails" ? "block" : "hidden"
-              } pl-4 space-y-2`}
-            >
-              <li className="block text-md text-[#333333] font-overpass">
-                Email Address:
-                <br /> {userData.email}
-              </li>
-              <li className="block text-md text-[#333333] font-overpass">
-                Username:
-                <br /> {userData.username}
-              </li>
-              <li className="block text-md text-[#333333] font-overpass">
-                No. Handphone:
-                <br /> {userData.no_hp}
-              </li>
-              <li className="block text-md text-[#333333] font-overpass">
-                Birthday:
-                <br /> {formatDate(userData.birthday)}
-              </li>
-              <button
-                className="bg-[#333] hover:bg-white font-garamond text-white hover:text-[#333] transition-colors w-full py-2"
-                onClick={toggleEditUserForm}
-              >
-                Edit Profile
-              </button>
-              {showEditUserForm && (
-                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
-                  <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-4">
-                    <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">
-                      Edit Profile
-                    </h2>
-                    <form onSubmit={handleEditUser} className="space-y-4">
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="email"
-                          className="font-overpass font-semibold"
-                        >
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formUser.email}
-                          onChange={handleChangeUser}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="username"
-                          className="font-overpass font-semibold"
-                        >
-                          Username
-                        </label>
-                        <input
-                          type="text"
-                          id="username"
-                          name="username"
-                          value={formUser.username}
-                          onChange={handleChangeUser}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="no_hp"
-                          className="font-overpass font-semibold"
-                        >
-                          No. Handphone
-                        </label>
-                        <input
-                          type="text"
-                          id="no_hp"
-                          name="no_hp"
-                          value={formUser.no_hp}
-                          onChange={handleChangeUser}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="birthday"
-                          className="font-overpass font-semibold"
-                        >
-                          Birthday
-                        </label>
-                        <input
-                          type="date"
-                          id="birthday"
-                          name="birthday"
-                          value={formUser.birthday}
-                          onChange={handleChangeUser}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="flex justify-end">
-                        {/* Cancel Button */}
-                        <button
-                          type="button"
-                          onClick={toggleEditUserForm}
-                          className="bg-white text-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="bg-[#333] hover:bg-white text-white hover:text-[#333] transition-colors py-2 px-4 font-garamond font-bold"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </ul>
-          </li>
-        </ul>
-        <ul className="space-y-2 w-full border border-gray-200 px-8 py-3 flex flex-col justify-center">
-          <li>
-            <button
-              className="flex justify-between w-full mb-2"
-              onClick={() => toggleSubMenu("manageAddress")}
-            >
-              <span className="block text-lg font-garamond font-bold text-gray-800 hover:text-gray-900">
-                Manage Address
-              </span>
-              <span className="block text-xl font-garamond font-bold text-gray-800 hover:text-gray-900">
-                {activeSubMenu === "manageAddress" ? "-" : "+"}
-              </span>
-            </button>
-            <ul
-              className={`${
-                activeSubMenu === "manageAddress" ? "block" : "hidden"
-              } pl-4 space-y-2`}
-            >
-              {addresses.length > 0 ? (
-                addresses.map((address) => (
-                  <div key={address.id} className="flex w-full justify-between">
-                    <li className="block text-md text-[#333333] font-overpass">
-                      {address.address}
-                    </li>
-                    <button
-                      className="font-overpass font-bold"
-                      onClick={() => toggleEditAddressForm(address.id)}
-                    >
-                      Edit Data
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <li className="block text-md text-[#333333] font-overpass">
-                  No addresses found.
-                </li>
-              )}
-              {addresses.length === 0 && (
-                <button
-                  className="bg-[#333] hover:bg-white font-garamond text-white hover:text-[#333] transition-colors w-full py-2"
-                  onClick={toggleAddAddressForm}
-                >
-                  Add Address
-                </button>
-              )}
-              {showAddAddressForm && (
-                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
-                  <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-4">
-                    <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">
-                      Add Address
-                    </h2>
-                    <form onSubmit={handleAddAddress} className="space-y-4">
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="address"
-                          className="font-overpass font-semibold"
-                        >
-                          Alamat
-                        </label>
-                        <input
-                          type="text"
-                          id="address"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kelurahan"
-                          className="font-overpass font-semibold"
-                        >
-                          Kelurahan
-                        </label>
-                        <input
-                          type="text"
-                          id="kelurahan"
-                          name="kelurahan"
-                          value={formData.kelurahan}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kecamatan"
-                          className="font-overpass font-semibold"
-                        >
-                          Kecamatan
-                        </label>
-                        <input
-                          type="text"
-                          id="kecamatan"
-                          name="kecamatan"
-                          value={formData.kecamatan}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kabupatenKota"
-                          className="font-overpass font-semibold"
-                        >
-                          Kabupaten/Kota
-                        </label>
-                        <input
-                          type="text"
-                          id="kabupatenKota"
-                          name="kabupatenKota"
-                          value={formData.kabupatenKota}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="provinsi"
-                          className="font-overpass font-semibold"
-                        >
-                          Provinsi
-                        </label>
-                        <input
-                          type="text"
-                          id="provinsi"
-                          name="provinsi"
-                          value={formData.provinsi}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="negara"
-                          className="font-overpass font-semibold"
-                        >
-                          Negara
-                        </label>
-                        <input
-                          type="text"
-                          id="negara"
-                          name="negara"
-                          value={formData.negara}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kodePos"
-                          className="font-overpass font-semibold"
-                        >
-                          Kode Pos
-                        </label>
-                        <input
-                          type="text"
-                          id="kodePos"
-                          name="kodePos"
-                          value={formData.kodePos}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex justify-end">
-                        {/* Cancel Button */}
-                        <button
-                          type="button"
-                          onClick={toggleAddAddressForm}
-                          className="bg-white text-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="bg-[#333] hover:bg-white text-white hover:text-[#333] transition-colors py-2 px-4 font-garamond font-bold"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-              {/* Edit Address Form */}
-              {showEditAddressForm && (
-                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
-                  <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-4">
-                    <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">
-                      Edit Address
-                    </h2>
-                    <form onSubmit={handleEditAddress} className="space-y-4">
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="address"
-                          className="font-overpass font-semibold"
-                        >
-                          Alamat
-                        </label>
-                        <input
-                          type="text"
-                          id="address"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kelurahan"
-                          className="font-overpass font-semibold"
-                        >
-                          Kelurahan
-                        </label>
-                        <input
-                          type="text"
-                          id="kelurahan"
-                          name="kelurahan"
-                          value={formData.kelurahan}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kecamatan"
-                          className="font-overpass font-semibold"
-                        >
-                          Kecamatan
-                        </label>
-                        <input
-                          type="text"
-                          id="kecamatan"
-                          name="kecamatan"
-                          value={formData.kecamatan}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kabupatenKota"
-                          className="font-overpass font-semibold"
-                        >
-                          Kabupaten/Kota
-                        </label>
-                        <input
-                          type="text"
-                          id="kabupatenKota"
-                          name="kabupatenKota"
-                          value={formData.kabupatenKota}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="provinsi"
-                          className="font-overpass font-semibold"
-                        >
-                          Provinsi
-                        </label>
-                        <input
-                          type="text"
-                          id="provinsi"
-                          name="provinsi"
-                          value={formData.provinsi}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="negara"
-                          className="font-overpass font-semibold"
-                        >
-                          Negara
-                        </label>
-                        <input
-                          type="text"
-                          id="negara"
-                          name="negara"
-                          value={formData.negara}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="kodePos"
-                          className="font-overpass font-semibold"
-                        >
-                          Kode Pos
-                        </label>
-                        <input
-                          type="text"
-                          id="kodePos"
-                          name="kodePos"
-                          value={formData.kodePos}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex justify-end">
-                        <button
-                          type="button"
-                          onClick={toggleCloseEditAddressForm}
-                          className="bg-white text-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="bg-[#333] hover:bg-white text-white hover:text-[#333] transition-colors py-2 px-4 font-garamond font-bold"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </ul>
-          </li>
-        </ul>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 py-10">
+      <div className="bg-white p-8 shadow-md mx-3 md:max-w-2xl w-full space-y-4">
+        <h1 className="text-3xl font-bold text-center font-garamond text-[#333333] mb-8">My Account</h1>
+
+        {/* User Details Section */}
+        <AccordionSection title="Account Details" isActive={activeSection === 'account'} onToggle={() => toggleSection('account')}>
+          <UserDetails userData={userData} toggleEditUserForm={() => setShowEditUserForm(true)} />
+        </AccordionSection>
+
+        {/* Address Section */}
+        <AccordionSection title="Manage Address" isActive={activeSection === 'address'} onToggle={() => toggleSection('address')}>
+          <AddressList
+            addresses={addresses}
+            toggleEditAddressForm={(addressId) => {
+              setEditAddressId(addressId);
+              setShowEditAddressForm(true);
+            }}
+            toggleAddAddressForm={() => setShowAddAddressForm(true)}
+            handleDeleteAddress={handleDeleteAddress}
+            setDefaultAddress={setDefaultAddress}
+          />
+        </AccordionSection>
       </div>
+
+      {/* Modal Forms */}
+      {showEditUserForm && <EditUserForm formUser={formUser} onSubmit={handleEditUser} onCancel={() => setShowEditUserForm(false)} />}
+
+      {showAddAddressForm && <AddressForm onSubmit={handleAddAddress} onCancel={() => setShowAddAddressForm(false)} title="Tambah Alamat Baru" />}
+
+      {showEditAddressForm && <AddressForm onSubmit={handleEditAddress} onCancel={() => setShowEditAddressForm(false)} title="Edit Alamat" />}
     </div>
   );
 };

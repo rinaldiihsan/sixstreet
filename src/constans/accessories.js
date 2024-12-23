@@ -13,7 +13,7 @@ export const Accessories = [
   },
   {
     name: "Socks",
-    path: "/footwear/socks",
+    path: "/accessories/socks",
   },
   {
     name: "Belt",
