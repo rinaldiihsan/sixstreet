@@ -127,7 +127,7 @@ const Yeezy = () => {
         {/* Sort Options */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
@@ -321,11 +321,11 @@ const Yeezy = () => {
                     <div className="flex flex-col items-center text-center w-full px-2">
                       <h2
                         className="uppercase font-overpass font-extrabold text-base md:text-lg 
-                                                       line-clamp-2 break-words text-center
-                                                       w-full max-w-[10rem] 
-                                                       mobileS:max-w-[10.5rem] 
-                                                       mobile:max-w-[11.5rem] 
-                                                       md:max-w-[23rem]"
+                                                  break-words text-center
+                                                 w-full max-w-[10rem] 
+                                                 mobileS:max-w-[10.5rem] 
+                                                 mobile:max-w-[11.5rem] 
+                                                 md:max-w-[23rem]"
                       >
                         {variant.item_name}
                       </h2>
@@ -386,11 +386,18 @@ const Yeezy = () => {
                         />
                       )}
                     </Link>
-                    <div className="flex flex-col text-center gap-y-2">
-                      <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
+                    <div className="flex flex-col items-center text-center w-full px-2">
+                      <h2
+                        className="uppercase font-overpass font-extrabold text-base md:text-lg
+                                                         line-clamp-2 break-words text-center text-red-600
+                                                         w-full max-w-[10rem]
+                                                         mobileS:max-w-[10.5rem]
+                                                         mobile:max-w-[11.5rem]
+                                                         md:max-w-[23rem]"
+                      >
                         {variant.item_name}
                       </h2>
-                      <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
+                      <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
                         Sold Out
                       </h2>
                     </div>

@@ -5,7 +5,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import HeroAdidas from "../../../assets/banner/Adidas.webp";
-import SidebarFilterBrand from "../../../components/SidebarFilterBrand";
+// import SidebarFilterBrand from "../../../components/SidebarFilterBrand";
 
 const Adidas = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -100,14 +100,14 @@ const Adidas = () => {
     setIsDropdownOpen(false);
   };
 
-  // const handleBrandChange = (e) => {
-  //   const { checked, value } = e.target;
-  //   setSelectedBrands((prevState) =>
-  //     checked
-  //       ? [...prevState, value]
-  //       : prevState.filter((brand) => brand !== value)
-  //   );
-  // };
+  const handleBrandChange = (e) => {
+    const { checked, value } = e.target;
+    setSelectedBrands((prevState) =>
+      checked
+        ? [...prevState, value]
+        : prevState.filter((brand) => brand !== value)
+    );
+  };
 
   // Handler untuk kategori
   const handleCatagoryChange = (e) => {
@@ -167,7 +167,7 @@ const Adidas = () => {
         {/* Sort Options */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
@@ -227,66 +227,7 @@ const Adidas = () => {
                 />
               </svg>
             </div>
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
-              <p className="font-overpass text-lg hidden md:block">Filter</p>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                onClick={toggleSidebar}
-              >
-                <path
-                  d="M18.3335 5.41666H13.3335"
-                  stroke="#292D32"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M4.99984 5.41666H1.6665"
-                  stroke="#292D32"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M8.33317 8.33333C9.944 8.33333 11.2498 7.0275 11.2498 5.41667C11.2498 3.80584 9.944 2.5 8.33317 2.5C6.72234 2.5 5.4165 3.80584 5.4165 5.41667C5.4165 7.0275 6.72234 8.33333 8.33317 8.33333Z"
-                  stroke="#292D32"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M18.3333 14.5833H15"
-                  stroke="#292D32"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M6.6665 14.5833H1.6665"
-                  stroke="#292D32"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M11.6667 17.5C13.2775 17.5 14.5833 16.1942 14.5833 14.5833C14.5833 12.9725 13.2775 11.6667 11.6667 11.6667C10.0558 11.6667 8.75 12.9725 8.75 14.5833C8.75 16.1942 10.0558 17.5 11.6667 17.5Z"
-                  stroke="#292D32"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
+
             <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
               <p className="font-overpass capitalize">
                 {
@@ -345,14 +286,14 @@ const Adidas = () => {
         </div>
 
         <div className="w-full flex justify-between gap-x-3">
-          <SidebarFilterBrand
+          {/* <SidebarFilterBrand
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
             handleCatagoryChange={handleCatagoryChange}
             // handleSizeChange={handleSizeChange}
             selectedCatagory={selectedCatagory || []}
             selectedSizes={selectedSizes || []}
-          />
+          /> */}
 
           {/* Product Grid */}
           <div className="w-full grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
@@ -451,7 +392,7 @@ const Adidas = () => {
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
                           className="uppercase font-overpass font-extrabold text-base md:text-lg 
-                                       line-clamp-2 break-words text-center
+                                        break-words text-center
                                        w-full max-w-[10rem] 
                                        mobileS:max-w-[10.5rem] 
                                        mobile:max-w-[11.5rem] 
@@ -516,11 +457,18 @@ const Adidas = () => {
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg
+                                                         line-clamp-2 break-words text-center text-red-600
+                                                         w-full max-w-[10rem]
+                                                         mobileS:max-w-[10.5rem]
+                                                         mobile:max-w-[11.5rem]
+                                                         md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
                           Sold Out
                         </h2>
                       </div>
