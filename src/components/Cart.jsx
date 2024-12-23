@@ -157,15 +157,31 @@ const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
   }, [isLoggedIn, cartOpen, fetchCartItems]);
 
   const cartVariants = {
-    open: { x: 0, opacity: 1, transition: { duration: 0.1, ease: 'easeInOut' } },
-    closed: { x: '100%', opacity: 0, transition: { duration: 0.1, ease: 'easeInOut' } },
+    open: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.1, ease: 'easeInOut' },
+    },
+    closed: {
+      x: '100%',
+      opacity: 0,
+      transition: { duration: 0.1, ease: 'easeInOut' },
+    },
   };
 
   const renderCartItems = () => {
     return cartItems.map((product, index) => (
       <div key={`${product.product_id}`} className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 md:items-center justify-between mb-4" style={{ marginBottom: index < cartItems.length - 1 ? '30px' : '0' }}>
         <div className="flex items-center">
-          <img src={product.image || '/dummy-product.png'} alt={product.product_name} className="w-[5rem] h-[5rem] mr-4 " />
+          <img
+            src={product.image || '/dummy-product.png'}
+            alt={product.name}
+            className="w-[5rem] h-[5rem] mr-4 object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/dummy-product.png';
+            }}
+          />
           <div className="flex flex-col">
             <h4 className="md:text-lg font-overpass mb-2 font-medium">{product.product_name}</h4>
             <div className="flex gap-x-5 mb-2">

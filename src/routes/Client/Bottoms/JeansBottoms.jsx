@@ -6,6 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { motion } from "framer-motion";
 import assetBannerJeans from "../../../assets/banner/jeans.webp";
+import SidebarFilter from "../../../components/SidebarFilter";
 
 const JeansBottoms = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -15,6 +16,7 @@ const JeansBottoms = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -108,6 +110,13 @@ const JeansBottoms = () => {
       checked
         ? [...prevState, value]
         : prevState.filter((brand) => brand !== value)
+    );
+  };
+
+  const handleSizeChange = (e) => {
+    const { checked, value } = e.target;
+    setSelectedSizes((prev) =>
+      checked ? [...prev, value] : prev.filter((size) => size !== value)
     );
   };
 
@@ -279,142 +288,14 @@ const JeansBottoms = () => {
         </div>
         <div className="w-full flex justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
-            {/* Filter Brand */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Brand</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="PALM ANGELS"
-                    value="PALM ANGELS"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="PALM ANGELS">
-                    PALM ANGELS
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="OFFWHITE"
-                    value="OFFWHITE"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="OFFWHITE">
-                    OFFWHITE
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="NIKE"
-                    value="NIKE"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="NIKE">
-                    NIKE
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="ADIDAS"
-                    value="ADIDAS"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="ADIDAS">
-                    ADIDAS
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {isSidebarOpen && (
-            <motion.div
-              className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
-              initial="closed"
-              animate={isSidebarOpen ? "open" : "closed"}
-              variants={sidebarVariants}
-              transition={{ type: "spring", stiffness: 100 }}
-            >
-              <button
-                onClick={toggleSidebar}
-                className="self-end text-xl font-bold mb-4"
-              >
-                ×
-              </button>
-              {/* Filter Brand */}
-              <div className="mb-6">
-                <h3 className="text-lg font-medium font-overpass">Brand</h3>
-                <ul className="mt-3 space-y-2">
-                  <li className="flex items-center gap-x-2">
-                    <input
-                      type="checkbox"
-                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                      name="brand"
-                      id="PALM ANGELS"
-                      value="PALM ANGELS"
-                      onChange={handleBrandChange}
-                    />
-                    <label className="font-overpass" htmlFor="PALM ANGELS">
-                      PALM ANGELS
-                    </label>
-                  </li>
-                  <li className="flex items-center gap-x-2">
-                    <input
-                      type="checkbox"
-                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                      name="brand"
-                      id="OFFWHITE"
-                      value="OFFWHITE"
-                      onChange={handleBrandChange}
-                    />
-                    <label className="font-overpass" htmlFor="OFFWHITE">
-                      OFFWHITE
-                    </label>
-                  </li>
-                  <li className="flex items-center gap-x-2">
-                    <input
-                      type="checkbox"
-                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                      name="brand"
-                      id="NIKE"
-                      value="NIKE"
-                      onChange={handleBrandChange}
-                    />
-                    <label className="font-overpass" htmlFor="NIKE">
-                      NIKE
-                    </label>
-                  </li>
-                  <li className="flex items-center gap-x-2">
-                    <input
-                      type="checkbox"
-                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                      name="brand"
-                      id="ADIDAS"
-                      value="ADIDAS"
-                      onChange={handleBrandChange}
-                    />
-                    <label className="font-overpass" htmlFor="ADIDAS">
-                      ADIDAS
-                    </label>
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          )}
-
+          <SidebarFilter
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+            handleBrandChange={handleBrandChange}
+            handleSizeChange={handleSizeChange}
+            selectedBrands={selectedBrands}
+            selectedSizes={selectedSizes}
+          />
           {/* Product */}
           <div className="w-full md:w-[85%] grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
             {isLoading ? (

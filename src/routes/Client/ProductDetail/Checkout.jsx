@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { expeditionOptions } from '../../../constans/expedition';
+import { toast } from 'react-toastify';
 
 const Checkout = () => {
   const { user_id, transaction_uuid } = useParams();
@@ -39,8 +40,10 @@ const Checkout = () => {
           },
         });
         setTransactionData(response.data);
+        toast.success('Data transaksi berhasil dimuat');
       } catch (err) {
         setError('Failed to fetch transaction data.');
+        toast.error('Gagal memuat data transaksi');
       } finally {
         setLoading(false);
       }
@@ -69,6 +72,7 @@ const Checkout = () => {
       setCities(response.data.rajaongkir.results);
     } catch (error) {
       console.error('Error fetching cities:', error);
+      toast.error('Gagal memuat daftar kota');
     }
   };
 
@@ -80,8 +84,10 @@ const Checkout = () => {
       setSelectedExpedition('');
       setSelectedProvider('');
       setShippingCosts([]);
+      toast.success('Data kecamatan berhasil dimuat');
     } catch (error) {
       console.error('Error fetching subdistricts:', error);
+      toast.error('Gagal memuat daftar kecamatan');
     }
   };
 
@@ -91,6 +97,8 @@ const Checkout = () => {
     setSelectedProvider('');
     if (selectedSubdistrict) {
       calculateShipping(selectedSubdistrict, expedition);
+    } else {
+      toast.warning('Silakan pilih kecamatan terlebih dahulu');
     }
   };
 
@@ -105,8 +113,10 @@ const Checkout = () => {
         courier: courier,
       });
       setShippingCosts(response.data.rajaongkir.results[0].costs);
+      toast.success('Biaya pengiriman berhasil dihitung');
     } catch (error) {
       console.error('Error calculating shipping:', error);
+      toast.error('Gagal menghitung biaya pengiriman');
     }
   };
 
@@ -120,6 +130,7 @@ const Checkout = () => {
     setSelectedProvider(e.target.value);
     if (service) {
       updateTotalWithShipping(service.cost[0].value);
+      toast.info(`Biaya pengiriman: ${formatCurrency(service.cost[0].value)}`);
     }
   };
 
@@ -137,11 +148,14 @@ const Checkout = () => {
   };
 
   const handlePayment = async () => {
-    // Ambil biaya pengiriman dari layanan yang dipilih
+    if (!selectedSubdistrict || !selectedExpedition || !selectedProvider) {
+      toast.error('Mohon lengkapi semua data pengiriman');
+      return;
+    }
+
     const selectedService = shippingCosts.find((s) => s.service === selectedProvider);
     const shippingCost = selectedService ? selectedService.cost[0].value : 0;
 
-    // Mapping items dengan quantity yang benar
     const items = transactionData.map((transaction) => ({
       id: transaction.product_id,
       price: transaction.product_price,
@@ -149,7 +163,6 @@ const Checkout = () => {
       name: transaction.product_name,
     }));
 
-    // Data untuk dikirim ke backend
     const data = {
       transaction_id: transactionData[0].transaction_uuid,
       name: transactionData[0].name,
@@ -170,23 +183,29 @@ const Checkout = () => {
         window.snap.pay(response.data.token, {
           onSuccess: function (result) {
             console.log('Payment success:', result);
+            toast.success('Pembayaran berhasil!');
             navigate('/thank-you');
           },
           onPending: function (result) {
             console.log('Payment pending:', result);
+            toast.info('Pembayaran dalam proses');
           },
           onError: function (result) {
             console.error('Payment error:', result);
+            toast.error('Pembayaran gagal');
           },
           onClose: function () {
             console.log('Payment closed');
+            toast.warning('Pembayaran dibatalkan');
           },
         });
       } else {
         console.error('Snap not available or token missing');
+        toast.error('Terjadi kesalahan pada sistem pembayaran');
       }
     } catch (error) {
       console.error('Checkout error:', error);
+      toast.error('Gagal memproses pembayaran');
     }
   };
 

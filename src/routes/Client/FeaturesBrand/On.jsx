@@ -97,7 +97,6 @@ const On = () => {
     setSelectedOption(option);
     setIsDropdownOpen(false);
   };
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };

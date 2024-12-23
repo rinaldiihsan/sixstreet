@@ -26,20 +26,64 @@ export const CartProvider = ({ children }) => {
   }
 
   const fetchCartItems = async () => {
-    const token = Cookies.get('accessToken');
+    const token = Cookies.get('pos_token'); // Gunakan pos_token, bukan accessToken
     const userId = getUserId('DetailUser');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     if (userId) {
       try {
-        const response = await axios.get(`${backendUrl}/cart/${userId}`, {
+        // 1. Ambil items dari cart
+        const cartResponse = await axios.get(`${backendUrl}/cart/${userId}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${Cookies.get('accessToken')}`, // Gunakan accessToken untuk backend
           },
         });
-        setCartItems(response.data);
+
+        // 2. Untuk setiap item, ambil dulu detail SKU untuk mendapatkan item_group_id
+        const itemsWithDetails = await Promise.all(
+          cartResponse.data.map(async (item) => {
+            try {
+              // Ambil detail SKU dulu untuk dapat item_group_id
+              const skuResponse = await axios.get(`${apiUrl}/inventory/items/${item.product_id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Gunakan pos_token untuk Jubelio API
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              const itemGroupId = skuResponse.data.item_group_id;
+
+              // Setelah dapat item_group_id, baru ambil gambar
+              const catalogResponse = await axios.get(`${apiUrl}/inventory/catalog/for-listing/${itemGroupId}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              let productImage = '/dummy-product.png';
+              if (catalogResponse.status === 200 && catalogResponse.data.length > 0 && catalogResponse.data[0].images && catalogResponse.data[0].images.length > 0) {
+                productImage = catalogResponse.data[0].images[0].thumbnail;
+              }
+
+              return {
+                ...item,
+                item_group_id: itemGroupId,
+                image: productImage,
+                product_name: catalogResponse.data[0]?.item_group_name || item.name,
+              };
+            } catch (error) {
+              console.error('Error fetching item details:', error);
+              return { ...item, image: '/dummy-product.png' };
+            }
+          })
+        );
+
+        setCartItems(itemsWithDetails);
       } catch (error) {
         console.error('Error fetching cart items:', error);
+        setCartItems([]);
       }
     }
   };
@@ -67,38 +111,68 @@ export const CartProvider = ({ children }) => {
     const userId = getUserId('DetailUser');
     const token = Cookies.get('accessToken');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     if (!userId) {
       return;
     }
 
-    const existingItem = cartItems.find((item) => item.product_id === product.product_id && item.size === product.size);
+    try {
+      // Fetch product image from catalog/for-listing
+      const catalogResponse = await axios.get(`${apiUrl}/inventory/catalog/for-listing/${product.product_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (existingItem) {
-      try {
-        await axios.put(
-          `${backendUrl}/cart/${userId}/${existingItem.id}`,
-          {
-            product_id: product.product_id,
-            quantity: existingItem.quantity + product.quantity,
-            price: product.price,
-            name: product.name,
-            size: product.size,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        setCartItems((prevItems) => prevItems.map((item) => (item.id === existingItem.id ? { ...item, quantity: item.quantity + product.quantity } : item)));
-      } catch (error) {
-        console.error('Error updating cart item:', error);
+      let productImage = '/dummy-product.png';
+      if (catalogResponse.status === 200 && catalogResponse.data.length > 0 && catalogResponse.data[0].images && catalogResponse.data[0].images.length > 0) {
+        productImage = catalogResponse.data[0].images[0].thumbnail;
       }
-    } else {
-      setCartItems((prevItems) => [...prevItems, { ...product, quantity: product.quantity, id: product.product_id }]);
+
+      const cartData = {
+        product_id: product.product_id,
+        quantity: product.quantity,
+        price: product.price,
+        name: product.name,
+        size: product.size,
+        image: productImage, // Add image to cart data
+      };
+
+      const existingItem = cartItems.find((item) => item.product_id === product.product_id && item.size === product.size);
+
+      if (existingItem) {
+        await axios.put(`${backendUrl}/cart/${userId}/${existingItem.id}`, cartData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        setCartItems((prevItems) =>
+          prevItems.map((item) =>
+            item.id === existingItem.id
+              ? {
+                  ...item,
+                  quantity: item.quantity + product.quantity,
+                  image: productImage,
+                }
+              : item
+          )
+        );
+      } else {
+        const response = await axios.post(`${backendUrl}/cart/${userId}`, cartData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        setCartItems((prevItems) => [...prevItems, { ...cartData, id: response.data.id }]);
+      }
+    } catch (error) {
+      console.error('Error adding/updating cart item:', error);
     }
   };
 
@@ -130,7 +204,20 @@ export const CartProvider = ({ children }) => {
     fetchUserAddress();
   }, []);
 
-  return <CartContext.Provider value={{ cartItems, fetchCartItems, addToCart, removeFromCart, setCartItems, userAddress }}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider
+      value={{
+        cartItems,
+        fetchCartItems,
+        addToCart,
+        removeFromCart,
+        setCartItems,
+        userAddress,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 };
 
 export const useCart = () => {
