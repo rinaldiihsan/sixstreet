@@ -36,7 +36,7 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     // Mengganti <p> dengan dua newline untuk membuat paragraf
     formattedText = formattedText.replace(/<\/?p>/gi, '\n\n');
 
-    // Membersihkan tag HTML lainnya
+    // Membersihkan tag HTML lainnyaf
     formattedText = formattedText.replace(/<\/?[^>]+(>|$)/g, '');
 
     // Membersihkan multiple newlines berlebih
@@ -117,6 +117,28 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     }
   };
 
+  const NextArrow = (props) => {
+    const { onClick } = props;
+    return (
+      <button onClick={onClick} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-[#333333] hover:bg-[#333333]/80 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    );
+  };
+
+  const PrevArrow = (props) => {
+    const { onClick } = props;
+    return (
+      <button onClick={onClick} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-[#333333] hover:bg-[#333333]/80 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+    );
+  };
+
   const settings = {
     dots: true,
     infinite: true,
@@ -127,6 +149,9 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
     autoplaySpeed: 3000,
     arrows: true,
     adaptiveHeight: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    className: 'relative',
   };
 
   const loginAndFetchProduct = async () => {
@@ -376,14 +401,14 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
             <Slider ref={setSlider} {...settings}>
               {productImages.map((image, index) => (
                 <div key={image.group_image_id}>
-                  <img src={image.url == null ? '/dummy-product.png' : image.url} alt={`${product?.item_group_name} - ${index + 1}`} className="w-[28rem] h-[28rem] lg:w-[40rem] lg:h-[40rem] object-cover" />
+                  <img src={image.url == null ? '/dummy-product.png' : image.url} alt={`${product?.item_group_name} - ${index + 1}`} className="w-[28rem] h-[28rem] md:w-full md:h-full lg:w-[40rem] lg:h-[40rem] object-cover" />
                 </div>
               ))}
             </Slider>
           </div>
 
           {/* Thumbnails */}
-          <div className="grid grid-cols-6 gap-2 mt-4 px-2">
+          <div className="grid grid-cols-5 lg:grid-cols-6 gap-2 mt-4 px-2">
             {productImages.map((image, index) => (
               <div key={`thumb-${image.group_image_id}`} className="cursor-pointer rounded overflow-hidden border-2 hover:border-gray-400" onClick={() => slider?.slickGoTo(index)}>
                 <img src={image.thumbnail == null ? '/dummy-product.png' : image.thumbnail} alt={`Thumbnail ${index + 1}`} className="w-full h-20 object-cover" />
