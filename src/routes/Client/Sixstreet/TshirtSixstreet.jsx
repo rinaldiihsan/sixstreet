@@ -465,14 +465,14 @@ const TshirtSixstreet = () => {
             )}
           </div>
           {/* Product */}
-          <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
+          <div className="w-full md:w-[85%] grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
-                  <Skeleton className="w-[30rem] h-[30rem]" />
-                  <div className="flex flex-col text-center gap-y-2">
-                    <Skeleton className="text-xl md:w-[24rem]" />
-                    <Skeleton className="text-xl" />
+                  <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
+                  <div className="flex flex-col text-center gap-y-2 w-full">
+                    <Skeleton className=" md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
+                    <Skeleton className="md:text-xl" />
                   </div>
                 </div>
               ))
@@ -516,36 +516,38 @@ const TshirtSixstreet = () => {
                       selectedSizes
                     )
                   )
-                  .map((item, index) => (
+                  .map((variant, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to={`/product-detail/${item.item_group_id}`}>
-                        {item?.thumbnail ? (
+                      <Link to={`/product-detail/${variant.item_group_id}`}>
+                        {variant.parentThumbnail ? (
                           <img
-                            src={item.thumbnail}
-                            alt={item?.item_name || "Product Image"}
-                            className="w-[30rem] object-cover"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "/dummy-product.png";
-                            }}
+                            src={variant.parentThumbnail}
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
-                            alt={item?.item_name || "Product Image"}
-                            className="w-[30rem] object-cover"
+                            alt={variant.item_name}
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem]">
-                          {item.item_name}
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center
+                                       w-full max-w-[10rem] 
+                                       mobileS:max-w-[10.5rem] 
+                                       mobile:max-w-[11.5rem] 
+                                       md:max-w-[23rem]"
+                        >
+                          {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl">
-                          Rp. {item.sell_price.toLocaleString("id-ID")}
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
+                          Rp. {variant.sell_price.toLocaleString("id-ID")}
                         </h2>
                       </div>
                     </div>

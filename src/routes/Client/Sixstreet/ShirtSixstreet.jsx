@@ -288,9 +288,9 @@ const ShirtSixstreet = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-between gap-x-3">
+        <div className="w-full flex items-center justify-center lg:justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">
@@ -405,14 +405,14 @@ const ShirtSixstreet = () => {
             )}
           </div>
           {/* Product */}
-          <div className="w-[85%] flex flex-col gap-y-8 md:flex-row md:flex-wrap md:justify-between mb-10 overflow-y-auto h-[calc(100vh-4rem)] px-5">
+          <div className="w-full md:w-[85%] grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
-                  <Skeleton className="w-[30rem] h-[30rem]" />
-                  <div className="flex flex-col text-center gap-y-2">
-                    <Skeleton className="text-xl md:w-[24rem]" />
-                    <Skeleton className="text-xl" />
+                  <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
+                  <div className="flex flex-col text-center gap-y-2 w-full">
+                    <Skeleton className=" md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
+                    <Skeleton className="md:text-xl" />
                   </div>
                 </div>
               ))
@@ -487,11 +487,18 @@ const ShirtSixstreet = () => {
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem]">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
+                                        break-words text-center
+                                       w-full max-w-[10rem] 
+                                       mobileS:max-w-[10.5rem] 
+                                       mobile:max-w-[11.5rem] 
+                                       md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
                           Rp. {variant.sell_price.toLocaleString("id-ID")}
                         </h2>
                       </div>
@@ -544,21 +551,28 @@ const ShirtSixstreet = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg
+                                       line-clamp-2 break-words text-center text-red-600
+                                       w-full max-w-[10rem]
+                                       mobileS:max-w-[10.5rem]
+                                       mobile:max-w-[11.5rem]
+                                       md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
                           Sold Out
                         </h2>
                       </div>
