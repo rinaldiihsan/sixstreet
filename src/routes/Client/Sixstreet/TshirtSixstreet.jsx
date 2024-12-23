@@ -233,7 +233,7 @@ const TshirtSixstreet = () => {
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
@@ -299,7 +299,7 @@ const TshirtSixstreet = () => {
                   products
                     .flatMap((item) => item.variants)
                     .filter((variant) =>
-                      variant.item_name.toUpperCase().includes("SIXSTREET TEE")
+                      variant.item_name.toLowerCase().includes("sixstreet tee")
                     ).length
                 }{" "}
                 Hasil
@@ -349,9 +349,9 @@ const TshirtSixstreet = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex items-center justify-center lg:justify-between md:gap-x-3 overflow-x-hidden">
+        <div className="w-full flex flex-col items-center justify-center lg:justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden  md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">
@@ -538,7 +538,8 @@ const TshirtSixstreet = () => {
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
+                                        break-words text-center
                                        w-full max-w-[10rem] 
                                        mobileS:max-w-[10.5rem] 
                                        mobile:max-w-[11.5rem] 
@@ -608,14 +609,19 @@ const TshirtSixstreet = () => {
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem] text-red-600">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg
+                                                         line-clamp-2 break-words text-center text-red-600
+                                                         w-full max-w-[10rem]
+                                                         mobileS:max-w-[10.5rem]
+                                                         mobile:max-w-[11.5rem]
+                                                         md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl text-red-600">
-                          {variant.available_qty === 1
-                            ? "Last Stock"
-                            : "Sold Out"}
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
+                          Sold Out
                         </h2>
                       </div>
                     </div>

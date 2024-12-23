@@ -170,7 +170,7 @@ const ShirtSixstreet = () => {
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            <div className="hidden border border-[#E5E5E5] items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
@@ -288,9 +288,9 @@ const ShirtSixstreet = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex items-center justify-center lg:justify-between md:gap-x-3 overflow-x-hidden">
+        <div className="w-full flex flex-col items-center justify-center lg:justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden  md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">
@@ -551,24 +551,24 @@ const ShirtSixstreet = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
                           className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                       line-clamp-2 break-words text-center text-red-600
-                                       w-full max-w-[10rem]
-                                       mobileS:max-w-[10.5rem]
-                                       mobile:max-w-[11.5rem]
-                                       md:max-w-[23rem]"
+                                                         line-clamp-2 break-words text-center text-red-600
+                                                         w-full max-w-[10rem]
+                                                         mobileS:max-w-[10.5rem]
+                                                         mobile:max-w-[11.5rem]
+                                                         md:max-w-[23rem]"
                         >
                           {variant.item_name}
                         </h2>
