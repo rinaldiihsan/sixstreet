@@ -492,13 +492,13 @@ const TshirtSixstreet = () => {
                           variant.item_name
                             .toLowerCase()
                             .includes("sixstreet tee") &&
-                          variant.available_qty > 1 // Check for stock > 1
+                          variant.available_qty > 1
                       )
                     )
                     .map((item) => ({
                       ...item.variants[0],
                       item_group_id: item.item_group_id,
-                      thumbnail: item.thumbnail,
+                      parentThumbnail: item.thumbnail,
                       images: item.images,
                       last_modified: item.last_modified,
                     }))
@@ -522,19 +522,11 @@ const TshirtSixstreet = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link to={`/product-detail/${variant.item_group_id}`}>
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                          />
-                        )}
+                        <img
+                          src={variant.parentThumbnail || "/dummy-product.png"}
+                          alt={variant.item_name}
+                          className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                        />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
@@ -583,7 +575,7 @@ const TshirtSixstreet = () => {
                     (variant) =>
                       variant.sell_price !== null &&
                       variant.sell_price !== 0 &&
-                      variant.available_qty <= 1 // Changed from <= 0 to <= 1
+                      variant.available_qty < 1
                   )
                   .map((variant, index) => (
                     <div
@@ -595,19 +587,11 @@ const TshirtSixstreet = () => {
                         onClick={handleSoldOutClick}
                         className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
                       >
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                          />
-                        )}
+                        <img
+                          src={variant.parentThumbnail || "/dummy-product.png"}
+                          alt={variant.item_name}
+                          className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
+                        />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
