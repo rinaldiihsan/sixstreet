@@ -498,21 +498,28 @@ const PoloShirtsTops = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col md:text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
+                                                         line-clamp-2 break-words text-center
+                                                         w-full max-w-[10rem] 
+                                                         mobileS:max-w-[10.5rem] 
+                                                         mobile:max-w-[11.5rem] 
+                                                         md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
                           Rp. {variant.sell_price.toLocaleString("id-ID")}
                         </h2>
                       </div>
@@ -553,30 +560,26 @@ const PoloShirtsTops = () => {
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link
-                        href="#"
-                        onClick={handleSoldOutClick}
-                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
-                      >
-                        {variant.parentThumbnail ? (
+                      <div className="relative">
+                        <Link
+                          href="#"
+                          onClick={handleSoldOutClick}
+                          className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                        >
                           <img
-                            src={variant.parentThumbnail}
+                            src={
+                              variant.parentThumbnail || "/dummy-product.png"
+                            }
                             alt={variant.item_name}
                             className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
                           />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover opacity-50"
-                          />
-                        )}
-                      </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem] text-red-600">
+                        </Link>
+                      </div>
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg line-clamp-2 break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem] text-red-600">
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl text-red-600">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
                           Sold Out
                         </h2>
                       </div>

@@ -318,11 +318,18 @@ const Yeezy = () => {
                         />
                       )}
                     </Link>
-                    <div className="flex flex-col md:text-center gap-y-2">
-                      <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                    <div className="flex flex-col items-center text-center w-full px-2">
+                      <h2
+                        className="uppercase font-overpass font-extrabold text-base md:text-lg 
+                                                       line-clamp-2 break-words text-center
+                                                       w-full max-w-[10rem] 
+                                                       mobileS:max-w-[10.5rem] 
+                                                       mobile:max-w-[11.5rem] 
+                                                       md:max-w-[23rem]"
+                      >
                         {variant.item_name}
                       </h2>
-                      <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                      <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
                         Rp. {variant.sell_price.toLocaleString("id-ID")}
                       </h2>
                     </div>
