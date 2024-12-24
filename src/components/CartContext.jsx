@@ -7,8 +7,8 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
-  const [userAddress, setUserAddress] = useState(null);
   const secretKey = import.meta.env.VITE_KEY_LOCALSTORAGE;
+  const [userName, setUserName] = useState('Guest');
 
   function decryptData(data) {
     const bytes = CryptoJS.AES.decrypt(data, secretKey);
@@ -25,36 +25,53 @@ export const CartProvider = ({ children }) => {
     return item.user_id;
   }
 
+  const fetchUserName = async () => {
+    const token = Cookies.get('accessToken');
+    const userId = getUserId('DetailUser');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    if (userId) {
+      try {
+        const response = await axios.get(`${backendUrl}/getAddress/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data.addresses && response.data.addresses.length > 0) {
+          setUserName(response.data.addresses[0].username || 'Guest');
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+        setUserName('Guest');
+      }
+    }
+  };
+
   const fetchCartItems = async () => {
-    const token = Cookies.get('pos_token'); // Gunakan pos_token, bukan accessToken
+    const token = Cookies.get('pos_token');
     const userId = getUserId('DetailUser');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const apiUrl = import.meta.env.VITE_API_URL;
 
     if (userId) {
       try {
-        // 1. Ambil items dari cart
         const cartResponse = await axios.get(`${backendUrl}/cart/${userId}`, {
           headers: {
-            Authorization: `Bearer ${Cookies.get('accessToken')}`, // Gunakan accessToken untuk backend
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
           },
         });
 
-        // 2. Untuk setiap item, ambil dulu detail SKU untuk mendapatkan item_group_id
         const itemsWithDetails = await Promise.all(
           cartResponse.data.map(async (item) => {
             try {
-              // Ambil detail SKU dulu untuk dapat item_group_id
               const skuResponse = await axios.get(`${apiUrl}/inventory/items/${item.product_id}`, {
                 headers: {
-                  Authorization: `Bearer ${token}`, // Gunakan pos_token untuk Jubelio API
+                  Authorization: `Bearer ${token}`,
                   'Content-Type': 'application/json',
                 },
               });
 
               const itemGroupId = skuResponse.data.item_group_id;
-
-              // Setelah dapat item_group_id, baru ambil gambar
               const catalogResponse = await axios.get(`${apiUrl}/inventory/catalog/for-listing/${itemGroupId}`, {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -63,7 +80,7 @@ export const CartProvider = ({ children }) => {
               });
 
               let productImage = '/dummy-product.png';
-              if (catalogResponse.status === 200 && catalogResponse.data.length > 0 && catalogResponse.data[0].images && catalogResponse.data[0].images.length > 0) {
+              if (catalogResponse.status === 200 && catalogResponse.data.length > 0 && catalogResponse.data[0].images?.length > 0) {
                 productImage = catalogResponse.data[0].images[0].thumbnail;
               }
 
@@ -84,25 +101,6 @@ export const CartProvider = ({ children }) => {
       } catch (error) {
         console.error('Error fetching cart items:', error);
         setCartItems([]);
-      }
-    }
-  };
-
-  const fetchUserAddress = async () => {
-    const token = Cookies.get('accessToken');
-    const userId = getUserId('DetailUser');
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-    if (userId) {
-      try {
-        const response = await axios.get(`${backendUrl}/getAddress/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUserAddress(response.data.addresses || []);
-      } catch (error) {
-        console.error('Error fetching user address:', error);
       }
     }
   };
@@ -201,9 +199,8 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCartItems();
-    fetchUserAddress();
+    fetchUserName(); // Tambahkan ini
   }, []);
-
   return (
     <CartContext.Provider
       value={{
@@ -212,7 +209,8 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         setCartItems,
-        userAddress,
+        userName,
+        getUserId,
       }}
     >
       {children}

@@ -21,6 +21,7 @@ const Checkout = () => {
   const [selectedProvider, setSelectedProvider] = useState('');
   const [shippingCosts, setShippingCosts] = useState([]);
   const [totalWithShipping, setTotalWithShipping] = useState(0);
+  const [detailAddress, setDetailAddress] = useState('');
 
   useEffect(() => {
     fetchCities();
@@ -42,7 +43,6 @@ const Checkout = () => {
           },
         });
         setTransactionData(response.data);
-        toast.success('Data transaksi berhasil dimuat');
       } catch (err) {
         setError('Failed to fetch transaction data.');
         toast.error('Gagal memuat data transaksi');
@@ -86,7 +86,6 @@ const Checkout = () => {
       setSelectedExpedition('');
       setSelectedProvider('');
       setShippingCosts([]);
-      toast.success('Data kecamatan berhasil dimuat');
     } catch (error) {
       console.error('Error fetching subdistricts:', error);
       toast.error('Gagal memuat daftar kecamatan');
@@ -122,7 +121,9 @@ const Checkout = () => {
   };
 
   const updateTotalWithShipping = (shippingCost) => {
-    const subtotal = transactionData.reduce((acc, transaction) => acc + transaction.total, 0);
+    const subtotal = transactionData.reduce((acc, transaction) => {
+      return acc + transaction.product_price * transaction.quantity;
+    }, 0);
     setTotalWithShipping(subtotal + shippingCost);
   };
 
@@ -131,7 +132,6 @@ const Checkout = () => {
     setSelectedProvider(e.target.value);
     if (service) {
       updateTotalWithShipping(service.cost[0].value);
-      toast.info(`Biaya pengiriman: ${formatCurrency(service.cost[0].value)}`);
     }
   };
 
@@ -149,32 +149,69 @@ const Checkout = () => {
   };
 
   const handlePayment = async () => {
-    if (!selectedSubdistrict || !selectedExpedition || !selectedProvider) {
+    if (!selectedCity || !selectedSubdistrict || !selectedExpedition || !selectedProvider || !detailAddress) {
       toast.error('Mohon lengkapi semua data pengiriman');
       return;
     }
 
     const selectedService = shippingCosts.find((s) => s.service === selectedProvider);
     const shippingCost = selectedService ? selectedService.cost[0].value : 0;
-
-    const items = transactionData.map((transaction) => ({
-      id: transaction.product_id,
-      price: transaction.product_price,
-      quantity: transaction.quantity,
-      name: transaction.product_name,
-    }));
-
-    const data = {
-      transaction_id: transactionData[0].transaction_uuid,
-      name: transactionData[0].name,
-      address: transactionData[0].address,
-      items: items,
-      shipping_cost: shippingCost,
-    };
+    const selectedCityData = cities.find((city) => city.city_id === selectedCity);
+    const selectedSubdistrictData = subdistricts.find((sub) => sub.subdistrict_id === selectedSubdistrict);
 
     try {
       const token = Cookies.get('accessToken');
-      const response = await axios.post(`${backendUrl}/payment`, data, {
+
+      // Pastikan semua data terisi
+      const updateData = {
+        user_id,
+        transaction_uuid, // Tambahkan ini
+        name: transactionData[0].name,
+        city: selectedCityData ? `${selectedCityData.type} ${selectedCityData.city_name}` : '',
+        sub_district: selectedSubdistrictData ? selectedSubdistrictData.subdistrict_name : '',
+        detail_address: detailAddress,
+        expedition: selectedExpedition,
+        expedition_services: selectedProvider,
+        etd: selectedService ? selectedService.cost[0].etd || '1-7' : '',
+        resi: '',
+        product_id: transactionData[0].product_id,
+        product_name: transactionData[0].product_name,
+        product_price: transactionData[0].product_price,
+        product_size: transactionData[0].product_size,
+        quantity: transactionData[0].quantity,
+        total: totalWithShipping,
+        status: 'PENDING',
+      };
+
+      // Update transaction in database
+      await axios.put(`${backendUrl}/transaction/${user_id}/${transaction_uuid}`, updateData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Proceed with payment gateway
+      const paymentData = {
+        transaction_id: transaction_uuid,
+        name: transactionData[0].name,
+        city: updateData.city,
+        sub_district: updateData.sub_district,
+        detail_address: detailAddress,
+        expedition: selectedExpedition,
+        expedition_services: selectedProvider,
+        etd: updateData.etd,
+        resi: '',
+        items: transactionData.map((transaction) => ({
+          id: transaction.product_id,
+          price: transaction.product_price,
+          quantity: transaction.quantity,
+          name: transaction.product_name,
+        })),
+        shipping_cost: shippingCost,
+      };
+
+      const response = await axios.post(`${backendUrl}/payment`, paymentData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -206,7 +243,7 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Gagal memproses pembayaran');
+      toast.error(error.response?.data?.message || 'Gagal memproses pembayaran');
     }
   };
 
@@ -252,7 +289,6 @@ const Checkout = () => {
               <p className="font-overpass font-semibold">Nama Penerima</p>
               <p className="font-overpass md:text-end">{transactionData[0].name}</p>
             </div>
-
             {/* City Selection */}
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Kota/Kabupaten Tujuan</p>
@@ -271,7 +307,6 @@ const Checkout = () => {
                 ))}
               </select>
             </div>
-
             {/* Subdistrict Selection */}
             {selectedCity && (
               <div className="flex flex-col md:flex-row justify-between">
@@ -293,6 +328,13 @@ const Checkout = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+            )}
+
+            {selectedSubdistrict && (
+              <div className="flex flex-col md:flex-row justify-between">
+                <p className="font-overpass font-semibold">Alamat Detail</p>
+                <textarea value={detailAddress} onChange={(e) => setDetailAddress(e.target.value)} placeholder="Masukkan alamat lengkap" className="font-overpass md:text-end p-2 border rounded w-full md:w-1/2" rows="3" />
               </div>
             )}
 
@@ -320,15 +362,34 @@ const Checkout = () => {
                 <h3 className="font-overpass font-bold text-lg">Layanan Pengiriman</h3>
                 <div className="flex flex-col md:flex-row justify-between">
                   <p className="font-overpass font-semibold">Pilih Layanan</p>
-                  <select value={selectedProvider} onChange={handleProviderChange} className="font-overpass md:text-end p-2 border rounded">
+                  <select value={selectedProvider} onChange={handleProviderChange} className="font-overpass md:text-end p-2 border rounded w-full md:w-auto">
                     <option value="">Pilih layanan</option>
-                    {shippingCosts.map((service) => (
-                      <option key={service.service} value={service.service}>
-                        {service.service} - {formatCurrency(service.cost[0].value)}
-                      </option>
-                    ))}
+                    {shippingCosts.map((service) => {
+                      const etdText = service.cost[0].etd === '' ? '1-7' : service.cost[0].etd;
+                      return (
+                        <option key={service.service} value={service.service}>
+                          {service.service} - {formatCurrency(service.cost[0].value)} - {etdText} hari
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
+
+                {selectedProvider && (
+                  <div className="mt-2 space-y-2">
+                    {shippingCosts
+                      .filter((service) => service.service === selectedProvider)
+                      .map((service) => {
+                        const etdText = service.cost[0].etd === '' ? '1-7' : service.cost[0].etd;
+                        return (
+                          <div key={service.service} className="text-sm font-overpass">
+                            <p className="text-gray-600">{service.description}</p>
+                            <p className="text-gray-600">Estimasi pengiriman: {etdText} hari</p>
+                          </div>
+                        );
+                      })}
+                  </div>
+                )}
               </div>
             )}
 
@@ -348,7 +409,6 @@ const Checkout = () => {
                 </div>
               </div>
             )}
-
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Status</p>
               <p className="font-overpass md:text-end">{transactionData[0].status}</p>
