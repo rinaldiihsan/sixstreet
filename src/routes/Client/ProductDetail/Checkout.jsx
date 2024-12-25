@@ -45,7 +45,7 @@ const Checkout = () => {
         setTransactionData(response.data);
       } catch (err) {
         setError('Failed to fetch transaction data.');
-        toast.error('Gagal memuat data transaksi');
+        toast.error('Gagal memuat data transaksi', { autoClose: 1500 });
       } finally {
         setLoading(false);
       }
@@ -74,7 +74,7 @@ const Checkout = () => {
       setCities(response.data.rajaongkir.results);
     } catch (error) {
       console.error('Error fetching cities:', error);
-      toast.error('Gagal memuat daftar kota');
+      toast.error('Gagal memuat daftar kota', { autoClose: 1500 });
     }
   };
 
@@ -88,7 +88,7 @@ const Checkout = () => {
       setShippingCosts([]);
     } catch (error) {
       console.error('Error fetching subdistricts:', error);
-      toast.error('Gagal memuat daftar kecamatan');
+      toast.error('Gagal memuat daftar kecamatan', { autoClose: 1500 });
     }
   };
 
@@ -99,7 +99,7 @@ const Checkout = () => {
     if (selectedSubdistrict) {
       calculateShipping(selectedSubdistrict, expedition);
     } else {
-      toast.warning('Silakan pilih kecamatan terlebih dahulu');
+      toast.warning('Silakan pilih kecamatan terlebih dahulu', { autoClose: 1500 });
     }
   };
 
@@ -116,7 +116,7 @@ const Checkout = () => {
       setShippingCosts(response.data.rajaongkir.results[0].costs);
     } catch (error) {
       console.error('Error calculating shipping:', error);
-      toast.error('Gagal menghitung biaya pengiriman');
+      toast.error('Gagal menghitung biaya pengiriman', { autoClose: 1500 });
     }
   };
 
@@ -150,7 +150,7 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     if (!selectedCity || !selectedSubdistrict || !selectedExpedition || !selectedProvider || !detailAddress) {
-      toast.error('Mohon lengkapi semua data pengiriman');
+      toast.error('Mohon lengkapi semua data pengiriman', { autoClose: 1500 });
       return;
     }
 
@@ -220,30 +220,27 @@ const Checkout = () => {
       if (window.snap && response.data.token) {
         window.snap.pay(response.data.token, {
           onSuccess: function (result) {
-            console.log('Payment success:', result);
-            toast.success('Pembayaran berhasil!');
+            toast.success('Pembayaran berhasil!', { autoClose: 1500 });
             navigate('/thank-you');
           },
           onPending: function (result) {
-            console.log('Payment pending:', result);
-            toast.info('Pembayaran dalam proses');
+            toast.info('Pembayaran dalam proses', { autoClose: 1500 });
           },
           onError: function (result) {
             console.error('Payment error:', result);
             toast.error('Pembayaran gagal');
           },
           onClose: function () {
-            console.log('Payment closed');
-            toast.warning('Pembayaran dibatalkan');
+            toast.warning('Pembayaran dibatalkan', { autoClose: 1500 });
           },
         });
       } else {
         console.error('Snap not available or token missing');
-        toast.error('Terjadi kesalahan pada sistem pembayaran');
+        toast.error('Terjadi kesalahan pada sistem pembayaran', { autoClose: 1500 });
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error(error.response?.data?.message || 'Gagal memproses pembayaran');
+      toast.error(error.response?.data?.message || 'Gagal memproses pembayaran', { autoClose: 1500 });
     }
   };
 

@@ -7,7 +7,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [noHp, setNoHp] = useState('');
+  const [phoneNumber, setphoneNumber] = useState('');
   const [referralCode, setreferralCode] = useState('');
   const [birthday, setBirthday] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,7 +24,7 @@ const Register = () => {
       username,
       password,
       email,
-      no_hp: noHp,
+      no_hp: phoneNumber,
       birthday: birthday,
       referd_kode: referralCode || ' ',
     };
@@ -184,14 +184,14 @@ const Register = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-[#333333] text-lg font-bold mb-2 font-garamond" htmlFor="noHp">
-                No HP
+              <label className="block text-[#333333] text-lg font-bold mb-2 font-garamond" htmlFor="phoneNumber">
+                Phone Number
               </label>
               <input
                 type="text"
-                id="noHp"
-                value={noHp}
-                onChange={(e) => setNoHp(e.target.value)}
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setphoneNumber(e.target.value)}
                 className="appearance-none border border-gray-300 w-full py-2 px-3 text-[#333333] leading-tight focus:outline-none focus:shadow-outline focus:border-[#333333] focus:ring-0"
                 required
               />
