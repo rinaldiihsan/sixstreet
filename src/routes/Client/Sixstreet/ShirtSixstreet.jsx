@@ -230,7 +230,7 @@ const ShirtSixstreet = () => {
                 />
               </svg>
             </div>
-            <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
+            <div className="border lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
               <p className="font-overpass capitalize">
                 {
                   products
