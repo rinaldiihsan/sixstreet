@@ -7,7 +7,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { motion } from 'framer-motion';
 import assetBannerCollectibles from '../../../assets/banner/colleectible.webp';
 
-const Collectibles = () => {
+const Watch = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Relevance');
   const [loginStatus, setLoginStatus] = useState(null);
@@ -283,14 +283,16 @@ const Collectibles = () => {
           )}
 
           {/* Product */}
-          <div className="w-full grid grid-cols-2 gap-5 md:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
+          <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
-                <div key={index} className="flex flex-col gap-y-5 items-center">
-                  <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
-                  <div className="flex flex-col text-center gap-y-2 w-full">
-                    <Skeleton className="md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
-                    <Skeleton className="md:text-xl" />
+                <div key={index} className="flex flex-col items-center space-x-32 space-y-5">
+                  <div className="flex flex-col gap-y-5">
+                    <Skeleton className="aspect-square w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover" />
+                    <div className="flex flex-col text-center gap-y-2 w-full">
+                      <Skeleton className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem]" />
+                      <Skeleton className="w-[8rem] mobileS:w-[8.5rem] mobile:w-[9.5rem] md:w-[15rem]" />
+                    </div>
                   </div>
                 </div>
               ))
@@ -316,46 +318,33 @@ const Collectibles = () => {
                   .filter((variant) => variant.item_name !== 'ADIDAS Samba OG Cloud White PS')
                   .filter((variant) => {
                     const itemName = variant.item_name.toLowerCase();
-                    return !itemName.includes('watch') && !itemName.includes('bag');
+                    return itemName.includes('watch');
                   })
                   .filter((variant) => isProductMatchSelectedBrands(variant.item_name, selectedBrands))
                   .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty !== null && variant.available_qty >= 1)
                   .sort((a, b) => {
-                    if (selectedOption === 'Harga Tertinggi') {
-                      return b.sell_price - a.sell_price;
-                    } else if (selectedOption === 'Harga Terendah') {
-                      return a.sell_price - b.sell_price;
-                    } else if (selectedOption === 'Alphabet') {
-                      return a.item_name.localeCompare(b.item_name);
-                    } else if (selectedOption === 'Product Terbaru') {
-                      return new Date(b.last_modified) - new Date(a.last_modified);
-                    }
+                    if (selectedOption === 'Harga Tertinggi') return b.sell_price - a.sell_price;
+                    if (selectedOption === 'Harga Terendah') return a.sell_price - b.sell_price;
+                    if (selectedOption === 'Alphabet') return a.item_name.localeCompare(b.item_name);
+                    if (selectedOption === 'Product Terbaru') return new Date(b.last_modified) - new Date(a.last_modified);
                     return 0;
                   })
                   .map((variant, index) => (
                     <div key={index} className="flex flex-col gap-y-5 items-center">
                       <Link to={`/product-detail/${variant.item_group_id}`}>
                         {variant.parentThumbnail ? (
-                          <img src={variant.parentThumbnail} alt={variant.item_name} className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover" />
+                          <img src={variant.parentThumbnail} alt={variant.item_name} className="aspect-square w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover" />
                         ) : (
-                          <img src="/dummy-product.png" alt={variant.item_name} className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover" />
+                          <img src="/dummy-product.png" alt={variant.item_name} className="aspect-square w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover" />
                         )}
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
-                                                  break-words text-center
-                                                w-full max-w-[10rem] 
-                                                mobileS:max-w-[10.5rem] 
-                                                mobile:max-w-[11.5rem] 
-                                                md:max-w-[23rem]"
-                        >
-                          {variant.item_name}
-                        </h2>
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">{variant.item_name}</h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">Rp. {variant.sell_price.toLocaleString('id-ID')}</h2>
                       </div>
                     </div>
                   ))}
+
                 {/* Produk yang habis */}
                 {Object.values(
                   products
@@ -376,7 +365,7 @@ const Collectibles = () => {
                   .filter((variant) => variant.item_name !== 'ADIDAS Samba OG Cloud White PS')
                   .filter((variant) => {
                     const itemName = variant.item_name.toLowerCase();
-                    return !itemName.includes('watch') && !itemName.includes('bag');
+                    return itemName.includes('watch');
                   })
                   .filter((variant) => isProductMatchSelectedBrands(variant.item_name, selectedBrands))
                   .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && (variant.available_qty === null || variant.available_qty <= 0))
@@ -384,20 +373,13 @@ const Collectibles = () => {
                     <div key={index} className="flex flex-col gap-y-5 items-center">
                       <Link href="#" onClick={handleSoldOutClick} className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75">
                         {variant.parentThumbnail ? (
-                          <img src={variant.parentThumbnail} alt={variant.item_name} className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50" />
+                          <img src={variant.parentThumbnail} alt={variant.item_name} className="aspect-square w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50" />
                         ) : (
-                          <img src="/dummy-product.png" alt={variant.item_name} className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50" />
+                          <img src="/dummy-product.png" alt={variant.item_name} className="aspect-square w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50" />
                         )}
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                                        line-clamp-2 break-words text-center text-red-600
-                                                        w-full max-w-[10rem]
-                                                        mobileS:max-w-[10.5rem]
-                                                        mobile:max-w-[11.5rem]
-                                                        md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg line-clamp-2 break-words text-center text-red-600 w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">Sold Out</h2>
@@ -406,7 +388,7 @@ const Collectibles = () => {
                   ))}
               </>
             ) : (
-              <p className="uppercase font-overpass font-bold text-xl]">{error ? `Login failed: ${error}` : 'No products found in this category'}</p>
+              <p className="uppercase font-overpass font-bold text-xl">{error ? `Login failed: ${error}` : 'No products found in this category'}</p>
             )}
           </div>
         </div>
@@ -415,4 +397,4 @@ const Collectibles = () => {
   );
 };
 
-export default Collectibles;
+export default Watch;
