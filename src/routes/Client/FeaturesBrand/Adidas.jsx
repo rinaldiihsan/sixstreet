@@ -18,7 +18,7 @@ const Adidas = () => {
   const [selectedCatagory, setSelectedCatagory] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [productsLimit, setProductsLimit] = useState(10);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
 
   const fetchProducts = async (token) => {
     try {
@@ -435,7 +435,7 @@ const Adidas = () => {
                         variant.available_qty <= 0) &&
                       variant
                   )
-                  .slice(0, productsLimit)
+                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}

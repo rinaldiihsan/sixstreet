@@ -18,6 +18,7 @@ const ShirtSixstreet = () => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
 
   const fetchProducts = async (token) => {
     try {
@@ -537,15 +538,15 @@ const ShirtSixstreet = () => {
                       variant.sell_price !== 0 &&
                       variant.available_qty <= 0
                   )
+                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
-                        onClick={handleSoldOutClick}
-                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                        to={`/product-detail-sold/${variant.item_group_id}`}
+                        className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
                       >
                         {variant.parentThumbnail ? (
                           <img
