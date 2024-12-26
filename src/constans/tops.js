@@ -1,5 +1,9 @@
 export const Tops = [
   {
+    name: "All Products",
+    path: "/tops/all-products-tops",
+  },
+  {
     name: "T-Shirts",
     path: "/tops/t-shirts",
   },

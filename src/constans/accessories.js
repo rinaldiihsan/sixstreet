@@ -1,42 +1,46 @@
 export const Accessories = [
   {
-    name: 'Headwear',
-    path: '/accessories/headwear',
+    name: "All Products",
+    path: "/accessories/all-products-accessories",
   },
   {
-    name: 'Eyewear',
-    path: '/accessories/eyewear',
+    name: "Headwear",
+    path: "/accessories/headwear",
   },
   {
-    name: 'Bags',
-    path: '/accessories/bag',
+    name: "Eyewear",
+    path: "/accessories/eyewear",
   },
   {
-    name: 'Socks',
-    path: '/accessories/socks',
+    name: "Bags",
+    path: "/accessories/bag",
   },
   {
-    name: 'Belt',
-    path: '/accessories/belt',
+    name: "Socks",
+    path: "/accessories/socks",
   },
   {
-    name: 'Wallets & Cardholders',
-    path: '/accessories/wallets-cardholders',
+    name: "Belt",
+    path: "/accessories/belt",
   },
   {
-    name: 'Jewelry',
-    path: '/accessories/jewelry',
+    name: "Wallets & Cardholders",
+    path: "/accessories/wallets-cardholders",
   },
   {
-    name: 'Life Style',
-    path: '/accessories/life-style',
+    name: "Jewelry",
+    path: "/accessories/jewelry",
   },
   {
-    name: 'Watch',
-    path: '/accessories/watch',
+    name: "Life Style",
+    path: "/accessories/life-style",
   },
   {
-    name: 'Collectibles',
-    path: '/accessories/collectibles',
+    name: "Watch",
+    path: "/accessories/watch",
+  },
+  {
+    name: "Collectibles",
+    path: "/accessories/collectibles",
   },
 ];

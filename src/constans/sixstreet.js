@@ -1,5 +1,9 @@
 export const SixStreet = [
   {
+    name: "All Products",
+    path: "/sixstreet/all-products-sixstreet",
+  },
+  {
     name: "T-Shirts",
     path: "/sixstreet/tshirt",
   },
