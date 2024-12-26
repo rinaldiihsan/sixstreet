@@ -7,8 +7,8 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [noHp, setNoHp] = useState("");
-  const [referdKode, setReferdKode] = useState("");
+  const [phoneNumber, setphoneNumber] = useState("");
+  const [referralCode, setreferralCode] = useState("");
   const [birthday, setBirthday] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -24,9 +24,9 @@ const Register = () => {
       username,
       password,
       email,
-      no_hp: noHp,
+      no_hp: phoneNumber,
       birthday: birthday,
-      referd_kode: referdKode || " ",
+      referd_kode: referralCode || " ",
     };
 
     if (!validatePassword(password)) {
@@ -214,15 +214,15 @@ const Register = () => {
             <div className="mb-4">
               <label
                 className="block text-[#333333] text-lg font-bold mb-2 font-garamond"
-                htmlFor="noHp"
+                htmlFor="phoneNumber"
               >
-                No HP
+                Phone Number
               </label>
               <input
                 type="text"
-                id="noHp"
-                value={noHp}
-                onChange={(e) => setNoHp(e.target.value)}
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setphoneNumber(e.target.value)}
                 className="appearance-none border border-gray-300 w-full py-2 px-3 text-[#333333] leading-tight focus:outline-none focus:shadow-outline focus:border-[#333333] focus:ring-0"
                 required
               />
@@ -268,15 +268,16 @@ const Register = () => {
             <div className="mb-4">
               <label
                 className="block text-[#333333] text-lg font-bold mb-2 font-garamond"
-                htmlFor="referdKode"
+                htmlFor="referralCode"
               >
-                Referd Kode
+                Referral Code
+                <span className="text-sm text-gray-500"> (optional)</span>
               </label>
               <input
                 type="text"
-                id="referdKode"
-                value={referdKode}
-                onChange={(e) => setReferdKode(e.target.value)}
+                id="referralCode"
+                value={referralCode}
+                onChange={(e) => setreferralCode(e.target.value)}
                 className="appearance-none border border-gray-300 w-full py-2 px-3 text-[#333333] leading-tight focus:outline-none focus:shadow-outline focus:border-[#333333] focus:ring-0"
               />
             </div>

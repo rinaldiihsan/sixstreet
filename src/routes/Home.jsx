@@ -152,7 +152,7 @@ const Home = () => {
             <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet apparel</h1>
             <p className="capitalize font-garamond font-medium text-lg md:text-2xl">Lorem ipsum dolor sit amet consectetur. Vehicula ac bibendum elit varius auctor posuere.</p>
           </div>
-          <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
+          <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/tops/t-shirts">
             Buy Now
           </Link>
         </div>
@@ -216,7 +216,7 @@ const Home = () => {
             <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet sneakers</h1>
             <p className="capitalize font-garamond font-medium text-lg md:text-2xl">Lorem ipsum dolor sit amet consectetur. Vehicula ac bibendum elit varius auctor posuere.</p>
           </div>
-          <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
+          <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/footwear/sneakers">
             Buy Now
           </Link>
         </div>
