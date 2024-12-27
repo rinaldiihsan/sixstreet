@@ -189,7 +189,7 @@ const Belts = () => {
                     .filter((item) => [12468].includes(item.item_category_id))
                     .flatMap((item) => item.variants).length
                 }{" "}
-                Hasil
+                Result
               </p>
             </div>
             <div className="relative border border-[#E5E5E5] flex items-center justify-center w-[25rem] px-10 py-5 gap-x-5">

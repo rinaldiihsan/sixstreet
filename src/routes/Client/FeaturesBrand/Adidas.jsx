@@ -5,7 +5,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import HeroAdidas from "../../../assets/banner/Adidas.webp";
-// import SidebarFilterBrand from "../../../components/SidebarFilterBrand";
+import SidebarFilterBrand from "../../../components/SidebarFilterBrand";
 
 const Adidas = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -16,7 +16,6 @@ const Adidas = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [selectedCatagory, setSelectedCatagory] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSoldProducts, setIsSoldProducts] = useState(10);
 
@@ -118,34 +117,8 @@ const Adidas = () => {
     );
   };
 
-  // Handler untuk size
-  const handleSizeChange = (e) => {
-    const { checked, value } = e.target;
-    setSelectedSizes((prev) =>
-      checked ? [...prev, value] : prev.filter((size) => size !== value)
-    );
-  };
-
-  const filteredProducts = products.filter((product) => {
-    const categoryMatch =
-      selectedCatagory.length === 0 ||
-      selectedCatagory.includes(product.category);
-    const sizeMatch =
-      selectedSizes.length === 0 ||
-      selectedSizes.some((size) => product.sizes.includes(size));
-    return categoryMatch && sizeMatch;
-  });
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const handleSoldOutClick = (e) => {
-    e.preventDefault();
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
   };
 
   return (
@@ -168,7 +141,7 @@ const Adidas = () => {
         {/* Sort Options */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
@@ -238,7 +211,7 @@ const Adidas = () => {
                       variant.item_name.toUpperCase().includes("ADIDAS")
                     ).length
                 }{" "}
-                Hasil
+                Result
               </p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
@@ -287,14 +260,12 @@ const Adidas = () => {
         </div>
 
         <div className="w-full flex justify-between gap-x-3">
-          {/* <SidebarFilterBrand
+          <SidebarFilterBrand
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
             handleCatagoryChange={handleCatagoryChange}
-            // handleSizeChange={handleSizeChange}
-            selectedCatagory={selectedCatagory || []}
-            selectedSizes={selectedSizes || []}
-          /> */}
+            selectedCatagory={selectedCatagory}
+          />
 
           {/* Product Grid */}
           <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
@@ -318,10 +289,7 @@ const Adidas = () => {
                       item_group_id: item.item_group_id,
                       parentThumbnail: item.thumbnail,
                       last_modified: item.last_modified,
-                      category: item.item_category_name || "", // Tambahkan category
-                      sizes: item.variants.map(
-                        (v) => v.variation_values?.[0]?.value || ""
-                      ),
+                      category: item.item_name, // Pastikan field ini ada
                     }))
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
@@ -331,23 +299,43 @@ const Adidas = () => {
                     }, {})
                 )
                   .filter((variant) => {
-                    const matchesAdidas = variant.item_name
-                      .toUpperCase()
-                      .includes("ADIDAS");
+                    const name = variant.item_name.toLowerCase();
+                    const matchesAdidas = name.includes("adidas");
+
+                    // Filter berdasarkan kategori
                     const matchesCategory =
                       selectedCatagory.length === 0 ||
-                      selectedCatagory.some((cat) =>
-                        variant.category
-                          ?.toUpperCase()
-                          .includes(cat.toUpperCase())
-                      );
-                    const matchesSize =
-                      selectedSizes.length === 0 ||
-                      selectedSizes.some((size) =>
-                        variant.sizes.includes(size)
-                      );
+                      selectedCatagory.some((category) => {
+                        switch (category) {
+                          case "T-Shirts":
+                            return (
+                              name.includes("tee") || name.includes("t-shirt")
+                            );
+                          case "Shirts":
+                            return (
+                              name.includes("shirt") &&
+                              !name.includes("t-shirt") &&
+                              !name.includes("tee")
+                            );
+                          case "Hoodie":
+                            return (
+                              name.includes("hoodie") ||
+                              name.includes("sweatshirt")
+                            );
+                          case "Bags":
+                            return (
+                              name.includes("bag") || name.includes("backpack")
+                            );
+                          case "Hats":
+                            return name.includes("hat") || name.includes("cap");
+                          case "Socks":
+                            return name.includes("sock");
+                          default:
+                            return false;
+                        }
+                      });
 
-                    return matchesAdidas && matchesCategory && matchesSize;
+                    return matchesAdidas && matchesCategory;
                   })
                   .filter(
                     (variant) =>
@@ -424,9 +412,45 @@ const Adidas = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) =>
-                    variant.item_name.toUpperCase().includes("ADIDAS")
-                  )
+                  .filter((variant) => {
+                    const name = variant.item_name.toLowerCase();
+                    const matchesAdidas = name.includes("adidas");
+
+                    // Filter berdasarkan kategori
+                    const matchesCategory =
+                      selectedCatagory.length === 0 ||
+                      selectedCatagory.some((category) => {
+                        switch (category) {
+                          case "T-Shirts":
+                            return (
+                              name.includes("tee") || name.includes("t-shirt")
+                            );
+                          case "Shirts":
+                            return (
+                              name.includes("shirt") &&
+                              !name.includes("t-shirt") &&
+                              !name.includes("tee")
+                            );
+                          case "Hoodie":
+                            return (
+                              name.includes("hoodie") ||
+                              name.includes("sweatshirt")
+                            );
+                          case "Bags":
+                            return (
+                              name.includes("bag") || name.includes("backpack")
+                            );
+                          case "Hats":
+                            return name.includes("hat") || name.includes("cap");
+                          case "Socks":
+                            return name.includes("sock");
+                          default:
+                            return false;
+                        }
+                      });
+
+                    return matchesAdidas && matchesCategory;
+                  })
                   .filter(
                     (variant) =>
                       variant.sell_price !== null &&

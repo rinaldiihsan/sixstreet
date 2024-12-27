@@ -220,7 +220,7 @@ const Jameson = () => {
                       variant.item_name.toLowerCase().includes("jameson")
                     ).length
                 }{" "}
-                Hasil
+                Result
               </p>
             </div>
 
