@@ -14,6 +14,7 @@ function SidebarFilterBrand({
     { id: "HATS", label: "Hats" },
     { id: "HOODIE", label: "Hoodie" },
     { id: "SOCKS", label: "Socks" },
+    { id: "SHIRTS", label: "Shirts" },
     { id: "T_SHIRTS", label: "T-Shirts" },
   ];
 
@@ -61,11 +62,11 @@ function SidebarFilterBrand({
           options={catagory}
           onChange={handleCatagoryChange}
         />
-        <FilterSection
+        {/* <FilterSection
           title="Size"
           options={sizes}
           onChange={handleSizeChange}
-        />
+        /> */}
       </div>
 
       {/* Mobile Sidebar */}
@@ -91,11 +92,11 @@ function SidebarFilterBrand({
             options={catagory}
             onChange={handleCatagoryChange}
           />
-          <FilterSection
+          {/* <FilterSection
             title="Size"
             options={sizes}
             onChange={handleSizeChange}
-          />
+          /> */}
         </motion.div>
       )}
     </>
