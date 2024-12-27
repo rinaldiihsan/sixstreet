@@ -1,7 +1,7 @@
 export const Footwear = [
   {
     name: "All Products",
-    path: "/footwear/all-products-sneakers",
+    path: "/footwear/all-products-footwear",
   },
   {
     name: "Sneakers",
