@@ -1,22 +1,22 @@
 export const Bottom = [
   {
     name: "All Products",
-    path: "/bottom/all-products-bottoms",
+    path: "/bottoms/all-products-bottoms",
   },
   {
     name: "Jeans",
-    path: "/bottom/jeans",
+    path: "/bottoms/jeans",
   },
   {
     name: "Trouser",
-    path: "/bottom/trouser",
+    path: "/bottoms/trouser",
   },
   {
     name: "Shorts",
-    path: "/bottom/shorts",
+    path: "/bottoms/shorts",
   },
   {
     name: "Sweatpants",
-    path: "/bottom/sweatpants",
+    path: "/bottoms/sweatpants",
   },
 ];

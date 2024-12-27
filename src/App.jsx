@@ -505,13 +505,13 @@ const App = () => {
 
             {/* Bottoms */}
             <Route
-              path="/bottom/all-products-bottoms"
+              path="/bottoms/all-products-bottoms"
               element={<AllProductsBottom />}
             />
-            <Route path="/bottom/jeans" element={<JeansBottoms />} />
-            <Route path="/bottom/trouser" element={<TrouserBottom />} />
-            <Route path="/bottom/shorts" element={<ShortBottom />} />
-            <Route path="/bottom/sweatpants" element={<SweatpantsBottom />} />
+            <Route path="/bottoms/jeans" element={<JeansBottoms />} />
+            <Route path="/bottoms/trouser" element={<TrouserBottom />} />
+            <Route path="/bottoms/shorts" element={<ShortBottom />} />
+            <Route path="/bottoms/sweatpants" element={<SweatpantsBottom />} />
 
             {/* Accessories */}
             <Route
