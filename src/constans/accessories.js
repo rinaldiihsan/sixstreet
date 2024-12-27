@@ -32,7 +32,7 @@ export const Accessories = [
     path: "/accessories/jewelry",
   },
   {
-    name: "Life Style",
+    name: "Lifestyle",
     path: "/accessories/life-style",
   },
   {
