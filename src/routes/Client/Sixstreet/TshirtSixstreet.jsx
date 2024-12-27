@@ -71,9 +71,12 @@ const TshirtSixstreet = () => {
 
         // Filter sixstreet products safely
         const sixstreetProducts = data.filter((item) =>
-          item?.variants?.some((variant) =>
-            variant?.item_name?.toLowerCase().includes("sixstreet tee")
-          )
+          item?.variants?.some((variant) => {
+            const name = (variant?.item_name || "").toLowerCase();
+            return (
+              name.includes("sixstreet tee") || name.includes("sixstreet l/s")
+            );
+          })
         );
 
         // Get unique group ids safely
@@ -479,22 +482,27 @@ const TshirtSixstreet = () => {
               ))
             ) : loginStatus === "success" &&
               products.some((item) =>
-                item.variants.some((variant) =>
-                  variant.item_name.toLowerCase().includes("sixstreet tee")
-                )
+                item.variants.some((variant) => {
+                  const name = variant.item_name.toLowerCase();
+                  return (
+                    name.includes("sixstreet tee") ||
+                    name.includes("sixstreet l/s")
+                  );
+                })
               ) ? (
               <>
                 {/* Available Products (Stock > 1) */}
                 {Object.values(
                   products
                     .filter((item) =>
-                      item.variants.some(
-                        (variant) =>
-                          variant.item_name
-                            .toLowerCase()
-                            .includes("sixstreet tee") &&
+                      item.variants.some((variant) => {
+                        const name = variant.item_name.toLowerCase();
+                        return (
+                          (name.includes("sixstreet tee") ||
+                            name.includes("sixstreet l/s")) &&
                           variant.available_qty > 1
-                      )
+                        );
+                      })
                     )
                     .map((item) => ({
                       ...item.variants[0],
@@ -556,9 +564,13 @@ const TshirtSixstreet = () => {
                       parentThumbnail: item.thumbnail,
                       last_modified: item.last_modified,
                     }))
-                    .filter((variant) =>
-                      variant.item_name.toLowerCase().includes("sixstreet tee")
-                    )
+                    .filter((variant) => {
+                      const name = variant.item_name.toLowerCase();
+                      return (
+                        name.includes("sixstreet tee") ||
+                        name.includes("sixstreet l/s")
+                      );
+                    })
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
