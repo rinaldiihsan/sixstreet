@@ -183,7 +183,7 @@ const ProductDetailSold = () => {
                   <img
                     src={image.url == null ? "/dummy-product.png" : image.url}
                     alt={`${product?.item_group_name} - ${index + 1}`}
-                    className="w-[28rem] h-[28rem] md:w-full md:h-full lg:w-[40rem] lg:h-[40rem] object-cover opacity-50"
+                    className="w-[28rem] h-[28rem] md:w-full md:h-full lg:w-[40rem] lg:h-[40rem] object-cover "
                   />
                 </div>
               ))}
@@ -204,7 +204,7 @@ const ProductDetailSold = () => {
                       : image.thumbnail
                   }
                   alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-20 object-cover opacity-50"
+                  className="w-full h-20 object-cover "
                 />
               </div>
             ))}

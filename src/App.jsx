@@ -16,6 +16,7 @@ import Register from "./routes/Client/Register";
 // End Auth Component
 
 // Footware Component
+import AllProductsFootwear from "./routes/Client/Footware/AllProductsFootwear";
 import Sneakers from "./routes/Client/Footware/Sneakers";
 import Sandals from "./routes/Client/Footware/Sandals";
 import Boots from "./routes/Client/Footware/Boots";
@@ -26,6 +27,7 @@ import Loafers from "./routes/Client/Footware/Loafers";
 // End Footware Component
 
 // Accessories Component
+import AllProductsAccessories from "./routes/Client/Accessories/AllProductsAccessories";
 import Eyewear from "./routes/Client/Accessories/Eyewear";
 import Wallets from "./routes/Client/Accessories/Wallets";
 import Belts from "./routes/Client/Accessories/Belts";
@@ -176,6 +178,7 @@ import SweatersSixstreet from "./routes/Client/Sixstreet/SweatersSixstreet";
 // End Six Street Component
 
 // Tops Component
+import AllProductsTops from "./routes/Client/Tops/AllProductsTops";
 import HoodiesTops from "./routes/Client/Tops/HoodiesTops";
 import JacketsTops from "./routes/Client/Tops/JacketsTops";
 import ShirtsTops from "./routes/Client/Tops/ShirtsTops";
@@ -186,6 +189,7 @@ import PoloShirtsTops from "./routes/Client/Tops/PoloShirtsTops";
 // End Tops Component
 
 // Bottoms Component
+import AllProductsBottom from "./routes/Client/Bottoms/AllProductsBottom";
 import JeansBottoms from "./routes/Client/Bottoms/JeansBottoms";
 import TrouserBottom from "./routes/Client/Bottoms/TrouserBottom";
 import ShortBottom from "./routes/Client/Bottoms/ShortBottom";
@@ -466,6 +470,10 @@ const App = () => {
             <Route path="/sixstreet/sweaters" element={<SweatersSixstreet />} />
 
             {/* Tops Section */}
+            <Route
+              path="/tops/all-products-tops"
+              element={<AllProductsTops />}
+            />
             <Route path="/tops/t-shirts" element={<TshirtsTops />} />
             <Route path="/tops/shirts" element={<ShirtsTops />} />
             <Route path="/tops/polo-shirts" element={<PoloShirtsTops />} />
@@ -483,6 +491,10 @@ const App = () => {
             />
 
             {/* Footwear */}
+            <Route
+              path="/footwear/all-products-footwear"
+              element={<AllProductsFootwear />}
+            />
             <Route path="/footwear/sneakers" element={<Sneakers />} />
             <Route path="/footwear/sandals" element={<Sandals />} />
             <Route path="/footwear/boots" element={<Boots />} />
@@ -492,12 +504,20 @@ const App = () => {
             <Route path="/footwear/loafers" element={<Loafers />} />
 
             {/* Bottoms */}
+            <Route
+              path="/bottom/all-products-bottoms"
+              element={<AllProductsBottom />}
+            />
             <Route path="/bottom/jeans" element={<JeansBottoms />} />
             <Route path="/bottom/trouser" element={<TrouserBottom />} />
             <Route path="/bottom/shorts" element={<ShortBottom />} />
             <Route path="/bottom/sweatpants" element={<SweatpantsBottom />} />
 
             {/* Accessories */}
+            <Route
+              path="/accessories/all-products-accessories"
+              element={<AllProductsAccessories />}
+            />
             <Route path="/accessories/eyewear" element={<Eyewear />} />
             <Route
               path="/accessories/wallets-cardholders"
