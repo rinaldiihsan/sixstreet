@@ -33,7 +33,7 @@ export const Accessories = [
   },
   {
     name: "Lifestyle",
-    path: "/accessories/life-style",
+    path: "/accessories/lifestyle",
   },
   {
     name: "Watch",

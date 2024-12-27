@@ -34,6 +34,7 @@ import Belts from "./routes/Client/Accessories/Belts";
 import Bag from "./routes/Client/Accessories/Bag";
 import Headwear from "./routes/Client/Accessories/Headwear";
 import Jewelry from "./routes/Client/Accessories/Jewelry";
+import Lifestyle from "./routes/Client/Accessories/Lifestyle";
 import Collectibles from "./routes/Client/Accessories/Collectibles";
 import SocksAcc from "./routes/Client/Accessories/SocksAcc";
 import Watch from "./routes/Client/Accessories/Watch";
@@ -531,6 +532,7 @@ const App = () => {
               path="/accessories/collectibles"
               element={<Collectibles />}
             />
+            <Route path="/accessories/lifestyle" element={<Lifestyle />} />
             <Route path="/accessories/socks" element={<SocksAcc />} />
             <Route path="/accessories/watch" element={<Watch />} />
 
