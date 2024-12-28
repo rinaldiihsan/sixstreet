@@ -15,7 +15,7 @@ const Adidas = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
-  const [selectedCatagory, setSelectedCatagory] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSoldProducts, setIsSoldProducts] = useState(10);
 
@@ -110,9 +110,9 @@ const Adidas = () => {
   };
 
   // Handler untuk kategori
-  const handleCatagoryChange = (e) => {
+  const handleCategoryChange = (e) => {
     const { checked, value } = e.target;
-    setSelectedCatagory((prev) =>
+    setSelectedCategory((prev) =>
       checked ? [...prev, value] : prev.filter((cat) => cat !== value)
     );
   };
@@ -263,8 +263,8 @@ const Adidas = () => {
           <SidebarFilterBrand
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
-            handleCatagoryChange={handleCatagoryChange}
-            selectedCatagory={selectedCatagory}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
           />
 
           {/* Product Grid */}
@@ -304,8 +304,8 @@ const Adidas = () => {
 
                     // Filter berdasarkan kategori
                     const matchesCategory =
-                      selectedCatagory.length === 0 ||
-                      selectedCatagory.some((category) => {
+                      selectedCategory.length === 0 ||
+                      selectedCategory.some((category) => {
                         switch (category) {
                           case "T-Shirts":
                             return (
@@ -418,8 +418,8 @@ const Adidas = () => {
 
                     // Filter berdasarkan kategori
                     const matchesCategory =
-                      selectedCatagory.length === 0 ||
-                      selectedCatagory.some((category) => {
+                      selectedCategory.length === 0 || // Ganti dari selectedCatagory
+                      selectedCategory.some((category) => {
                         switch (category) {
                           case "T-Shirts":
                             return (

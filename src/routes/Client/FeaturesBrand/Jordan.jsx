@@ -16,7 +16,7 @@ const Jordan = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedCatagory, setSelectedCatagory] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState([]);
   const [isSoldProducts, setIsSoldProducts] = useState(10);
 
   const fetchProducts = async (token) => {
@@ -100,9 +100,9 @@ const Jordan = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleCatagoryChange = (e) => {
+  const handleCategoryChange = (e) => {
     const { checked, value } = e.target;
-    setSelectedCatagory((prev) =>
+    setSelectedCategory((prev) =>
       checked ? [...prev, value] : prev.filter((cat) => cat !== value)
     );
   };
@@ -258,8 +258,8 @@ const Jordan = () => {
           <SidebarFilterBrand
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
-            handleCatagoryChange={handleCatagoryChange}
-            selectedCatagory={selectedCatagory}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
           />
 
           {/* Product Grid */}
@@ -299,8 +299,8 @@ const Jordan = () => {
                       .includes("JORDAN");
 
                     const matchesCategory =
-                      selectedCatagory.length === 0 ||
-                      selectedCatagory.some((category) => {
+                      selectedCategory.length === 0 ||
+                      selectedCategory.some((category) => {
                         switch (category) {
                           case "T-Shirts":
                             return (
@@ -414,8 +414,8 @@ const Jordan = () => {
                       .includes("JORDAN");
 
                     const matchesCategory =
-                      selectedCatagory.length === 0 ||
-                      selectedCatagory.some((category) => {
+                      selectedCategory.length === 0 ||
+                      selectedCategory.some((category) => {
                         switch (category) {
                           case "T-Shirts":
                             return (

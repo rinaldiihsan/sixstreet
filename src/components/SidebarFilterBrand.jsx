@@ -2,14 +2,14 @@ import React from "react";
 import { motion } from "framer-motion";
 
 function SidebarFilterBrand({
-  isSidebarOpen, // Terima dari props
-  toggleSidebar, // Terima dari props
-  handleCatagoryChange,
+  isSidebarOpen,
+  toggleSidebar,
+  handleCategoryChange,
   handleSizeChange,
-  selectedCatagory,
+  selectedCategory,
   selectedSizes,
 }) {
-  const catagory = [
+  const categories = [
     { id: "BAGS", label: "Bags" },
     { id: "HATS", label: "Hats" },
     { id: "HOODIE", label: "Hoodie" },
@@ -39,8 +39,8 @@ function SidebarFilterBrand({
               value={option.label}
               onChange={onChange}
               checked={
-                title === "Catagory"
-                  ? selectedCatagory.includes(option.label)
+                title === "Category"
+                  ? selectedCategory.includes(option.label)
                   : selectedSizes.includes(option.label)
               }
             />
@@ -55,21 +55,14 @@ function SidebarFilterBrand({
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:flex md:py-5">
         <FilterSection
-          title="Catagory"
-          options={catagory}
-          onChange={handleCatagoryChange}
+          title="Category"
+          options={categories}
+          onChange={handleCategoryChange}
         />
-        {/* <FilterSection
-          title="Size"
-          options={sizes}
-          onChange={handleSizeChange}
-        /> */}
       </div>
 
-      {/* Mobile Sidebar */}
       {isSidebarOpen && (
         <motion.div
           className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
@@ -88,15 +81,10 @@ function SidebarFilterBrand({
             ×
           </button>
           <FilterSection
-            title="Catagory"
-            options={catagory}
-            onChange={handleCatagoryChange}
+            title="Category"
+            options={categories}
+            onChange={handleCategoryChange}
           />
-          {/* <FilterSection
-            title="Size"
-            options={sizes}
-            onChange={handleSizeChange}
-          /> */}
         </motion.div>
       )}
     </>
