@@ -6,6 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { motion } from "framer-motion";
 import heroMoschino from "../../../assets/banner/MOSCHINO.webp";
+import SidebarFilterBrand from "../../../components/SidebarFilterBrand";
 
 const Moschino = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -17,6 +18,8 @@ const Moschino = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
 
   const fetchProducts = async (token) => {
     try {
@@ -120,17 +123,11 @@ const Moschino = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const sidebarVariants = {
-    open: {
-      x: 0,
-      opacity: 1,
-      transition: { duration: 0.2, ease: "easeInOut" },
-    },
-    closed: {
-      x: "-100%",
-      opacity: 0,
-      transition: { duration: 0.2, ease: "easeInOut" },
-    },
+  const handleCategoryChange = (e) => {
+    const { checked, value } = e.target;
+    setSelectedCategory((prev) =>
+      checked ? [...prev, value] : prev.filter((cat) => cat !== value)
+    );
   };
 
   return (
@@ -160,7 +157,7 @@ const Moschino = () => {
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            <div className="border border-[#E5E5E5] flex items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg
                 width="24"
@@ -229,7 +226,7 @@ const Moschino = () => {
                       variant.item_name.toUpperCase().includes("MOSCHINO")
                     ).length
                 }{" "}
-                Hasil
+                Result
               </p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
@@ -277,205 +274,13 @@ const Moschino = () => {
           </div>
         </div>
 
-        {isSidebarOpen && (
-          <motion.div
-            className="fixed inset-0 bg-white z-[999] flex flex-col w-3/4 h-full px-6 py-6 overflow-y-auto md:hidden overflow-x-hidden"
-            initial="closed"
-            animate={isSidebarOpen ? "open" : "closed"}
-            variants={sidebarVariants}
-            transition={{ type: "spring", stiffness: 100 }}
-          >
-            <button
-              onClick={toggleSidebar}
-              className="self-end text-xl font-bold mb-4"
-            >
-              ×
-            </button>
-            {/* Filter Brand */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Brand</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="JORDAN"
-                    value="JORDAN"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="JORDAN">
-                    JORDAN
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="OFFWHITE"
-                    value="OFFWHITE"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="OFFWHITE">
-                    OFFWHITE
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="BAPE"
-                    value="BAPE"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="BAPE">
-                    BAPE
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="OFFWHITE"
-                    value="OFFWHITE"
-                    onChange={handleBrandChange}
-                  />
-                  <label className="font-overpass" htmlFor="OFFWHITE">
-                    OFFWHITE
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-        )}
-
-        <div className="w-full flex justify-between gap-x-3 overflow-x-hidden">
-          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden  md:py-5">
-            {/* Filter Size */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Size</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price1"
-                  />
-                  <label className="font-overpass" htmlFor="price1">
-                    S
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price2"
-                  />
-                  <label className="font-overpass" htmlFor="price2">
-                    M
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price3"
-                  />
-                  <label className="font-overpass" htmlFor="price3">
-                    L
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price4"
-                  />
-                  <label className="font-overpass" htmlFor="price4">
-                    XL
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="price"
-                    id="price4"
-                  />
-                  <label className="font-overpass" htmlFor="price4">
-                    XXL
-                  </label>
-                </li>
-              </ul>
-            </div>
-            <div className="mb-6">
-              <h3 className="text-lg font-medium font-overpass">Categories</h3>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand1"
-                  />
-                  <label className="font-overpass" htmlFor="brand1">
-                    Bags
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand2"
-                  />
-                  <label className="font-overpass" htmlFor="brand2">
-                    Hats
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand3"
-                  />
-                  <label className="font-overpass" htmlFor="brand3">
-                    Hoodie
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand4"
-                  />
-                  <label className="font-overpass" htmlFor="brand4">
-                    Socks
-                  </label>
-                </li>
-                <li className="flex items-center gap-x-2">
-                  <input
-                    type="checkbox"
-                    className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
-                    name="brand"
-                    id="brand4"
-                  />
-                  <label className="font-overpass" htmlFor="brand4">
-                    T-Shirts
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <div className="w-full flex justify-between gap-x-3">
+          <SidebarFilterBrand
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
+          />
 
           {/* Product Grid */}
           <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
@@ -507,9 +312,46 @@ const Moschino = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) =>
-                    variant.item_name.toUpperCase().includes("MOSCHINO")
-                  )
+                  .filter((variant) => {
+                    const name = variant.item_name.toLowerCase();
+                    const matchesMoschino = variant.item_name
+                      .toUpperCase()
+                      .includes("MOSCHINO");
+
+                    const matchesCategory =
+                      selectedCategory.length === 0 ||
+                      selectedCategory.some((category) => {
+                        switch (category) {
+                          case "T-Shirts":
+                            return (
+                              name.includes("tee") || name.includes("t-shirt")
+                            );
+                          case "Shirts":
+                            return (
+                              name.includes("shirt") &&
+                              !name.includes("t-shirt") &&
+                              !name.includes("tee")
+                            );
+                          case "Hoodie":
+                            return (
+                              name.includes("hoodie") ||
+                              name.includes("sweatshirt")
+                            );
+                          case "Bags":
+                            return (
+                              name.includes("bag") || name.includes("backpack")
+                            );
+                          case "Hats":
+                            return name.includes("hat") || name.includes("cap");
+                          case "Socks":
+                            return name.includes("sock");
+                          default:
+                            return false;
+                        }
+                      });
+
+                    return matchesMoschino && matchesCategory;
+                  })
                   .filter(
                     (variant) =>
                       variant.sell_price !== null &&
@@ -585,9 +427,46 @@ const Moschino = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) =>
-                    variant.item_name.toUpperCase().includes("MOSCHINO")
-                  )
+                  .filter((variant) => {
+                    const name = variant.item_name.toLowerCase();
+                    const matchesMoschino = variant.item_name
+                      .toUpperCase()
+                      .includes("MOSCHINO");
+
+                    const matchesCategory =
+                      selectedCategory.length === 0 ||
+                      selectedCategory.some((category) => {
+                        switch (category) {
+                          case "T-Shirts":
+                            return (
+                              name.includes("tee") || name.includes("t-shirt")
+                            );
+                          case "Shirts":
+                            return (
+                              name.includes("shirt") &&
+                              !name.includes("t-shirt") &&
+                              !name.includes("tee")
+                            );
+                          case "Hoodie":
+                            return (
+                              name.includes("hoodie") ||
+                              name.includes("sweatshirt")
+                            );
+                          case "Bags":
+                            return (
+                              name.includes("bag") || name.includes("backpack")
+                            );
+                          case "Hats":
+                            return name.includes("hat") || name.includes("cap");
+                          case "Socks":
+                            return name.includes("sock");
+                          default:
+                            return false;
+                        }
+                      });
+
+                    return matchesMoschino && matchesCategory;
+                  })
                   .filter(
                     (variant) =>
                       variant.sell_price !== null &&
@@ -595,15 +474,15 @@ const Moschino = () => {
                       (variant.available_qty === null ||
                         variant.available_qty <= 0)
                   )
+                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
-                        onClick={handleSoldOutClick}
-                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                        to={`/product-detail-sold/${variant.item_group_id}`}
+                        className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
                       >
                         {variant.parentThumbnail ? (
                           <img
@@ -622,11 +501,11 @@ const Moschino = () => {
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
                           className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                                                  line-clamp-2 break-words text-center text-red-600
-                                                                  w-full max-w-[10rem]
-                                                                  mobileS:max-w-[10.5rem]
-                                                                  mobile:max-w-[11.5rem]
-                                                                  md:max-w-[23rem]"
+                                                                                             line-clamp-2 break-words text-center text-red-600
+                                                                                             w-full max-w-[10rem]
+                                                                                             mobileS:max-w-[10.5rem]
+                                                                                             mobile:max-w-[11.5rem]
+                                                                                             md:max-w-[23rem]"
                         >
                           {variant.item_name}
                         </h2>
