@@ -227,7 +227,7 @@ const AmiParis = () => {
                       variant.item_name.toUpperCase().includes("AMI PARIS")
                     ).length
                 }{" "}
-                Hasil
+                Result
               </p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">

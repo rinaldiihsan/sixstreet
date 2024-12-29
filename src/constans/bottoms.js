@@ -8,8 +8,8 @@ export const Bottom = [
     path: "/bottoms/jeans",
   },
   {
-    name: "Trouser",
-    path: "/bottoms/trouser",
+    name: "Trousers",
+    path: "/bottoms/trousers",
   },
   {
     name: "Shorts",
