@@ -149,7 +149,7 @@ const ProductDetailSold = () => {
   }, [itemId]);
 
   const getWhatsAppLink = () => {
-    const phoneNumber = "6282284423150";
+    const phoneNumber = "6281990106666";
     const productName = product?.item_group_name || "";
     const message = `Halo, saya tertarik dengan produk berikut:\n\nNama: ${productName}\n*Status: SOLD OUT - Available for Pre-Order*\n\nMohon informasi mengenai:\n- Estimasi waktu Pre-Order\n- Sistem pembayaran\n- Harga Pre-Order\n\nTerima kasih!`;
     const encodedMessage = encodeURIComponent(message);
