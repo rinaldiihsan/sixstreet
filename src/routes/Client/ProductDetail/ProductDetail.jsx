@@ -450,7 +450,7 @@ const ProductDetail = ({ userId, isLoggedIn }) => {
   };
 
   const getWhatsAppLink = () => {
-    const phoneNumber = "6282284423150";
+    const phoneNumber = "6281990106666";
     const productName = product?.item_group_name || "";
     const productSize = selectedSize || "";
     const productPrice = getCurrentPrice();
