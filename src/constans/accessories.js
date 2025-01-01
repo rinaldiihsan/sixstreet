@@ -28,7 +28,7 @@ export const Accessories = [
     path: "/accessories/wallets-cardholders",
   },
   {
-    name: "Jewerlry",
+    name: "Jewelry",
     path: "/accessories/jewelry",
   },
   {

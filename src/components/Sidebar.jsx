@@ -7,6 +7,7 @@ import { Tops } from "../constans/tops";
 import { Bottom } from "../constans/bottoms";
 import { Footwear } from "../constans/footwear";
 import { Accessories } from "../constans/accessories";
+import { Collaborations } from "../constans/collaborations";
 import { Sale } from "../constans/sale";
 
 const Sidebar = ({
@@ -382,38 +383,32 @@ const Sidebar = ({
                   <li>
                     <button
                       className="flex justify-between w-full"
-                      onClick={() => toggleSubMenu("collboration")}
+                      onClick={() => toggleSubMenu("collaboration")}
                     >
                       <span className="block text-lg font-overpass font-semibold text-gray-800 hover:text-gray-900 uppercase">
                         Collaboration
                       </span>
                       <span className="block text-xl font-overpass font-semibold text-gray-800 hover:text-gray-900">
-                        {activeSubMenu === "collboration" ? "-" : "+"}
+                        {activeSubMenu === "collaboration" ? "-" : "+"}
                       </span>
                     </button>
                     <ul
                       className={`${
-                        activeSubMenu === "collboration" ? "block" : "hidden"
+                        activeSubMenu === "collaboration" ? "block" : "hidden"
                       } pl-4 space-y-1`}
                     >
-                      <li>
-                        <Link
-                          to="/collaboration/wukong"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Sixstreet x Wukong
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/collaboration/jameson"
-                          className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
-                          onClick={handleCloseSidebar}
-                        >
-                          Sixstreet x Jameson
-                        </Link>
-                      </li>
+                      {/*  Sub Menu */}
+                      {Collaborations.map((brand, index) => (
+                        <li key={index}>
+                          <Link
+                            to={brand.path}
+                            className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                            onClick={handleCloseSidebar}
+                          >
+                            {brand.name}
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   </li>
                   {/* Comunnity Menu */}
