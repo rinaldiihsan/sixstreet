@@ -2,13 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const secretKey = import.meta.env.VITE_KEY_LOCALSTORAGE;
-  const [userName, setUserName] = useState("Guest");
+  const [fullName, setFullName] = useState("Guest");
 
   function decryptData(data) {
     const bytes = CryptoJS.AES.decrypt(data, secretKey);
@@ -25,25 +26,40 @@ export const CartProvider = ({ children }) => {
     return item.user_id;
   }
 
-  const fetchUserName = async () => {
+  const fetchFullName = async () => {
     const token = Cookies.get("accessToken");
     const userId = getUserId("DetailUser");
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    if (userId) {
-      try {
-        const response = await axios.get(`${backendUrl}/getAddress/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    // Jika tidak ada token atau userId, berarti belum login
+    // Langsung return tanpa menampilkan error
+    if (!token || !userId) {
+      setFullName("Guest");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${backendUrl}/getAddress/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.addresses && response.data.addresses.length > 0) {
+        setFullName(response.data.addresses[0].fullName);
+      } else {
+        toast.warning("Silahkan tambahkan alamat pengiriman", {
+          autoClose: 1500,
         });
-        if (response.data.addresses && response.data.addresses.length > 0) {
-          setUserName(response.data.addresses[0].username || "Guest");
-        }
-      } catch (error) {
-        console.error("Error fetching user name:", error);
-        setUserName("Guest");
       }
+    } catch (error) {
+      console.error("Error fetching fullName:", error);
+      toast.error(
+        "Gagal memuat data alamat, Silahkan Isi Alamat Terlebih Dahulu",
+        {
+          autoClose: 1500,
+        }
+      );
     }
   };
 
@@ -127,7 +143,6 @@ export const CartProvider = ({ children }) => {
     }
 
     try {
-      // Fetch product image from catalog/for-listing
       const catalogResponse = await axios.get(
         `${apiUrl}/inventory/catalog/for-listing/${product.product_id}`,
         {
@@ -154,7 +169,7 @@ export const CartProvider = ({ children }) => {
         price: product.price,
         name: product.name,
         size: product.size,
-        image: productImage, // Add image to cart data
+        image: productImage,
       };
 
       const existingItem = cartItems.find(
@@ -234,8 +249,9 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCartItems();
-    fetchUserName(); // Tambahkan ini
+    fetchFullName();
   }, []);
+
   return (
     <CartContext.Provider
       value={{
@@ -244,7 +260,7 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         setCartItems,
-        userName,
+        fullName,
         getUserId,
       }}
     >

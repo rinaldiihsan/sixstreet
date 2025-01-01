@@ -2,7 +2,7 @@ import React from 'react';
 
 const AccordionSection = ({ title, isActive, onToggle, children }) => {
   return (
-    <div className="w-full border border-gray-200 rounded-md overflow-hidden">
+    <div className="w-full border border-gray-200 -md overflow-hidden">
       <button className="w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors duration-200" onClick={onToggle}>
         <span className="text-lg font-garamond font-bold text-[#333333]">{title}</span>
         <span className="text-xl font-garamond font-bold text-[#333333] transition-transform duration-200">{isActive ? '−' : '+'}</span>

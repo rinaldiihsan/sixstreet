@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EditUserForm = ({ formUser, handleChangeUser, toggleEditUserForm, handleEditUser }) => {
+const EditUserForm = ({ formUser, handleChangeUser, onCancel, handleEditUser }) => {
   return (
     <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
       <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-4">
@@ -21,14 +21,14 @@ const EditUserForm = ({ formUser, handleChangeUser, toggleEditUserForm, handleEd
             />
           </div>
           <div className="flex flex-col">
-            <label htmlFor="username" className="font-overpass font-semibold">
-              Username
+            <label htmlFor="fullName" className="font-overpass font-semibold">
+              Full Name
             </label>
             <input
               type="text"
-              id="username"
-              name="username"
-              value={formUser.username}
+              id="fullName"
+              name="fullName"
+              value={formUser.fullName}
               onChange={handleChangeUser}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
               required
@@ -55,7 +55,7 @@ const EditUserForm = ({ formUser, handleChangeUser, toggleEditUserForm, handleEd
             />
           </div>
           <div className="flex justify-end">
-            <button type="button" onClick={toggleEditUserForm} className="bg-white text-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2">
+            <button type="button" onClick={onCancel} className="bg-white text-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2">
               Cancel
             </button>
             <button type="submit" className="bg-[#333] hover:bg-white text-white hover:text-[#333] transition-colors py-2 px-4 font-garamond font-bold">
