@@ -34,8 +34,10 @@ const VoucherSection = ({ user_id }) => {
   };
 
   const filterVouchers = (category) => {
-    if (category === 'all') return vouchers;
-    return vouchers.filter((voucher) => JSON.parse(voucher.applicableProducts).includes(category));
+    if (category === 'all') return vouchers; // Return all vouchers when 'all' is selected
+    return vouchers.filter(
+      (voucher) => voucher.applicableProducts.toLowerCase() === category.toLowerCase() // Match the category exactly
+    );
   };
 
   const categories = [
