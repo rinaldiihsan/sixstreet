@@ -41,6 +41,7 @@ import Watch from "./routes/Client/Accessories/Watch";
 // End Accessories Component
 
 // Collaboration Component
+import AllCollaborations from "./routes/Client/Collaboration/AllCollaborations";
 import Wukong from "./routes/Client/Collaboration/Wukong";
 import Jameson from "./routes/Client/Collaboration/Jameson";
 // End Collaboration Component
@@ -537,6 +538,10 @@ const App = () => {
             <Route path="/accessories/watch" element={<Watch />} />
 
             {/* Collaboration */}
+            <Route
+              path="/collaboration/all-collaborations"
+              element={<AllCollaborations />}
+            />
             <Route path="/collaboration/wukong" element={<Wukong />} />
             <Route path="/collaboration/jameson" element={<Jameson />} />
 
