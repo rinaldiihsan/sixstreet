@@ -20,7 +20,7 @@ const Footer = () => {
                 SIXSTREET
               </h1>
             </Link>
-            <div className="flex gap-x-2 md:gap-x-8">
+            <div className="flex flex-wrap items-center justify-center gap-x-2 md:gap-x-8">
               <Link
                 to="/tops/all-products-tops"
                 className="font-garamond text-white text-xl"
