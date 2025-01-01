@@ -406,6 +406,10 @@ const Checkout = () => {
               <p className="font-overpass md:text-end">{formatDate(transactionData[0].createdAt)}</p>
             </div>
             <div className="flex flex-col md:flex-row justify-between">
+              <p className="font-overpass font-semibold">Nama Pembeli</p>
+              <p className="font-overpass md:text-end">{transactionData[0].name}</p>
+            </div>
+            <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">ID Transaksi</p>
               <p className="font-overpass md:text-end">{transaction_uuid}</p>
             </div>
