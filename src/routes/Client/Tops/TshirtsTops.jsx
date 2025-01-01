@@ -172,14 +172,7 @@ const TshirtsTops = () => {
               </svg>
             </div>
             <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
-              <p className="font-overpass capitalize">
-                {
-                  products
-                    .filter((item) => [18200].includes(item.item_category_id))
-                    .flatMap((item) => item.variants).length
-                }{" "}
-                Hasil
-              </p>
+              <p className="font-overpass capitalize">{products.filter((item) => [18200].includes(item.item_category_id)).flatMap((item) => item.variants).length} Hasil</p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p className="font-overpass capitalize cursor-pointer" onClick={handleDropdownToggle}>
