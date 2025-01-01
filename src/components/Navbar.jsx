@@ -109,7 +109,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
   return (
     <>
       <nav
-        className={`${navbarColor} fixed top-0 left-0 right-0 w-full z-[999] transition-colors duration-300 overflow-x-hidden`}
+        className={`${navbarColor} fixed top-0 left-0 right-0 w-full z-[999] transition-colors duration-300`}
       >
         <div className="max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex justify-between items-center">
           {/* Hamburger Button */}
