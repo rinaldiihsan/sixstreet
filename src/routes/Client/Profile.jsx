@@ -9,6 +9,7 @@ import UserDetails from '../../components/User/Profile/UserDetails';
 import AddressList from '../../components/User/Profile/AddressList';
 import AccordionSection from '../../components/User/Profile/AccordionSection';
 import PointsSection from '../../components/User/Profile/PointsSection';
+import VoucherSection from '../../components/User/Profile/VoucherSection';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -262,9 +263,7 @@ const Profile = () => {
               </AccordionSection>
 
               <AccordionSection title="Vouchers" isActive={activeSection === 'vouchers'} onToggle={() => toggleSection('vouchers')}>
-                <div className="bg-gray-100 p-4 font-garamond">
-                  <p className="text-gray-500">Belum ada voucher tersedia</p>
-                </div>
+                <VoucherSection user_id={id} />
               </AccordionSection>
             </>
           )}
