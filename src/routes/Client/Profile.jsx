@@ -70,6 +70,9 @@ const Profile = () => {
       setAddresses(response.data.addresses || []);
     } catch (error) {
       console.error('Error fetching addresses:', error);
+      toast.error('Gagal memuat data alamat, Silahkan Isi Alamat Terlebih Dahulu', {
+        autoClose: 1500,
+      });
     }
   };
 
@@ -113,8 +116,8 @@ const Profile = () => {
         toast.success('Alamat berhasil ditambahkan');
       }
     } catch (error) {
-      console.error('Full error object:', error); // Detailed error logging
-      console.error('Error response data:', error.response?.data); // Check error response
+      console.error('Full error object:', error);
+      console.error('Error response data:', error.response?.data);
       toast.error(error.response?.data?.message || 'Gagal menambahkan alamat');
     }
   };

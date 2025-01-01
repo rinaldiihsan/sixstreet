@@ -2,41 +2,43 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AddressForm = ({ onSubmit, onCancel, title }) => {
-  // State for location data
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [subdistricts, setSubdistricts] = useState([]);
-
-  // State for selected values
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
-
-  // State for form inputs
   const [formData, setFormData] = useState({
-    address: '',
+    detail_address: '',
     kelurahan: '',
     kodePos: '',
   });
-
-  // State for loading
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(false);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [isLoadingSubdistricts, setIsLoadingSubdistricts] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  // Fetch provinces on component mount
   useEffect(() => {
     fetchProvinces();
   }, []);
 
-  // Fetch cities when component mounts
   useEffect(() => {
-    fetchCities();
-  }, []);
+    if (selectedProvince) {
+      setIsLoadingCities(true);
+      axios
+        .get(`${backendUrl}/rajacity`)
+        .then((response) => {
+          const filteredCities = response.data.rajaongkir.results.filter((city) => city.province_id === selectedProvince);
+          setCities(filteredCities);
+        })
+        .catch((error) => console.error('Error fetching cities:', error))
+        .finally(() => setIsLoadingCities(false));
+    } else {
+      setCities([]);
+    }
+  }, [selectedProvince]);
 
-  // Fetch subdistricts when city is selected
   useEffect(() => {
     if (selectedCity) {
       fetchSubdistricts(selectedCity);
@@ -52,18 +54,6 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
       console.error('Error fetching provinces:', error);
     } finally {
       setIsLoadingProvinces(false);
-    }
-  };
-
-  const fetchCities = async () => {
-    setIsLoadingCities(true);
-    try {
-      const response = await axios.get(`${backendUrl}/rajacity`);
-      setCities(response.data.rajaongkir.results);
-    } catch (error) {
-      console.error('Error fetching cities:', error);
-    } finally {
-      setIsLoadingCities(false);
     }
   };
 
@@ -94,18 +84,20 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
     const selectedCityData = cities.find((c) => c.city_id === selectedCity);
     const selectedSubdistrictData = subdistricts.find((s) => s.subdistrict_id === selectedSubdistrict);
 
-    // Format alamat sesuai dengan format yang diterima database
-    const combinedAddress = `${formData.address}, ${formData.kelurahan}, ${selectedSubdistrictData?.subdistrict_name || ''}, ${selectedCityData ? `${selectedCityData.type} ${selectedCityData.city_name}` : ''}, ${
-      selectedProvinceData?.province || ''
-    }, Indonesia, ${formData.kodePos}`;
-
-    const requestData = {
-      address: combinedAddress,
+    const addressData = {
+      province_id: selectedProvince,
+      province_name: selectedProvinceData?.province || '',
+      city_id: selectedCity,
+      city_name: selectedCityData ? selectedCityData.city_name : '',
+      city_type: selectedCityData ? selectedCityData.type : '',
+      subdistrict_id: selectedSubdistrict,
+      subdistrict_name: selectedSubdistrictData?.subdistrict_name || '',
+      kelurahan: formData.kelurahan,
+      detail_address: formData.detail_address,
+      kodePos: formData.kodePos,
     };
 
-    console.log('Request data:', requestData);
-
-    onSubmit(requestData);
+    onSubmit(addressData);
   };
 
   return (
@@ -113,10 +105,9 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
       <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-4 max-h-[80vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">{title}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Province Selection */}
           <div className="flex flex-col">
             <label htmlFor="province" className="font-overpass font-semibold mb-1">
-              Provinsi
+              Provinsi {isLoadingProvinces && '(Loading...)'}
             </label>
             <select
               id="province"
@@ -138,10 +129,9 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
             </select>
           </div>
 
-          {/* City Selection */}
           <div className="flex flex-col">
             <label htmlFor="city" className="font-overpass font-semibold mb-1">
-              Kota/Kabupaten
+              Kota/Kabupaten {isLoadingCities && '(Loading...)'}
             </label>
             <select
               id="city"
@@ -163,10 +153,9 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
             </select>
           </div>
 
-          {/* Subdistrict/Kecamatan Selection */}
           <div className="flex flex-col">
             <label htmlFor="subdistrict" className="font-overpass font-semibold mb-1">
-              Kecamatan
+              Kecamatan {isLoadingSubdistricts && '(Loading...)'}
             </label>
             <select
               id="subdistrict"
@@ -185,7 +174,6 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
             </select>
           </div>
 
-          {/* Kelurahan Input */}
           <div className="flex flex-col">
             <label htmlFor="kelurahan" className="font-overpass font-semibold mb-1">
               Kelurahan
@@ -202,15 +190,14 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
             />
           </div>
 
-          {/* Detailed Address */}
           <div className="flex flex-col">
-            <label htmlFor="address" className="font-overpass font-semibold mb-1">
-              Alamat Lengkap
+            <label htmlFor="detail_address" className="font-overpass font-semibold mb-1">
+              Detail Alamat
             </label>
             <textarea
-              id="address"
-              name="address"
-              value={formData.address}
+              id="detail_address"
+              name="detail_address"
+              value={formData.detail_address}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent rounded h-24"
               required
@@ -218,7 +205,6 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
             />
           </div>
 
-          {/* Postal Code */}
           <div className="flex flex-col">
             <label htmlFor="kodePos" className="font-overpass font-semibold mb-1">
               Kode Pos
@@ -235,7 +221,6 @@ const AddressForm = ({ onSubmit, onCancel, title }) => {
             />
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-end pt-4">
             <button type="button" onClick={onCancel} className="bg-white text-[#333] border border-[#333] transition-colors py-2 px-4 font-garamond font-bold mr-2 hover:bg-gray-100">
               Batal

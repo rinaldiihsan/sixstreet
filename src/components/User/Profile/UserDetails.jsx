@@ -18,8 +18,8 @@ const UserDetails = ({ userData, toggleEditUserForm }) => {
         <br /> {userData.email}
       </li>
       <li className="block text-md text-[#333333] font-overpass">
-        Username:
-        <br /> {userData.username}
+        Full Name:
+        <br /> {userData.fullName}
       </li>
       <li className="block text-md text-[#333333] font-overpass">
         No. Handphone:

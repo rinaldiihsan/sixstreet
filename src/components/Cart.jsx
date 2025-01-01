@@ -11,7 +11,7 @@ import axios from 'axios';
 
 const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
   const secretKey = import.meta.env.VITE_KEY_LOCALSTORAGE;
-  const { cartItems, setCartItems, fetchCartItems, removeFromCart, userName } = useCart();
+  const { cartItems, setCartItems, fetchCartItems, removeFromCart, fullName } = useCart();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const navigate = useNavigate();
 
@@ -77,7 +77,7 @@ const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
         `${backendUrl}/transaction`,
         {
           user_id: userId,
-          name: userName, // Gunakan userName dari context
+          name: fullName,
           cartItems: cartItems,
           city: '',
           sub_district: '',
@@ -149,7 +149,7 @@ const Cart = ({ cartOpen, showCart, isLoggedIn }) => {
 
   const renderCartItems = () => {
     return cartItems.map((product, index) => (
-      <div key={`${product.product_id}`} className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 md:items-center justify-between mb-4" style={{ marginBottom: index < cartItems.length - 1 ? '30px' : '0' }}>
+      <div key={`${product.id}-${product.size}-${index}`} className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 md:items-center justify-between mb-4" style={{ marginBottom: index < cartItems.length - 1 ? '30px' : '0' }}>
         <div className="flex items-center">
           <img
             src={product.image || '/dummy-product.png'}
