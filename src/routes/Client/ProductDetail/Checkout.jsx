@@ -603,6 +603,8 @@ const Checkout = () => {
                       <option value="">Pilih Voucher</option>
                       {voucherList
                         .filter((voucher) => {
+                          if (voucher.isUsed) return false;
+
                           const productName = productJubelio.item_group_name.toLowerCase();
                           const isSixstreet = productName.includes('sixstreet');
                           if (isSixstreet) {
