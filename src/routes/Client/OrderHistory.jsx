@@ -142,9 +142,9 @@ const OrderHistory = () => {
 
       <div className="w-full overflow-x-auto">
         <div className="inline-block min-w-full border border-gray-200  overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
+          <table className="min-w-full divide-y divide-gray-200 ">
+            <thead className="bg-gray-50 ">
+              <tr className="">
                 {/* Header cells */}
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tanggal

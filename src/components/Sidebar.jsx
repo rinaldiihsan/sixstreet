@@ -541,6 +541,15 @@ const Sidebar = ({
                             </Link>
                           </li>
                           <li>
+                            <Link
+                              to={"/order-history"}
+                              className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
+                              onClick={handleCloseSidebar}
+                            >
+                              Order History
+                            </Link>
+                          </li>
+                          <li>
                             <button
                               onClick={handleLogout}
                               className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
