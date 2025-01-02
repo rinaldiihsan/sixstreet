@@ -14,25 +14,26 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const jubelioUrl = import.meta.env.VITE_API_URL;
 
-  // Address States
+  // State untuk Alamat
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [cities, setCities] = useState([]);
   const [subdistricts, setSubdistricts] = useState([]);
 
-  // Address Selection States
+  // State untuk Seleksi Alamat
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
-  // Shipping and Payment States
+  // State untuk Pengiriman dan Pembayaran
   const [selectedExpedition, setSelectedExpedition] = useState('');
   const [selectedProvider, setSelectedProvider] = useState('');
   const [shippingCosts, setShippingCosts] = useState([]);
   const [totalWithShipping, setTotalWithShipping] = useState(0);
 
-  // Points Management
+  // State untuk Points
   const [userPoints, setUserPoints] = useState({
     available_points: 0,
     points_value: 0,
@@ -40,10 +41,21 @@ const Checkout = () => {
   const [usePoints, setUsePoints] = useState(false);
   const [pointsToUse, setPointsToUse] = useState(0);
 
-  // Button State
+  // State untuk Produk Jubelio
+  const [productJubelio, setProductJubelio] = useState(null);
+  const [productCategory, setProductCategory] = useState('');
+
+  // State untuk Voucher
+  const [voucherApplied, setVoucherApplied] = useState(false);
+  const [voucherData, setVoucherData] = useState(null);
+  const [voucherList, setVoucherList] = useState([]);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [voucherError, setVoucherError] = useState('');
+
+  // State untuk Button
   const [buttonText, setButtonText] = useState('Bayar Sekarang');
 
-  // Fetch Midtrans Script
+  // Fetch Script Midtrans
   useEffect(() => {
     const snapScript = 'https://app.sandbox.midtrans.com/snap/snap.js';
     const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
@@ -58,32 +70,44 @@ const Checkout = () => {
     };
   }, []);
 
-  // Fetch Addresses and Cities on Component Mount
-  useEffect(() => {
-    if (user_id) {
-      const fetchAddresses = async () => {
-        try {
-          const token = Cookies.get('accessToken');
-          const response = await axios.get(`${backendUrl}/getAddress/${user_id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setAddresses(response.data.addresses || []);
-        } catch (error) {
-          console.error('Error fetching addresses:', error);
-          toast.error('Gagal memuat alamat tersimpan');
-        }
-      };
+  // Fetch data produk dari Jubelio
+  const fetchJubelioProduct = async (productId) => {
+    try {
+      const pos_token = Cookies.get('pos_token');
+      if (!pos_token) {
+        throw new Error('POS Token tidak ditemukan');
+      }
 
-      fetchAddresses();
-      fetchCities();
-      fetchTransaction();
-      fetchUserPoints();
+      const response = await axios.get(`${jubelioUrl}/inventory/items/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${pos_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      setProductJubelio(response.data);
+
+      // Tentukan kategori produk
+      const category_id = response.data.item_category_id;
+      const apparel = [18215, 18218, 18210, 18216, 18199, 18198, 18209, 18217, 18200];
+      const sneakers = [5472, 999, 1013, 12780, 12803, 1027, 18710, 7545, 17895];
+      const accessories = [7339, 7340, 17860, 1147, 7332, 1143, 10217, 36, 5516];
+
+      let category = '';
+      if (apparel.includes(category_id)) {
+        category = 'apparel';
+      } else if (sneakers.includes(category_id)) {
+        category = 'sneakers';
+      } else if (accessories.includes(category_id)) {
+        category = 'accessories';
+      }
+      setProductCategory(category);
+    } catch (error) {
+      console.error('Error fetching Jubelio product:', error);
+      toast.error('Gagal memuat data produk dari Jubelio');
     }
-  }, [user_id]);
+  };
 
-  // Fetch Transaction Data
+  // Fetch Data Transaksi
   const fetchTransaction = async () => {
     try {
       const token = Cookies.get('accessToken');
@@ -93,11 +117,64 @@ const Checkout = () => {
         },
       });
       setTransactionData(response.data);
+      return response.data;
     } catch (err) {
       setError('Failed to fetch transaction data.');
       toast.error('Gagal memuat data transaksi', { autoClose: 1500 });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch data awal
+  useEffect(() => {
+    if (user_id) {
+      const fetchInitialData = async () => {
+        try {
+          const transactionResponse = await fetchTransaction();
+          if (transactionResponse && transactionResponse.length > 0) {
+            await fetchJubelioProduct(transactionResponse[0].product_id);
+          }
+          await Promise.all([fetchAddresses(), fetchCities(), fetchUserPoints(), fetchVoucherByUserId()]);
+        } catch (error) {
+          console.error('Error fetching initial data:', error);
+          toast.error('Gagal memuat beberapa data');
+        }
+      };
+      fetchInitialData();
+    }
+  }, [user_id]);
+
+  // Fetch Voucher
+  const fetchVoucherByUserId = async () => {
+    try {
+      const token = Cookies.get('accessToken');
+
+      const response = await axios.get(`${backendUrl}/voucher/${user_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setVoucherList(response.data);
+    } catch (error) {
+      console.error('Error fetching vouchers:', error);
+      toast.error('Gagal memuat data voucher');
+    }
+  };
+
+  // Fetch Addresses
+  const fetchAddresses = async () => {
+    try {
+      const token = Cookies.get('accessToken');
+      const response = await axios.get(`${backendUrl}/getAddress/${user_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setAddresses(response.data.addresses || []);
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+      toast.error('Gagal memuat alamat tersimpan');
     }
   };
 
@@ -153,13 +230,103 @@ const Checkout = () => {
     }
   };
 
+  // Implement Voucher
+  const implementVoucher = async (productId, price) => {
+    try {
+      if (!productJubelio) {
+        throw new Error('Data produk Jubelio tidak tersedia');
+      }
+
+      const token = Cookies.get('accessToken');
+      let endpoint = `${backendUrl}/voucher/${user_id}`;
+      const productName = productJubelio.item_group_name.toLowerCase();
+      const isSixstreet = productName.includes('sixstreet');
+
+      // Validasi kategori voucher
+      if (!productCategory && !isSixstreet) {
+        throw new Error('Kategori produk tidak valid');
+      }
+
+      if (isSixstreet) {
+        endpoint = `${backendUrl}/voucher_sixstreet/${user_id}`;
+      } else if (selectedVoucher.applicableProducts.toLowerCase() !== productCategory.toLowerCase()) {
+        throw new Error(`Voucher hanya berlaku untuk produk ${selectedVoucher.applicableProducts}`);
+      }
+
+      const response = await axios.post(
+        endpoint,
+        {
+          product_id: productId,
+          price: price,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setVoucherData(response.data);
+      setVoucherApplied(true);
+      setVoucherError('');
+
+      const newTotal = totalWithShipping - response.data.discountAmount;
+      setTotalWithShipping(newTotal);
+      toast.success(response.data.message);
+
+      return response.data;
+    } catch (error) {
+      console.error('Error implementing voucher:', error);
+      const errorMessage = error.response?.data?.message || error.message;
+      setVoucherError(errorMessage);
+      toast.error(errorMessage);
+      setVoucherApplied(false);
+      setVoucherData(null);
+    }
+  };
+
+  // Handle Apply Voucher
+  const handleApplyVoucher = async () => {
+    if (!transactionData?.length || !productJubelio) {
+      toast.error('Data transaksi atau produk tidak tersedia');
+      return;
+    }
+
+    if (!selectedVoucher) {
+      toast.error('Silakan pilih voucher terlebih dahulu');
+      return;
+    }
+
+    const productId = transactionData[0].product_id;
+    const price = transactionData[0].product_price * transactionData[0].quantity;
+    const productName = productJubelio.item_group_name.toLowerCase();
+    const isSixstreet = productName.includes('sixstreet');
+
+    // Validasi voucher Sixstreet
+    if (isSixstreet && selectedVoucher.applicableProducts !== 'sixstreet') {
+      toast.error('Produk Sixstreet hanya bisa menggunakan voucher Sixstreet');
+      return;
+    }
+
+    if (!isSixstreet && selectedVoucher.applicableProducts === 'sixstreet') {
+      toast.error('Voucher Sixstreet hanya bisa digunakan untuk produk Sixstreet');
+      return;
+    }
+
+    // Validasi kategori untuk non-Sixstreet
+    if (!isSixstreet && selectedVoucher.applicableProducts.toLowerCase() !== productCategory.toLowerCase()) {
+      toast.error(`Voucher ${selectedVoucher.code} hanya dapat digunakan untuk produk ${selectedVoucher.applicableProducts}`);
+      return;
+    }
+
+    await implementVoucher(productId, price);
+  };
+
   // Handle Expedition Change
   const handleExpeditionChange = (e) => {
     const expedition = e.target.value;
     setSelectedExpedition(expedition);
     setSelectedProvider('');
-
-    // Hapus kondisi pengecekan kecamatan
     calculateShipping(selectedAddress.subdistrict_id, expedition);
   };
 
@@ -167,7 +334,7 @@ const Checkout = () => {
   const calculateShipping = async (subdistrictId, courier = 'jne') => {
     try {
       const response = await axios.post(`${backendUrl}/rajacost`, {
-        origin: '3917', // Pastikan ini adalah kota asal yang benar
+        origin: '3917',
         originType: 'subdistrict',
         destination: subdistrictId,
         destinationType: 'subdistrict',
@@ -178,7 +345,6 @@ const Checkout = () => {
       const shippingResults = response.data.rajaongkir.results[0].costs;
       setShippingCosts(shippingResults);
 
-      // Otomatis pilih layanan pertama
       if (shippingResults.length > 0) {
         const firstService = shippingResults[0];
         setSelectedProvider(firstService.service);
@@ -212,13 +378,9 @@ const Checkout = () => {
     const address = addresses.find((a) => a.id === parseInt(addressId));
     if (address) {
       setSelectedAddress(address);
-
-      // Langsung gunakan data dari database
       setSelectedCity(address.city_id);
       setSelectedSubdistrict(address.subdistrict_id);
       setDetailAddress(address.detail_address);
-
-      // Hitung shipping dengan data yang sudah ada
       calculateShipping(address.subdistrict_id);
     }
   };
@@ -257,7 +419,7 @@ const Checkout = () => {
       const selectedService = shippingCosts.find((s) => s.service === selectedProvider);
       const shippingCost = selectedService ? selectedService.cost[0].value : 0;
 
-      // Process points redemption if points are being used
+      // Proses redeem points jika digunakan
       if (usePoints && pointsToUse > 0) {
         try {
           await axios.post(
@@ -280,10 +442,14 @@ const Checkout = () => {
         }
       }
 
-      // Calculate final total after points
-      const finalTotal = Math.max(0, totalWithShipping - pointsToUse * 1000);
+      // Hitung total akhir setelah points dan voucher
+      const pointsDiscount = pointsToUse * 1000;
+      const voucherDiscount = voucherApplied && voucherData ? voucherData.discountAmount : 0;
 
-      // Prepare transaction update data
+      // Hitung final total sekaligus
+      const finalTotal = Math.max(0, totalWithShipping - pointsDiscount - voucherDiscount);
+
+      // Update data transaksi
       const updateData = {
         user_id,
         transaction_uuid,
@@ -299,14 +465,15 @@ const Checkout = () => {
         product_price: transactionData[0].product_price,
         product_size: transactionData[0].product_size,
         quantity: transactionData[0].quantity,
-        total: totalWithShipping,
+        total: finalTotal,
         points_used: pointsToUse,
         points_value: pointsToUse * 1000,
+        voucher_applied: voucherApplied,
+        voucher_discount: voucherApplied ? voucherData.discountAmount : 0,
         final_total: finalTotal,
         status: 'PENDING',
       };
 
-      // Update transaction in database
       await axios.put(`${backendUrl}/transaction/${user_id}/${transaction_uuid}`, updateData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -314,7 +481,7 @@ const Checkout = () => {
         },
       });
 
-      // Prepare payment data
+      // Persiapkan data pembayaran
       const paymentData = {
         transaction_id: transaction_uuid,
         name: transactionData[0].name,
@@ -332,10 +499,11 @@ const Checkout = () => {
         })),
         shipping_cost: shippingCost,
         points_discount: pointsToUse * 1000,
+        voucher_discount: voucherApplied ? voucherData.discountAmount : 0,
         final_amount: finalTotal,
       };
 
-      // Process payment
+      // Proses pembayaran
       const response = await axios.post(`${backendUrl}/payment`, paymentData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -349,7 +517,6 @@ const Checkout = () => {
             try {
               const token = Cookies.get('accessToken');
 
-              // Process points untuk transaksi yang berhasil
               await axios.post(
                 `${backendUrl}/points/process/${transaction_uuid}`,
                 {},
@@ -391,7 +558,6 @@ const Checkout = () => {
     }
   };
 
-  // Loading and Error Handling
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -400,7 +566,9 @@ const Checkout = () => {
       {transactionData.length > 0 ? (
         <div className="bg-white p-8 shadow-md mx-3 md:max-w-[50rem] w-full space-y-10">
           <h2 className="text-2xl font-bold mb-6 text-center font-garamond text-[#333333]">Detail Transaksi</h2>
+
           <div className="flex flex-col space-y-4 font-overpass">
+            {/* Transaction Basic Info */}
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Tanggal Transaksi</p>
               <p className="font-overpass md:text-end">{formatDate(transactionData[0].createdAt)}</p>
@@ -413,17 +581,77 @@ const Checkout = () => {
               <p className="font-overpass font-semibold">ID Transaksi</p>
               <p className="font-overpass md:text-end">{transaction_uuid}</p>
             </div>
-
-            {/* Existing transaction details */}
             <div className="flex flex-col md:flex-row justify-between">
               <p className="font-overpass font-semibold">Nama Produk</p>
               <p className="font-overpass md:text-end">{transactionData.map((transaction) => transaction.product_name).join(', ')}</p>
             </div>
 
-            {/* Alamat Pengiriman Section */}
+            {/* Voucher Section */}
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="font-overpass font-bold text-lg">Voucher</h3>
+              {productJubelio ? (
+                voucherList.length > 0 ? (
+                  <div className="flex flex-col space-y-2">
+                    <select
+                      value={selectedVoucher ? selectedVoucher.id : ''}
+                      onChange={(e) => {
+                        const voucher = voucherList.find((v) => v.id === parseInt(e.target.value));
+                        setSelectedVoucher(voucher);
+                      }}
+                      className="font-overpass p-2 border rounded"
+                    >
+                      <option value="">Pilih Voucher</option>
+                      {voucherList
+                        .filter((voucher) => {
+                          const productName = productJubelio.item_group_name.toLowerCase();
+                          const isSixstreet = productName.includes('sixstreet');
+                          if (isSixstreet) {
+                            return voucher.applicableProducts.toLowerCase() === 'sixstreet';
+                          }
+                          return voucher.applicableProducts.toLowerCase() === productCategory.toLowerCase();
+                        })
+                        .map((voucher) => (
+                          <option key={voucher.id} value={voucher.id}>
+                            {voucher.code} - {voucher.discountPercentage}% ({voucher.applicableProducts})
+                          </option>
+                        ))}
+                    </select>
+
+                    {selectedVoucher && (
+                      <div className="text-sm text-gray-600 p-3 bg-gray-50 rounded">
+                        <p>Voucher ini berlaku untuk produk {selectedVoucher.applicableProducts}</p>
+                        <p>Diskon: {selectedVoucher.discountPercentage}%</p>
+                        <p>Berlaku sampai: {formatDate(selectedVoucher.validUntil)}</p>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={handleApplyVoucher}
+                      disabled={!selectedVoucher || voucherApplied}
+                      className={`px-4 py-2 rounded ${!selectedVoucher || voucherApplied ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#333] text-white hover:bg-[#444]'}`}
+                    >
+                      {voucherApplied ? 'Voucher DiGunakan' : 'Gunakan Voucher'}
+                    </button>
+
+                    {voucherError && <p className="text-red-500 text-sm">{voucherError}</p>}
+
+                    {voucherApplied && voucherData && (
+                      <div className="bg-green-50 p-3 rounded">
+                        <p className="text-green-700">Voucher berhasil digunakan! Potongan: {formatCurrency(voucherData.discountAmount)}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">Tidak ada voucher tersedia</p>
+                )
+              ) : (
+                <p className="text-gray-500">Memuat data produk...</p>
+              )}
+            </div>
+
+            {/* Shipping Address Section */}
             <div className="space-y-4 border-t pt-4">
               <h3 className="font-overpass font-bold text-lg">Pilih Alamat Pengiriman</h3>
-
               {addresses.length > 0 ? (
                 <div className="flex flex-col space-y-2">
                   <select value={selectedAddress ? selectedAddress.id : ''} onChange={(e) => handleAddressSelection(e.target.value)} className="font-overpass p-2 border rounded">
@@ -448,7 +676,6 @@ const Checkout = () => {
                 </div>
               )}
 
-              {/* Detail Alamat Terpilih */}
               {selectedAddress && (
                 <div className="mt-4 p-3 bg-gray-50 rounded">
                   <p>
@@ -487,7 +714,8 @@ const Checkout = () => {
                 </div>
               </div>
             )}
-            {/* Provider Section */}
+
+            {/* Shipping Service Section */}
             {selectedExpedition && shippingCosts.length > 0 && (
               <div className="border p-4 rounded-lg space-y-4">
                 <h3 className="font-overpass font-bold text-lg">Layanan Pengiriman</h3>
@@ -570,6 +798,7 @@ const Checkout = () => {
               )}
             </div>
 
+            {/* Total Summary Section */}
             {selectedProvider && (
               <div className="space-y-4 border-t pt-4">
                 <div className="flex flex-col md:flex-row justify-between">
@@ -580,13 +809,19 @@ const Checkout = () => {
                   <p className="font-overpass font-semibold">Biaya Pengiriman ({selectedProvider})</p>
                   <p className="font-overpass md:text-end">{formatCurrency(shippingCosts.find((s) => s.service === selectedProvider)?.cost[0].value || 0)}</p>
                 </div>
-                <div className="flex justify-between items-center mt-4">
+                {voucherApplied && voucherData && (
+                  <div className="flex flex-col md:flex-row justify-between">
+                    <p className="font-overpass font-semibold">Potongan Voucher</p>
+                    <p className="font-overpass md:text-end">- {formatCurrency(voucherData.discountAmount)}</p>
+                  </div>
+                )}
+                <div className="flex justify-between items-center">
                   <p className="font-overpass font-semibold">Potongan Points</p>
                   <p className="font-overpass">- {formatCurrency(pointsToUse * 1000)}</p>
                 </div>
                 <div className="flex flex-col md:flex-row justify-between font-bold">
                   <p className="font-overpass">Total Pembayaran</p>
-                  <p className="font-overpass md:text-end">{formatCurrency(Math.max(0, totalWithShipping - pointsToUse * 1000))}</p>
+                  <p className="font-overpass md:text-end">{formatCurrency(Math.max(0, totalWithShipping - (voucherData?.discountAmount || 0) - pointsToUse * 1000))}</p>
                 </div>
               </div>
             )}

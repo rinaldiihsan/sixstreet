@@ -209,7 +209,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 py-24 px-5 md:px-0">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 py-24 lg:pt-[7rem] px-5 md:px-0">
       <div className="md:max-w-2xl w-full flex gap-x-3 mb-3">
         <button
           id="detail_account"
