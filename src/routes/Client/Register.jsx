@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import CryptoJS from 'crypto-js';
 
 const Register = () => {
   const [fullName, setfullName] = useState('');
@@ -187,7 +190,8 @@ const Register = () => {
 
   const handleVerifyOtp = async () => {
     try {
-      const response = await fetch(`${backendUrl}/verifyOTP`, {
+      // Verifikasi OTP
+      const verifyResponse = await fetch(`${backendUrl}/verifyOTP`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,45 +199,87 @@ const Register = () => {
         body: JSON.stringify({ otp }),
       });
 
-      if (response.ok) {
-        toast.success('OTP verified successfully!', {
-          position: 'top-right',
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          className: 'font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg',
-        });
-        setOtpSent(false);
-        navigate('/login');
+      if (verifyResponse.ok) {
+        // Setelah verifikasi berhasil, langsung login
+        try {
+          const loginResponse = await axios.post(`${backendUrl}/login`, {
+            email,
+            password,
+          });
+
+          if (loginResponse.status === 200) {
+            const accessToken = loginResponse.data.accessToken;
+            const detailUser = loginResponse.data.detailData;
+            const user_id = detailUser.user_id;
+            const role = detailUser.role;
+
+            // Set session storage
+            setItemWithExpiry('DetailUser', user_id, role, 3000000);
+
+            // Set cookie
+            const expiryDate = new Date();
+            expiryDate.setSeconds(expiryDate.getSeconds() + 3000);
+            Cookies.set('accessToken', accessToken, { expires: expiryDate });
+
+            toast.success('Registration and login successful!', {
+              position: 'top-right',
+              autoClose: 1500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              className: 'font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg',
+            });
+
+            // Redirect berdasarkan role
+            if (role === 1) {
+              navigate('/dashboard-admin');
+            } else {
+              navigate('/');
+            }
+            window.location.reload();
+          }
+        } catch (loginError) {
+          console.error('Login error:', loginError);
+          toast.error('Verification successful but login failed. Please try logging in manually.', {
+            position: 'top-right',
+            autoClose: 1500,
+          });
+          navigate('/login');
+        }
       } else {
-        const errorData = await response.json();
+        const errorData = await verifyResponse.json();
         toast.error(`OTP verification failed: ${errorData.message}`, {
           position: 'top-right',
           autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          className: 'font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg',
         });
       }
     } catch (error) {
       toast.error('An error occurred during OTP verification. Please try again later.', {
         position: 'top-right',
         autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        className: 'font-garamond font-bold text-[#333333] px-4 py-2 sm:px-6 sm:py-3 sm:rounded-lg',
       });
     }
   };
+
+  // Tambahkan fungsi encryption
+  function encryptData(data) {
+    const secretKey = import.meta.env.VITE_KEY_LOCALSTORAGE;
+    return CryptoJS.AES.encrypt(data, secretKey).toString();
+  }
+
+  function setItemWithExpiry(key, user_id, role, ttl) {
+    const now = new Date();
+
+    const item = {
+      user_id,
+      role,
+      expiry: now.getTime() + ttl,
+    };
+    const encryptedItem = encryptData(JSON.stringify(item));
+    sessionStorage.setItem(key, encryptedItem);
+  }
 
   return (
     <>
