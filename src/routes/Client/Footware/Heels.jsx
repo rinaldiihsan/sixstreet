@@ -427,7 +427,7 @@ const Heels = () => {
           )}
 
           {/* Product */}
-          <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden">
+          <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden scroll-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">

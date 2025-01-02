@@ -42,3 +42,13 @@
   justify-content: center;
   align-items: center;
 }
+
+.scroll-hidden {
+  -ms-overflow-style: none; /* IE dan Edge */
+  scrollbar-width: none; /* Firefox */
+  overflow-y: auto;
+}
+
+.scroll-hidden::-webkit-scrollbar {
+  display: none; /* Chrome, Safari dan Opera */
+}

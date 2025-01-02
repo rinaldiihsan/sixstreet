@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 const VoucherSection = ({ user_id }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [vouchers, setVouchers] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('all');
 
   const fetchVouchers = async () => {
     try {
@@ -14,7 +13,16 @@ const VoucherSection = ({ user_id }) => {
       const response = await axios.get(`${backendUrl}/voucher/${user_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setVouchers(response.data);
+
+      // Filter untuk memisahkan voucher yang sudah digunakan dan belum digunakan
+      const usedVouchers = response.data.filter((v) => v.isUsed);
+      const unusedVouchers = response.data.filter((v) => !v.isUsed);
+
+      // Jika ada voucher yang sudah digunakan, ambil hanya 1
+      const limitedUsedVouchers = usedVouchers.slice(0, 1);
+
+      // Gabungkan voucher yang belum digunakan dengan 1 voucher yang sudah digunakan
+      setVouchers([...unusedVouchers, ...limitedUsedVouchers]);
     } catch (error) {
       console.error('Error fetching vouchers:', error);
       toast.error('Gagal memuat voucher');
@@ -33,39 +41,14 @@ const VoucherSection = ({ user_id }) => {
     });
   };
 
-  const filterVouchers = (category) => {
-    if (category === 'all') return vouchers; // Return all vouchers when 'all' is selected
-    return vouchers.filter(
-      (voucher) => voucher.applicableProducts.toLowerCase() === category.toLowerCase() // Match the category exactly
-    );
-  };
-
-  const categories = [
-    { key: 'all', label: 'Semua Voucher' },
-    { key: 'apparel', label: 'Apparel' },
-    { key: 'sneakers', label: 'Sneakers' },
-    { key: 'Accessories', label: 'Accessories' },
-    { key: 'Sixstreet', label: 'Sixstreet' },
-  ];
-
-  const displayedVouchers = filterVouchers(activeCategory);
-
   return (
     <div className="font-overpass space-y-4">
-      <div className="flex overflow-x-auto space-x-2 pb-2">
-        {categories.map((category) => (
-          <button key={category.key} onClick={() => setActiveCategory(category.key)} className={`px-4 py-2  text-sm whitespace-nowrap ${activeCategory === category.key ? 'bg-[#333333] text-white' : 'bg-gray-100 text-gray-600'}`}>
-            {category.label}
-          </button>
-        ))}
-      </div>
-
-      {displayedVouchers.length === 0 ? (
+      {vouchers.length === 0 ? (
         <div className="text-center text-gray-500 py-4">Tidak ada voucher tersedia</div>
       ) : (
         <div className="space-y-4">
-          {displayedVouchers.map((voucher) => (
-            <div key={voucher.id} className="border border-gray-200  p-4 flex justify-between items-center">
+          {vouchers.map((voucher) => (
+            <div key={voucher.id} className="border border-gray-200 p-4 flex justify-between items-center">
               <div>
                 <p className="font-bold text-[#333333]">{voucher.code}</p>
                 <p className="text-sm text-gray-600">Diskon {voucher.discountPercentage}%</p>
