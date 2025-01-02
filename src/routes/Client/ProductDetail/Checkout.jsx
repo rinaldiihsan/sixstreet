@@ -287,6 +287,7 @@ const Checkout = () => {
 
   // Handle Apply Voucher
   const handleApplyVoucher = async () => {
+    // Validasi data dasar
     if (!transactionData?.length || !productJubelio) {
       toast.error('Data transaksi atau produk tidak tersedia');
       return;
@@ -301,25 +302,42 @@ const Checkout = () => {
     const price = transactionData[0].product_price * transactionData[0].quantity;
     const productName = productJubelio.item_group_name.toLowerCase();
     const isSixstreet = productName.includes('sixstreet');
+    const voucherCategory = selectedVoucher.applicableProducts.toLowerCase();
+    const isSixstreetVoucher = voucherCategory === 'sixstreet';
 
-    // Validasi voucher Sixstreet
-    if (isSixstreet && selectedVoucher.applicableProducts !== 'sixstreet') {
-      toast.error('Produk Sixstreet hanya bisa menggunakan voucher Sixstreet');
-      return;
+    try {
+      // Validasi untuk produk Sixstreet
+      if (isSixstreet) {
+        if (!isSixstreetVoucher) {
+          toast.error('Produk Sixstreet hanya bisa menggunakan voucher Sixstreet');
+          return;
+        }
+      }
+      // Validasi untuk produk non-Sixstreet
+      else {
+        if (isSixstreetVoucher) {
+          toast.error('Voucher Sixstreet hanya bisa digunakan untuk produk Sixstreet');
+          return;
+        }
+
+        // Validasi kategori produk
+        if (!productCategory) {
+          toast.error('Kategori produk tidak valid');
+          return;
+        }
+
+        if (voucherCategory !== productCategory.toLowerCase()) {
+          toast.error(`Voucher ${selectedVoucher.code} hanya dapat digunakan untuk produk ${selectedVoucher.applicableProducts}`);
+          return;
+        }
+      }
+
+      // Implementasi voucher
+      await implementVoucher(productId, price);
+    } catch (error) {``
+      console.error('Error applying voucher:', error);
+      toast.error(error.response?.data?.message || 'Gagal menerapkan voucher');
     }
-
-    if (!isSixstreet && selectedVoucher.applicableProducts === 'sixstreet') {
-      toast.error('Voucher Sixstreet hanya bisa digunakan untuk produk Sixstreet');
-      return;
-    }
-
-    // Validasi kategori untuk non-Sixstreet
-    if (!isSixstreet && selectedVoucher.applicableProducts.toLowerCase() !== productCategory.toLowerCase()) {
-      toast.error(`Voucher ${selectedVoucher.code} hanya dapat digunakan untuk produk ${selectedVoucher.applicableProducts}`);
-      return;
-    }
-
-    await implementVoucher(productId, price);
   };
 
   // Handle Expedition Change
