@@ -33,21 +33,32 @@ const TshirtSixstreet = () => {
         }
       );
 
-      if (response.status === 200 && response.data.length > 0) {
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
         const productData = response.data[0];
-        return {
-          groupId: group_id,
-          thumbnail: productData?.images?.[0]?.thumbnail || null,
-          images: productData?.images || [],
-        };
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
       }
+
       return {
         groupId: group_id,
         thumbnail: null,
         images: [],
       };
     } catch (error) {
-      // Return default values instead of throwing error
       return {
         groupId: group_id,
         thumbnail: null,
@@ -69,7 +80,7 @@ const TshirtSixstreet = () => {
       if (response.status === 200) {
         const data = response.data.data || [];
 
-        // Filter sixstreet products safely
+        // Filter products
         const sixstreetProducts = data.filter((item) =>
           item?.variants?.some((variant) => {
             const name = (variant?.item_name || "").toLowerCase();
@@ -79,44 +90,48 @@ const TshirtSixstreet = () => {
           })
         );
 
-        // Get unique group ids safely
+        // Get unique IDs
         const uniqueGroupIds = [
           ...new Set(
             sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
           ),
         ];
 
-        // Fetch thumbnails with error handling
+        // Fetch details
         const groupDetails = await Promise.allSettled(
           uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
         );
 
-        // Process results safely
         const validGroupDetails = groupDetails
           .filter((result) => result.status === "fulfilled")
           .map((result) => result.value)
           .filter(Boolean);
 
-        // Combine data safely
+        // Combine products with images
         const productsWithThumbnails = sixstreetProducts.map((item) => {
           const groupDetail = validGroupDetails.find(
             (g) => g?.groupId === item?.item_group_id
           );
-          return {
+
+          const result = {
             ...item,
             thumbnail: groupDetail?.thumbnail || null,
             images: groupDetail?.images || [],
           };
+
+          return result;
         });
 
         setProducts(productsWithThumbnails);
       }
     } catch (error) {
+      console.error("Error in fetchProducts:", error);
       setProducts([]);
     } finally {
       setIsLoading(false);
     }
   };
+
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
