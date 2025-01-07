@@ -14,6 +14,54 @@ const Bag = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
+
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        const productData = response.data[0];
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
+      }
+
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
 
   const fetchProducts = async (token) => {
     try {
@@ -25,24 +73,48 @@ const Bag = () => {
         },
       });
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter berdasarkan category_id
+        const sixstreetProducts = data.filter((item) =>
+          [
+            10217, 36, 5516, 10230, 12622, 12628, 12632, 15320, 18225, 2835,
+            10222, 12621, 12626, 12631,
+          ].includes(item.item_category_id)
+        );
+
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+
+          return {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+        });
+
+        setProducts(productsWithThumbnails);
       }
-
-      const data = response.data;
-
-      // Menggabungkan thumbnail dari objek utama produk ke dalam variants
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -530,15 +602,15 @@ const Bag = () => {
                       (variant.available_qty === null ||
                         variant.available_qty <= 0)
                   )
+                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
-                        onClick={handleSoldOutClick}
-                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                        to={`/product-detail-sold/${variant.item_group_id}`}
+                        className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
                       >
                         {variant.parentThumbnail ? (
                           <img

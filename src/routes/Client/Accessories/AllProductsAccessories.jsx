@@ -19,6 +19,53 @@ const AllProductsAccessories = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [isSoldProducts, setIsSoldProducts] = useState(15);
 
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        const productData = response.data[0];
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
+      }
+
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
+
   const fetchProducts = async (token) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
@@ -29,23 +76,49 @@ const AllProductsAccessories = () => {
         },
       });
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter berdasarkan category_id
+        const sixstreetProducts = data.filter((item) =>
+          [
+            7339, 7340, 17860, 1147, 7332, 1143, 10217, 36, 5516, 10230, 12622,
+            12628, 12632, 15320, 18225, 2835, 10222, 12621, 12626, 12631, 24806,
+            24807, 1149, 12610, 12611, 10219, 17866, 1139, 1137, 12432, 5429,
+          ].includes(item.item_category_id)
+        );
+
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+
+          return {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+        });
+
+        setProducts(productsWithThumbnails);
       }
-
-      const data = response.data;
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-          last_modified: item.last_modified,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }

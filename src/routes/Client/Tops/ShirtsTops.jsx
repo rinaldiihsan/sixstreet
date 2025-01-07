@@ -17,6 +17,54 @@ const ShirtsTops = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
+
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        const productData = response.data[0];
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
+      }
+
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
 
   const fetchProducts = async (token) => {
     try {
@@ -28,23 +76,45 @@ const ShirtsTops = () => {
         },
       });
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter berdasarkan category_id
+        const sixstreetProducts = data.filter((item) =>
+          [18198, 18209].includes(item.item_category_id)
+        );
+
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+
+          return {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+        });
+
+        setProducts(productsWithThumbnails);
       }
-
-      const data = response.data;
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-          last_modified: item.last_modified,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -76,83 +146,6 @@ const ShirtsTops = () => {
     } catch (error) {
       setError(`An error occurred: ${error.message}`);
       setLoginStatus("error");
-    }
-  };
-
-  const fetchProductGroup = async (token) => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(
-        `${apiUrl}/inventory/catalog/for-listing/${itemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        const productData = response.data[0];
-        setProductImage(productData.images[0].thumbnail);
-
-        // Store basic product info
-        setProduct({
-          item_group_name: productData.item_group_name,
-          description: stripHtmlTags(productData.description),
-          variations: [productData.group_variations[0]],
-        });
-
-        // Set initial size
-        if (productData.group_variations[0]?.values?.length > 0) {
-          setSelectedSize(productData.group_variations[0].values[0]);
-        }
-
-        // Get all item_ids from variations
-        const itemIds = productData.variations.map(
-          (variant) => variant.item_id
-        );
-
-        // Fetch details for each SKU
-        const skusPromises = itemIds.map((id) => fetchSkuDetails(token, id));
-        const skusData = await Promise.all(skusPromises);
-
-        // Filter out any null responses and set the SKUs
-        const validSkus = skusData.filter((sku) => sku !== null);
-        setProductSkus(validSkus);
-
-        // Update available quantities
-        const quantities = {};
-        validSkus.forEach((sku) => {
-          if (sku.variation_values && sku.variation_values[0]) {
-            quantities[sku.variation_values[0].value] = sku.available_qty || 0;
-          }
-        });
-        setAvailableQuantities(quantities);
-      }
-    } catch (error) {
-      console.error("Error fetching product group:", error);
-      setError("Failed to fetch product details");
-    }
-  };
-
-  const fetchSkuDetails = async (token, itemId) => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(`${apiUrl}/inventory/items/${itemId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status === 200) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      console.error(`Error fetching SKU details for item ${itemId}:`, error);
-      return null;
     }
   };
 
@@ -638,15 +631,15 @@ const ShirtsTops = () => {
                       (variant.available_qty === null ||
                         variant.available_qty <= 0)
                   )
+                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link
-                        href="#"
-                        onClick={handleSoldOutClick}
-                        className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75"
+                        to={`/product-detail-sold/${variant.item_group_id}`}
+                        className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
                       >
                         {variant.parentThumbnail ? (
                           <img
@@ -665,11 +658,11 @@ const ShirtsTops = () => {
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
                           className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                                         line-clamp-2 break-words text-center text-red-600
-                                                         w-full max-w-[10rem]
-                                                         mobileS:max-w-[10.5rem]
-                                                         mobile:max-w-[11.5rem]
-                                                         md:max-w-[23rem]"
+                                                                     line-clamp-2 break-words text-center text-red-600
+                                                                     w-full max-w-[10rem]
+                                                                     mobileS:max-w-[10.5rem]
+                                                                     mobile:max-w-[11.5rem]
+                                                                     md:max-w-[23rem]"
                         >
                           {variant.item_name}
                         </h2>
