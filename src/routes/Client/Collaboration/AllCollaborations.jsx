@@ -32,21 +32,32 @@ const AllCollaborations = () => {
         }
       );
 
-      if (response.status === 200 && response.data.length > 0) {
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
         const productData = response.data[0];
-        return {
-          groupId: group_id,
-          thumbnail: productData?.images?.[0]?.thumbnail || null,
-          images: productData?.images || [],
-        };
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
       }
+
       return {
         groupId: group_id,
         thumbnail: null,
         images: [],
       };
     } catch (error) {
-      // Return default values instead of throwing error
       return {
         groupId: group_id,
         thumbnail: null,

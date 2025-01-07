@@ -12,6 +12,54 @@ const Hats = () => {
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
+
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        const productData = response.data[0];
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
+      }
+
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
 
   const fetchProducts = async (token) => {
     try {
@@ -23,29 +71,49 @@ const Hats = () => {
         },
       });
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter berdasarkan category_id
+        const sixstreetProducts = data.filter((item) =>
+          [7339, 1147].includes(item.item_category_id)
+        );
+
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+
+          return {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+        });
+
+        setProducts(productsWithThumbnails);
       }
-
-      const data = response.data;
-
-      // Menggabungkan thumbnail dari objek utama produk ke dalam variants
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
   };
-
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
@@ -477,31 +545,42 @@ const Hats = () => {
                       (variant.available_qty === null ||
                         variant.available_qty <= 1)
                   )
+                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-y-5 items-center"
                     >
-                      <Link to="/">
+                      <Link
+                        to={`/product-detail-sold/${variant.item_group_id}`}
+                        className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
+                      >
                         {variant.parentThumbnail ? (
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[30rem]"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[30rem]"
+                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
                           />
                         )}
                       </Link>
-                      <div className="flex flex-col text-center gap-y-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-xl md:w-[24rem] text-red-600">
+                      <div className="flex flex-col items-center text-center w-full px-2">
+                        <h2
+                          className="uppercase font-overpass font-extrabold text-base md:text-lg
+                                                         line-clamp-2 break-words text-center text-red-600
+                                                         w-full max-w-[10rem]
+                                                         mobileS:max-w-[10.5rem]
+                                                         mobile:max-w-[11.5rem]
+                                                         md:max-w-[23rem]"
+                        >
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-xl text-red-600">
+                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
                           Sold Out
                         </h2>
                       </div>
