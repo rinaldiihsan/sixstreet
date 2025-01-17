@@ -6,6 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import HeroAdidas from "../../../assets/banner/Adidas.webp";
 import SidebarFilterBrand from "../../../components/SidebarFilterBrand";
+import lazySizes from "lazysizes";
 
 const Adidas = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -442,29 +443,19 @@ const Adidas = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link to={`/product-detail/${variant.item_group_id}`}>
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                          />
-                        )}
+                        <img
+                          data-src={
+                            variant.parentThumbnail || "/dummy-product.png"
+                          } // Ganti src dengan data-src
+                          className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                          alt={variant.item_name}
+                          onError={(e) => {
+                            e.target.src = "/dummy-product.png";
+                          }}
+                        />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
-                                        break-words text-center
-                                       w-full max-w-[10rem] 
-                                       mobileS:max-w-[10.5rem] 
-                                       mobile:max-w-[11.5rem] 
-                                       md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
@@ -547,29 +538,19 @@ const Adidas = () => {
                         to={`/product-detail-sold/${variant.item_group_id}`}
                         className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
                       >
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                          />
-                        )}
+                        <img
+                          data-src={
+                            variant.parentThumbnail || "/dummy-product.png"
+                          } // Ganti src dengan data-src
+                          className="lazyload w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                          alt={variant.item_name}
+                          onError={(e) => {
+                            e.target.src = "/dummy-product.png";
+                          }}
+                        />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                                         line-clamp-2 break-words text-center text-red-600
-                                                         w-full max-w-[10rem]
-                                                         mobileS:max-w-[10.5rem]
-                                                         mobile:max-w-[11.5rem]
-                                                         md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg line-clamp-2 break-words text-center text-red-600 w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
