@@ -6,6 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import { motion } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 import assetHeroTshirt from "../../../assets/banner/t-shirts.webp";
+import lazySizes from "lazysizes";
 
 const TshirtSixstreet = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -495,18 +496,9 @@ const TshirtSixstreet = () => {
                   </div>
                 </div>
               ))
-            ) : loginStatus === "success" &&
-              products.some((item) =>
-                item.variants.some((variant) => {
-                  const name = variant.item_name.toLowerCase();
-                  return (
-                    name.includes("sixstreet tee") ||
-                    name.includes("sixstreet l/s")
-                  );
-                })
-              ) ? (
+            ) : loginStatus === "success" ? (
               <>
-                {/* Available Products (Stock > 1) */}
+                {/* Available Products */}
                 {Object.values(
                   products
                     .filter((item) =>
@@ -519,6 +511,7 @@ const TshirtSixstreet = () => {
                         );
                       })
                     )
+                    .slice(0, 8) // Ambil 8 item pertama
                     .map((item) => ({
                       ...item.variants[0],
                       item_group_id: item.item_group_id,
@@ -547,20 +540,18 @@ const TshirtSixstreet = () => {
                     >
                       <Link to={`/product-detail/${variant.item_group_id}`}>
                         <img
-                          src={variant.parentThumbnail || "/dummy-product.png"}
+                          data-src={
+                            variant.parentThumbnail || "/dummy-product.png"
+                          } // Ganti src dengan data-src
+                          className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
                           alt={variant.item_name}
-                          className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                          onError={(e) => {
+                            e.target.src = "/dummy-product.png";
+                          }}
                         />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
-                                        break-words text-center
-                                       w-full max-w-[10rem] 
-                                       mobileS:max-w-[10.5rem] 
-                                       mobile:max-w-[11.5rem] 
-                                       md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
@@ -570,22 +561,26 @@ const TshirtSixstreet = () => {
                     </div>
                   ))}
 
-                {/* Sold Out or Low Stock Products (Stock <= 1) */}
+                {/* Sold Out Products */}
                 {Object.values(
                   products
+                    .filter((item) =>
+                      item.variants.some((variant) => {
+                        const name = variant.item_name.toLowerCase();
+                        return (
+                          (name.includes("sixstreet tee") ||
+                            name.includes("sixstreet l/s")) &&
+                          variant.available_qty <= 0
+                        );
+                      })
+                    )
+                    .slice(0, isSoldProducts) // Batasi jumlah produk sold out
                     .flatMap((item) => ({
                       ...item.variants[0],
                       item_group_id: item.item_group_id,
                       parentThumbnail: item.thumbnail,
                       last_modified: item.last_modified,
                     }))
-                    .filter((variant) => {
-                      const name = variant.item_name.toLowerCase();
-                      return (
-                        name.includes("sixstreet tee") ||
-                        name.includes("sixstreet l/s")
-                      );
-                    })
                     .reduce((uniqueVariants, variant) => {
                       if (!uniqueVariants[variant.item_name]) {
                         uniqueVariants[variant.item_name] = variant;
@@ -599,13 +594,6 @@ const TshirtSixstreet = () => {
                       selectedBrands
                     )
                   )
-                  .filter(
-                    (variant) =>
-                      variant.sell_price !== null &&
-                      variant.sell_price !== 0 &&
-                      variant.available_qty <= 0
-                  )
-                  .slice(0, isSoldProducts)
                   .map((variant, index) => (
                     <div
                       key={index}
@@ -615,29 +603,19 @@ const TshirtSixstreet = () => {
                         to={`/product-detail-sold/${variant.item_group_id}`}
                         className="cursor-pointer transition-opacity duration-300 hover:opacity-75"
                       >
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
-                          />
-                        )}
+                        <img
+                          data-src={
+                            variant.parentThumbnail || "/dummy-product.png"
+                          } // Ganti src dengan data-src
+                          className="lazyload w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50"
+                          alt={variant.item_name}
+                          onError={(e) => {
+                            e.target.src = "/dummy-product.png";
+                          }}
+                        />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                                         line-clamp-2 break-words text-center text-red-600
-                                                         w-full max-w-[10rem]
-                                                         mobileS:max-w-[10.5rem]
-                                                         mobile:max-w-[11.5rem]
-                                                         md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg line-clamp-2 break-words text-center text-red-600 w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">
