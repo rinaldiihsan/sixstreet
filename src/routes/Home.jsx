@@ -6,6 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import bannerAwal from "../assets/banner/banner-awal.webp";
 
 const Home = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -140,7 +141,7 @@ const Home = () => {
       <main className="overflow-x-hidden">
         <div className="relative">
           <img
-            src="/hero1.webp"
+            src={bannerAwal}
             alt="Hero"
             className="w-full object-cover"
             style={{ height: windowHeight }}
@@ -150,7 +151,7 @@ const Home = () => {
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">
                 apparel
               </h1>
-              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-justify leading-tight">
+              <p className="capitalize font-garamond font-medium text-base md:text-xl text-center lg:text-justify leading-tight">
                 Sixstreet Apparel represents the essence of modern streetwear,
                 characterized by minimalist design and refined craftsmanship.
                 Each piece is meticulously created to convey a sense of
@@ -179,7 +180,7 @@ const Home = () => {
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">
                 apparel
               </h1>
-              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-justify">
+              <p className="capitalize font-garamond font-medium text-lg text-center md:text-xl lg:text-justify">
                 Elevate your wardrobe with our latest arrivals.
               </p>
             </div>
@@ -270,7 +271,7 @@ const Home = () => {
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">
                 sneakers
               </h1>
-              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-justify">
+              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-center lg:text-justify">
                 Elevate every step – browse our sneaker collection now.
               </p>
             </div>
@@ -372,7 +373,7 @@ const Home = () => {
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">
                 accessories
               </h1>
-              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-justify">
+              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-center lg:text-justify">
                 Accessorize your life – shop now for the perfect pieces.
               </p>
             </div>
