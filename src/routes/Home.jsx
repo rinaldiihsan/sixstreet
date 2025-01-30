@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import bannerAwal from "../assets/banner/banner-awal.webp";
+import lazySizes from "lazysizes";
 
 const Home = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -16,6 +17,113 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [news, setNews] = useState([]);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        const productData = response.data[0];
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
+      }
+
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
+
+  const fetchProducts = async (token) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(`${apiUrl}/inventory/items/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter berdasarkan category_id
+        const sixstreetProducts = data.filter((item) =>
+          [18200, 5472, 999, 1013, 12780, 12803, 17866, 7332].includes(
+            item.item_category_id
+          )
+        );
+
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+
+          return {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+        });
+
+        productsWithThumbnails.sort(
+          (a, b) => new Date(b.last_modified) - new Date(a.last_modified)
+        );
+
+        setProducts(productsWithThumbnails);
+      }
+    } catch (error) {
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
@@ -44,43 +152,6 @@ const Home = () => {
     } catch (error) {
       setError(`An error occurred: ${error.message}`);
       setLoginStatus("error");
-    }
-  };
-
-  const fetchProducts = async (token) => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(`${apiUrl}/inventory/items/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
-      }
-
-      const data = response.data;
-
-      // Menggabungkan thumbnail dari objek utama produk ke dalam variants
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-        }));
-        return item;
-      });
-
-      productsWithThumbnails.sort(
-        (a, b) => new Date(b.last_modified) - new Date(a.last_modified)
-      );
-
-      setProducts(productsWithThumbnails);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -227,26 +298,21 @@ const Home = () => {
               .map((variant, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Link to={`/product-detail/${variant.item_group_id}`}>
-                    {variant.parentThumbnail ? (
-                      <img
-                        src={variant.parentThumbnail}
-                        alt={variant.item_name}
-                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      />
-                    ) : (
-                      <img
-                        src="/dummy-product.png"
-                        alt={variant.item_name}
-                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      />
-                    )}
+                    <img
+                      data-src={variant.parentThumbnail || "/dummy-product.png"} // Ganti src dengan data-src
+                      className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      alt={variant.item_name}
+                      onError={(e) => {
+                        e.target.src = "/dummy-product.png";
+                      }}
+                    />
                   </Link>
-                  <div className="flex flex-col md:text-center gap-y-2">
-                    <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                  <div className="flex flex-col items-center text-center w-full px-2">
+                    <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                       {variant.item_name}
                     </h2>
-                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
-                      {formatPrice(variant.sell_price)}
+                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
+                      Rp. {variant.sell_price.toLocaleString("id-ID")}
                     </h2>
                   </div>
                 </div>
@@ -329,26 +395,21 @@ const Home = () => {
               .map((variant, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Link to={`/product-detail/${variant.item_group_id}`}>
-                    {variant.parentThumbnail ? (
-                      <img
-                        src={variant.parentThumbnail}
-                        alt={variant.item_name}
-                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      />
-                    ) : (
-                      <img
-                        src="/dummy-product.png"
-                        alt={variant.item_name}
-                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      />
-                    )}
+                    <img
+                      data-src={variant.parentThumbnail || "/dummy-product.png"} // Ganti src dengan data-src
+                      className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      alt={variant.item_name}
+                      onError={(e) => {
+                        e.target.src = "/dummy-product.png";
+                      }}
+                    />
                   </Link>
-                  <div className="flex flex-col md:text-center gap-y-2">
-                    <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                  <div className="flex flex-col items-center text-center w-full px-2">
+                    <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                       {variant.item_name}
                     </h2>
-                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
-                      {formatPrice(variant.sell_price)}
+                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
+                      Rp. {variant.sell_price.toLocaleString("id-ID")}
                     </h2>
                   </div>
                 </div>
@@ -433,26 +494,21 @@ const Home = () => {
               .map((variant, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Link to={`/product-detail/${variant.item_group_id}`}>
-                    {variant.parentThumbnail ? (
-                      <img
-                        src={variant.parentThumbnail}
-                        alt={variant.item_name}
-                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      />
-                    ) : (
-                      <img
-                        src="/dummy-product.png"
-                        alt={variant.item_name}
-                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      />
-                    )}
+                    <img
+                      data-src={variant.parentThumbnail || "/dummy-product.png"} // Ganti src dengan data-src
+                      className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      alt={variant.item_name}
+                      onError={(e) => {
+                        e.target.src = "/dummy-product.png";
+                      }}
+                    />
                   </Link>
-                  <div className="flex flex-col md:text-center gap-y-2">
-                    <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
+                  <div className="flex flex-col items-center text-center w-full px-2">
+                    <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
                       {variant.item_name}
                     </h2>
-                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
-                      {formatPrice(variant.sell_price)}
+                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
+                      Rp. {variant.sell_price.toLocaleString("id-ID")}
                     </h2>
                   </div>
                 </div>
