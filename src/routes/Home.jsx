@@ -4,10 +4,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
 import bannerAwal from "../assets/banner/banner-awal.webp";
-import lazySizes from "lazysizes";
 
 const Home = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -18,9 +15,51 @@ const Home = () => {
   const [news, setNews] = useState([]);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+  // Helper Functions
+  const chunk = (arr, size) => {
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+      arr.slice(i * size, i * size + size)
+    );
+  };
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Get top products per category
+  const getFilteredProducts = (products, categoryIds, limit = 8) => {
+    return Object.values(
+      products
+        .filter((item) => categoryIds.includes(item.item_category_id))
+        .flatMap((item) =>
+          item.variants.map((variant) => ({
+            ...variant,
+            item_group_id: item.item_group_id,
+            last_modified: item.last_modified,
+            category_id: item.item_category_id,
+          }))
+        )
+        .reduce((uniqueVariants, variant) => {
+          if (!uniqueVariants[variant.item_name]) {
+            uniqueVariants[variant.item_name] = variant;
+          }
+          return uniqueVariants;
+        }, {})
+    )
+      .filter(
+        (variant) =>
+          variant.sell_price !== null &&
+          variant.sell_price !== 0 &&
+          variant.available_qty !== null &&
+          variant.available_qty >= 1
+      )
+      .sort((a, b) => new Date(b.last_modified) - new Date(a.last_modified))
+      .slice(0, limit);
+  };
+
+  // Fetch product groups for images
   const fetchProductGroup = async (token, group_id) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
+
       const response = await axios.get(
         `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
         {
@@ -31,7 +70,6 @@ const Home = () => {
         }
       );
 
-      // Karena response.data adalah array, ambil item pertama
       if (
         response.status === 200 &&
         Array.isArray(response.data) &&
@@ -39,13 +77,10 @@ const Home = () => {
       ) {
         const productData = response.data[0];
 
-        // Pastikan ada images dan url
         if (productData.images && productData.images.length > 0) {
-          const imageUrl = productData.images[0].url;
-
           return {
             groupId: group_id,
-            thumbnail: imageUrl,
+            thumbnail: productData.images[0].url,
             images: productData.images,
           };
         }
@@ -57,6 +92,7 @@ const Home = () => {
         images: [],
       };
     } catch (error) {
+      console.warn(`Failed to fetch group ${group_id}:`, error.message);
       return {
         groupId: group_id,
         thumbnail: null,
@@ -65,9 +101,13 @@ const Home = () => {
     }
   };
 
+  // Main fetch function
   const fetchProducts = async (token) => {
     try {
+      setIsLoading(true);
       const apiUrl = import.meta.env.VITE_API_URL;
+
+      // 1. Fetch all products first
       const response = await axios.get(`${apiUrl}/inventory/items/`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -78,53 +118,76 @@ const Home = () => {
       if (response.status === 200) {
         const data = response.data.data || [];
 
-        // Filter berdasarkan category_id
-        const sixstreetProducts = data.filter((item) =>
-          [18200, 5472, 999, 1013, 12780, 12803, 17866, 7332].includes(
-            item.item_category_id
-          )
+        // 2. Get filtered products for each category
+        const apparelProducts = getFilteredProducts(data, [18200]);
+        const footwearProducts = getFilteredProducts(
+          data,
+          [5472, 999, 1013, 12780, 12803]
         );
+        const accessoriesProducts = getFilteredProducts(data, [17866, 7332]);
 
-        const uniqueGroupIds = [
-          ...new Set(
-            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
-          ),
-        ];
+        // 3. Get unique group IDs from filtered products only
+        const neededGroupIds = [
+          ...new Set([
+            ...apparelProducts.map((p) => p.item_group_id),
+            ...footwearProducts.map((p) => p.item_group_id),
+            ...accessoriesProducts.map((p) => p.item_group_id),
+          ]),
+        ].filter(Boolean);
 
-        const groupDetails = await Promise.allSettled(
-          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
-        );
+        // 4. Fetch images in batches
+        const batchSize = 2;
+        const batches = chunk(neededGroupIds, batchSize);
+        let allGroupDetails = [];
 
-        const validGroupDetails = groupDetails
-          .filter((result) => result.status === "fulfilled")
-          .map((result) => result.value)
-          .filter(Boolean);
-
-        const productsWithThumbnails = sixstreetProducts.map((item) => {
-          const groupDetail = validGroupDetails.find(
-            (g) => g?.groupId === item?.item_group_id
+        for (const batch of batches) {
+          const batchPromises = batch.map((groupId) =>
+            fetchProductGroup(token, groupId)
           );
+          const batchResults = await Promise.allSettled(batchPromises);
 
-          return {
-            ...item,
-            thumbnail: groupDetail?.thumbnail || null,
-            images: groupDetail?.images || [],
-          };
-        });
+          const validBatchResults = batchResults
+            .filter((result) => result.status === "fulfilled")
+            .map((result) => result.value)
+            .filter((result) => result && result.thumbnail);
 
-        productsWithThumbnails.sort(
-          (a, b) => new Date(b.last_modified) - new Date(a.last_modified)
-        );
+          allGroupDetails = [...allGroupDetails, ...validBatchResults];
 
-        setProducts(productsWithThumbnails);
+          // 5. Update products with images
+          const updatedProducts = data
+            .filter((item) => neededGroupIds.includes(item.item_group_id))
+            .map((item) => {
+              const groupDetail = allGroupDetails.find(
+                (g) => g.groupId === item.item_group_id
+              );
+
+              return {
+                ...item,
+                thumbnail: groupDetail?.thumbnail || null,
+                images: groupDetail?.images || [],
+                variants: Array.isArray(item.variants)
+                  ? item.variants.map((variant) => ({
+                      ...variant,
+                      parentThumbnail: groupDetail?.thumbnail || null,
+                      item_group_id: item.item_group_id,
+                    }))
+                  : [],
+              };
+            });
+
+          setProducts(updatedProducts);
+          await delay(1500);
+        }
       }
     } catch (error) {
+      console.error("Error fetching products:", error);
       setProducts([]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Login and initialize
   const loginAndFetchProducts = async () => {
     const email = import.meta.env.VITE_API_EMAIL;
     const password = import.meta.env.VITE_API_PASSWORD;
@@ -138,7 +201,6 @@ const Home = () => {
 
     try {
       const response = await axios.post(`${ApiLogin}/loginjubelio`);
-
       const data = response.data;
 
       if (response.status === 200) {
@@ -298,21 +360,26 @@ const Home = () => {
               .map((variant, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Link to={`/product-detail/${variant.item_group_id}`}>
-                    <img
-                      data-src={variant.parentThumbnail || "/dummy-product.png"} // Ganti src dengan data-src
-                      className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      alt={variant.item_name}
-                      onError={(e) => {
-                        e.target.src = "/dummy-product.png";
-                      }}
-                    />
+                    {variant.parentThumbnail ? (
+                      <img
+                        src={variant.parentThumbnail}
+                        alt={variant.item_name}
+                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      />
+                    ) : (
+                      <img
+                        src="/dummy-product.png"
+                        alt={variant.item_name}
+                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      />
+                    )}
                   </Link>
-                  <div className="flex flex-col items-center text-center w-full px-2">
-                    <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
+                  <div className="flex flex-col md:text-center gap-y-2">
+                    <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
                       {variant.item_name}
                     </h2>
-                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
-                      Rp. {variant.sell_price.toLocaleString("id-ID")}
+                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                      {formatPrice(variant.sell_price)}
                     </h2>
                   </div>
                 </div>
@@ -395,21 +462,26 @@ const Home = () => {
               .map((variant, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Link to={`/product-detail/${variant.item_group_id}`}>
-                    <img
-                      data-src={variant.parentThumbnail || "/dummy-product.png"} // Ganti src dengan data-src
-                      className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      alt={variant.item_name}
-                      onError={(e) => {
-                        e.target.src = "/dummy-product.png";
-                      }}
-                    />
+                    {variant.parentThumbnail ? (
+                      <img
+                        src={variant.parentThumbnail}
+                        alt={variant.item_name}
+                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      />
+                    ) : (
+                      <img
+                        src="/dummy-product.png"
+                        alt={variant.item_name}
+                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      />
+                    )}
                   </Link>
-                  <div className="flex flex-col items-center text-center w-full px-2">
-                    <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
+                  <div className="flex flex-col md:text-center gap-y-2">
+                    <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
                       {variant.item_name}
                     </h2>
-                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
-                      Rp. {variant.sell_price.toLocaleString("id-ID")}
+                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                      {formatPrice(variant.sell_price)}
                     </h2>
                   </div>
                 </div>
@@ -494,21 +566,26 @@ const Home = () => {
               .map((variant, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Link to={`/product-detail/${variant.item_group_id}`}>
-                    <img
-                      data-src={variant.parentThumbnail || "/dummy-product.png"} // Ganti src dengan data-src
-                      className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
-                      alt={variant.item_name}
-                      onError={(e) => {
-                        e.target.src = "/dummy-product.png";
-                      }}
-                    />
+                    {variant.parentThumbnail ? (
+                      <img
+                        src={variant.parentThumbnail}
+                        alt={variant.item_name}
+                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      />
+                    ) : (
+                      <img
+                        src="/dummy-product.png"
+                        alt={variant.item_name}
+                        className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                      />
+                    )}
                   </Link>
-                  <div className="flex flex-col items-center text-center w-full px-2">
-                    <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg break-words text-center w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
+                  <div className="flex flex-col md:text-center gap-y-2">
+                    <h2 className="uppercase font-overpass font-extrabold md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]">
                       {variant.item_name}
                     </h2>
-                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">
-                      Rp. {variant.sell_price.toLocaleString("id-ID")}
+                    <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl">
+                      {formatPrice(variant.sell_price)}
                     </h2>
                   </div>
                 </div>
