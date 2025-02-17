@@ -280,7 +280,7 @@ const Home = () => {
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">
-                apparel
+                sixstreet apparel
               </h1>
               <p className="capitalize font-garamond font-medium text-base md:text-xl text-center lg:text-justify leading-tight">
                 Sixstreet Apparel represents the essence of modern streetwear,
