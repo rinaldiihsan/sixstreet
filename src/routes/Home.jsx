@@ -55,7 +55,99 @@ const Home = () => {
       .slice(0, limit);
   };
 
-  // Fetch product groups for images
+  const fetchProducts = async (token) => {
+    try {
+      setIsLoading(true);
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+      // 1. Fetch initial products
+      const response = await axios.get(`${apiUrl}/inventory/items/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // 2. Get filtered products for each category
+        const apparelProducts = getFilteredProducts(data, [18200]);
+        const footwearProducts = getFilteredProducts(
+          data,
+          [5472, 999, 1013, 12780, 12803]
+        );
+        const accessoriesProducts = getFilteredProducts(data, [17866, 7332]);
+
+        // Set initial products with basic data
+        setProducts(
+          data.filter((item) =>
+            [18200, 5472, 999, 1013, 12780, 12803, 17866, 7332].includes(
+              item.item_category_id
+            )
+          )
+        );
+
+        // 3. Get unique group IDs from filtered products
+        const neededGroupIds = [
+          ...new Set([
+            ...apparelProducts.map((p) => p.item_group_id),
+            ...footwearProducts.map((p) => p.item_group_id),
+            ...accessoriesProducts.map((p) => p.item_group_id),
+          ]),
+        ].filter(Boolean);
+
+        // 4. Process each group ID individually
+        for (const groupId of neededGroupIds) {
+          try {
+            const groupDetail = await fetchProductGroup(token, groupId);
+
+            if (groupDetail && groupDetail.thumbnail) {
+              // Update products state immediately for this group
+              setProducts((prevProducts) => {
+                const updatedProducts = [...prevProducts];
+                const productIndex = updatedProducts.findIndex(
+                  (item) => item.item_group_id === groupId
+                );
+
+                if (productIndex !== -1) {
+                  updatedProducts[productIndex] = {
+                    ...updatedProducts[productIndex],
+                    thumbnail: groupDetail.thumbnail,
+                    images: groupDetail.images,
+                    variants: Array.isArray(
+                      updatedProducts[productIndex].variants
+                    )
+                      ? updatedProducts[productIndex].variants.map(
+                          (variant) => ({
+                            ...variant,
+                            parentThumbnail: groupDetail.thumbnail,
+                            item_group_id: groupId,
+                          })
+                        )
+                      : [],
+                  };
+                }
+
+                return updatedProducts.sort(
+                  (a, b) =>
+                    new Date(b.last_modified) - new Date(a.last_modified)
+                );
+              });
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch group ${groupId}:`, error.message);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchProductGroup = async (token, group_id) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
@@ -86,104 +178,10 @@ const Home = () => {
         }
       }
 
-      return {
-        groupId: group_id,
-        thumbnail: null,
-        images: [],
-      };
+      return null;
     } catch (error) {
       console.warn(`Failed to fetch group ${group_id}:`, error.message);
-      return {
-        groupId: group_id,
-        thumbnail: null,
-        images: [],
-      };
-    }
-  };
-
-  // Main fetch function
-  const fetchProducts = async (token) => {
-    try {
-      setIsLoading(true);
-      const apiUrl = import.meta.env.VITE_API_URL;
-
-      // 1. Fetch all products first
-      const response = await axios.get(`${apiUrl}/inventory/items/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status === 200) {
-        const data = response.data.data || [];
-
-        // 2. Get filtered products for each category
-        const apparelProducts = getFilteredProducts(data, [18200]);
-        const footwearProducts = getFilteredProducts(
-          data,
-          [5472, 999, 1013, 12780, 12803]
-        );
-        const accessoriesProducts = getFilteredProducts(data, [17866, 7332]);
-
-        // 3. Get unique group IDs from filtered products only
-        const neededGroupIds = [
-          ...new Set([
-            ...apparelProducts.map((p) => p.item_group_id),
-            ...footwearProducts.map((p) => p.item_group_id),
-            ...accessoriesProducts.map((p) => p.item_group_id),
-          ]),
-        ].filter(Boolean);
-
-        // 4. Fetch images in batches
-        const batchSize = 2;
-        const batches = chunk(neededGroupIds, batchSize);
-        let allGroupDetails = [];
-
-        for (const batch of batches) {
-          const batchPromises = batch.map((groupId) =>
-            fetchProductGroup(token, groupId)
-          );
-          const batchResults = await Promise.allSettled(batchPromises);
-
-          const validBatchResults = batchResults
-            .filter((result) => result.status === "fulfilled")
-            .map((result) => result.value)
-            .filter((result) => result && result.thumbnail);
-
-          allGroupDetails = [...allGroupDetails, ...validBatchResults];
-
-          // 5. Update products with images
-          const updatedProducts = data
-            .filter((item) => neededGroupIds.includes(item.item_group_id))
-            .map((item) => {
-              const groupDetail = allGroupDetails.find(
-                (g) => g.groupId === item.item_group_id
-              );
-
-              return {
-                ...item,
-                thumbnail: groupDetail?.thumbnail || null,
-                images: groupDetail?.images || [],
-                variants: Array.isArray(item.variants)
-                  ? item.variants.map((variant) => ({
-                      ...variant,
-                      parentThumbnail: groupDetail?.thumbnail || null,
-                      item_group_id: item.item_group_id,
-                    }))
-                  : [],
-              };
-            });
-
-          setProducts(updatedProducts);
-          await delay(1500);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setProducts([]);
-    } finally {
-      setIsLoading(false);
+      return null;
     }
   };
 
