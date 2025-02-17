@@ -5,6 +5,7 @@ import axios from 'axios';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import bannerAwal from '../assets/banner/banner-awal.webp';
+import AutoPopup from '../components/User/AutoPopup';
 
 const Home = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -228,6 +229,7 @@ const Home = () => {
 
   return (
     <>
+      <AutoPopup />
       <main className="overflow-x-hidden">
         <div className="relative">
           <img src={bannerAwal} alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
