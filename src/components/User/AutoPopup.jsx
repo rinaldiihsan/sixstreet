@@ -62,7 +62,7 @@ const AutoPopup = () => {
               </div>
 
               <Link
-                to="/login"
+                to="/register"
                 className="block w-full text-center mt-3 sm:mt-4 md:mt-5 lg:mt-6 bg-[#333333] text-white py-2 sm:py-3 md:py-3.5 lg:py-4 px-4 sm:px-5 md:px-6 hover:bg-white hover:text-[#333333] transition-colors border border-[#333333] font-overpass font-bold text-sm sm:text-base md:text-lg"
                 onClick={() => setIsOpen(false)}
               >
