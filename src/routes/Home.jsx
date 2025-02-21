@@ -241,7 +241,7 @@ const Home = () => {
                 expression of contemporary sophistication
               </p>
             </div>
-            <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/">
+            <Link to="/sixstreet/tshirt" className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300">
               Buy Now
             </Link>
           </div>
