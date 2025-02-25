@@ -21,6 +21,53 @@ const Fierdemoi = () => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [isSoldProducts, setIsSoldProducts] = useState(10);
 
+  const fetchProductGroup = async (token, group_id) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.get(
+        `${apiUrl}/inventory/catalog/for-listing/${group_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Karena response.data adalah array, ambil item pertama
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        const productData = response.data[0];
+
+        // Pastikan ada images dan url
+        if (productData.images && productData.images.length > 0) {
+          const imageUrl = productData.images[0].url;
+
+          return {
+            groupId: group_id,
+            thumbnail: imageUrl,
+            images: productData.images,
+          };
+        }
+      }
+
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    } catch (error) {
+      return {
+        groupId: group_id,
+        thumbnail: null,
+        images: [],
+      };
+    }
+  };
+
   const fetchProducts = async (token) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
@@ -31,23 +78,54 @@ const Fierdemoi = () => {
         },
       });
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch products");
+      if (response.status === 200) {
+        const data = response.data.data || [];
+
+        // Filter products
+        const sixstreetProducts = data.filter((item) =>
+          item?.variants?.some((variant) => {
+            const name = (variant?.item_name || "").toLowerCase();
+            return name.includes("fier de moi");
+          })
+        );
+
+        // Get unique IDs
+        const uniqueGroupIds = [
+          ...new Set(
+            sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean)
+          ),
+        ];
+
+        // Fetch details
+        const groupDetails = await Promise.allSettled(
+          uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId))
+        );
+
+        const validGroupDetails = groupDetails
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter(Boolean);
+
+        // Combine products with images
+        const productsWithThumbnails = sixstreetProducts.map((item) => {
+          const groupDetail = validGroupDetails.find(
+            (g) => g?.groupId === item?.item_group_id
+          );
+
+          const result = {
+            ...item,
+            thumbnail: groupDetail?.thumbnail || null,
+            images: groupDetail?.images || [],
+          };
+
+          return result;
+        });
+
+        setProducts(productsWithThumbnails);
       }
-
-      const data = response.data;
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-          last_modified: item.last_modified,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error in fetchProducts:", error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -379,19 +457,16 @@ const Fierdemoi = () => {
                       className="flex flex-col gap-y-5 items-center"
                     >
                       <Link to={`/product-detail/${variant.item_group_id}`}>
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover"
-                          />
-                        )}
+                        <img
+                          data-src={
+                            variant.parentThumbnail || "/dummy-product.png"
+                          } // Ganti src dengan data-src
+                          className="lazyload w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                          alt={variant.item_name}
+                          onError={(e) => {
+                            e.target.src = "/dummy-product.png";
+                          }}
+                        />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
                         <h2
