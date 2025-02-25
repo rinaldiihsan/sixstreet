@@ -469,7 +469,8 @@ const Sidebar = ({
                     >
                       <li>
                         <Link
-                          to="#"
+                          target="_blank"
+                          to="https://maps.app.goo.gl/9m9WXF5nCRbZqYgVA"
                           className="block text-lg text-[#AAAAAA] font-overpass font-light hover:text-[#7A7A7A]"
                           onClick={handleCloseSidebar}
                         >
