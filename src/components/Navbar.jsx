@@ -29,6 +29,13 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
   const showCart = () => setCartOpen(!cartOpen);
   const toggleUserDropdown = () => setUserDropdownOpen(!userDropdownOpen);
 
+  // Check if current page should show discount banner
+  const shouldShowDiscountBanner = () => {
+    const path = location.pathname;
+    // Don't show on login, register, profile pages, and order-history
+    return !(path.includes('/login') || path.includes('/register') || path.includes('/profile/') || path.includes('/order-history'));
+  };
+
   const handleLogout = async () => {
     try {
       await axios.delete(`${backendUrl}/logout`);
@@ -89,43 +96,47 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const showBanner = shouldShowDiscountBanner();
+  const navbarTopPosition = showBanner ? 'top-8' : 'top-0';
   const navbarColor = location.pathname === '/' ? (scrolling ? 'bg-white shadow-md' : 'bg-transparent') : 'bg-white shadow-md';
   const svgColor = scrolling || location.pathname !== '/' ? '#333333' : '#FFFFFF';
   const textColor = scrolling || location.pathname !== '/' ? 'text-[#333333]' : 'text-white';
 
   return (
     <>
-      {/* Discount Banner */}
-      <div className="fixed top-0 left-0 right-0 bg-black text-white h-8 z-[1000]">
-        <div className="max-w-[115rem] h-full mx-auto px-5 md:px-2">
-          <div className="h-full flex justify-center items-center">
-            <div className="flex items-center h-full">
-              <span className="text-base font-overpass leading-none">Discount 10% OFF - </span>
-              <div className="relative inline-flex items-center h-full">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={currentDiscountIndex}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -20, opacity: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      ease: 'easeInOut',
-                    }}
-                    className="absolute left-0 text-base font-overpass leading-none whitespace-nowrap"
-                  >
-                    {discountItems[currentDiscountIndex]}
-                  </motion.span>
-                </AnimatePresence>
-                <span className="invisible text-base font-overpass leading-none whitespace-nowrap"> {discountItems[currentDiscountIndex]}</span>
+      {/* Discount Banner - Only show on certain pages */}
+      {showBanner && (
+        <div className="fixed top-0 left-0 right-0 bg-black text-white h-8 z-[1000]">
+          <div className="max-w-[115rem] h-full mx-auto px-5 md:px-2">
+            <div className="h-full flex justify-center items-center">
+              <div className="flex items-center h-full">
+                <span className="text-base font-overpass leading-none">Discount 10% OFF - </span>
+                <div className="relative inline-flex items-center h-full">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={currentDiscountIndex}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -20, opacity: 0 }}
+                      transition={{
+                        duration: 0.5,
+                        ease: 'easeInOut',
+                      }}
+                      className="absolute left-0 text-base font-overpass leading-none whitespace-nowrap"
+                    >
+                      {discountItems[currentDiscountIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                  <span className="invisible text-base font-overpass leading-none whitespace-nowrap"> {discountItems[currentDiscountIndex]}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Main Navbar */}
-      <nav className={`${navbarColor} fixed top-8 left-0 right-0 w-full z-[999] transition-colors duration-300`}>
+      {/* Main Navbar - Adjust positioning based on banner visibility */}
+      <nav className={`${navbarColor} fixed ${navbarTopPosition} left-0 right-0 w-full z-[999] transition-colors duration-300`}>
         <div className="max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex justify-between items-center">
           {/* Hamburger Button */}
           <Link to="#" className="menu-bars transition-colors duration-300" onClick={showSidebar}>
