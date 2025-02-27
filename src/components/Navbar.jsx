@@ -32,8 +32,18 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
   // Check if current page should show discount banner
   const shouldShowDiscountBanner = () => {
     const path = location.pathname;
+    const isHomePage = path === '/';
+
     // Don't show on login, register, profile pages, and order-history
-    return !(path.includes('/login') || path.includes('/register') || path.includes('/profile/') || path.includes('/order-history'));
+    const isExcludedPage = path.includes('/login') || path.includes('/register') || path.includes('/profile/') || path.includes('/order-history');
+
+    // If it's homepage and scrolling, hide the banner
+    if (isHomePage && scrolling) {
+      return false;
+    }
+
+    // Otherwise check if it's an excluded page
+    return !isExcludedPage;
   };
 
   const handleLogout = async () => {
@@ -104,13 +114,13 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
 
   return (
     <>
-      {/* Discount Banner - Only show on certain pages */}
+      {/* Discount Banner - Only show on certain pages and hide on scroll for homepage */}
       {showBanner && (
-        <div className="fixed top-0 left-0 right-0 bg-black text-white h-8 z-[1000]">
+        <motion.div className="fixed top-0 left-0 right-0 bg-black text-white h-8 z-[1000]" initial={{ opacity: 1, y: 0 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -32 }} transition={{ duration: 0.3 }}>
           <div className="max-w-[115rem] h-full mx-auto px-5 md:px-2">
             <div className="h-full flex justify-center items-center">
               <div className="flex items-center h-full">
-                <span className="text-base font-overpass leading-none">Discount 10% OFF - </span>
+                <span className="text-sm md:text-base font-overpass leading-none">Discount 10% OFF - </span>
                 <div className="relative inline-flex items-center h-full">
                   <AnimatePresence mode="wait">
                     <motion.span
@@ -122,21 +132,21 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
                         duration: 0.5,
                         ease: 'easeInOut',
                       }}
-                      className="absolute left-0 text-base font-overpass leading-none whitespace-nowrap"
+                      className="absolute left-0 text-sm md:text-base font-overpass leading-none whitespace-nowrap pl-1"
                     >
                       {discountItems[currentDiscountIndex]}
                     </motion.span>
                   </AnimatePresence>
-                  <span className="invisible text-base font-overpass leading-none whitespace-nowrap"> {discountItems[currentDiscountIndex]}</span>
+                  <span className="invisible text-sm md:text-base font-overpass leading-none whitespace-nowrap"> {discountItems[currentDiscountIndex]}</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Main Navbar - Adjust positioning based on banner visibility */}
-      <nav className={`${navbarColor} fixed ${navbarTopPosition} left-0 right-0 w-full z-[999] transition-colors duration-300`}>
+      <nav className={`${navbarColor} fixed ${navbarTopPosition} left-0 right-0 w-full z-[999] transition-all duration-300`}>
         <div className="max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex justify-between items-center">
           {/* Hamburger Button */}
           <Link to="#" className="menu-bars transition-colors duration-300" onClick={showSidebar}>
