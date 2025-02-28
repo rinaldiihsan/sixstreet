@@ -186,6 +186,21 @@ const Jordan = () => {
     );
   };
 
+  const hasAvailableStock = (itemGroupId) => {
+    // Temukan produk berdasarkan item_group_id
+    const product = products.find((item) => item.item_group_id === itemGroupId);
+
+    // Jika produk ditemukan, periksa semua varian
+    if (product && product.variants && product.variants.length > 0) {
+      // Kembalikan true jika ada setidaknya satu varian dengan stok > 0
+      return product.variants.some(
+        (variant) => variant.available_qty !== null && variant.available_qty > 0
+      );
+    }
+
+    return false;
+  };
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -415,8 +430,7 @@ const Jordan = () => {
                     (variant) =>
                       variant.sell_price !== null &&
                       variant.sell_price !== 0 &&
-                      variant.available_qty !== null &&
-                      variant.available_qty >= 1
+                      hasAvailableStock(variant.item_group_id)
                   )
                   .sort((a, b) => {
                     if (selectedOption === "Harga Tertinggi") {
@@ -520,8 +534,7 @@ const Jordan = () => {
                     (variant) =>
                       variant.sell_price !== null &&
                       variant.sell_price !== 0 &&
-                      (variant.available_qty === null ||
-                        variant.available_qty <= 0)
+                      !hasAvailableStock(variant.item_group_id)
                   )
                   .slice(0, isSoldProducts)
                   .map((variant, index) => (
