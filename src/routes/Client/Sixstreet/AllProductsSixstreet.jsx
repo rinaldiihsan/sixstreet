@@ -19,6 +19,10 @@ const AllProductsSixstreet = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSoldProducts, setIsSoldProducts] = useState(10);
+  const [excludedProducts, setExcludedProducts] = useState([
+    "SIXSTREET Ring Box Wood Blue",
+    "Plasticbag SixStreet.co.id",
+  ]);
 
   const fetchProductGroup = async (token, group_id) => {
     try {
@@ -194,6 +198,12 @@ const AllProductsSixstreet = () => {
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
+  };
+
+  const shouldExcludeProduct = (productName) => {
+    return excludedProducts.some((name) =>
+      productName.toUpperCase().includes(name.toUpperCase())
+    );
   };
 
   const toggleSidebar = () => {
@@ -586,8 +596,10 @@ const AllProductsSixstreet = () => {
                       return uniqueVariants;
                     }, {})
                 )
-                  .filter((variant) =>
-                    variant.item_name.toUpperCase().includes("SIXSTREET")
+                  .filter(
+                    (variant) =>
+                      variant.item_name.toUpperCase().includes("SIXSTREET") &&
+                      !shouldExcludeProduct(variant.item_name)
                   )
                   .filter(
                     (variant) =>
