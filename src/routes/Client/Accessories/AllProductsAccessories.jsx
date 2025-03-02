@@ -5,7 +5,7 @@ import axios from 'axios';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { motion } from 'framer-motion';
-import assetBannerAccessories from '../../../assets/banner/Headwear (2).webp';
+import AssetBannerAccessories from '../../../assets/banner/all-acc.webp';
 
 const AllProductsAccessories = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -198,7 +198,7 @@ const AllProductsAccessories = () => {
             <div className="bg-red-100 border border-red-500 text-red-500 px-8 py-3 rounded-lg shadow-lg">Maaf, produk ini sedang tidak tersedia (Sold Out)</div>
           </div>
         )}
-        <img src={assetBannerAccessories} alt="Hero Hoodies" className="w-full h-full md:h-auto mb-6" />
+        <img src={AssetBannerAccessories} alt="Hero Hoodies" className="w-full h-full md:h-auto mb-6" />
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
