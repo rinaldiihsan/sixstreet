@@ -57,7 +57,7 @@ const Checkout = () => {
 
   // Fetch Script Midtrans
   useEffect(() => {
-    const snapScript = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const snapScript = 'https://app.midtrans.com/snap/snap.js';
     const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
     const script = document.createElement('script');
     script.src = snapScript;
@@ -334,7 +334,8 @@ const Checkout = () => {
 
       // Implementasi voucher
       await implementVoucher(productId, price);
-    } catch (error) {``
+    } catch (error) {
+      ``;
       console.error('Error applying voucher:', error);
       toast.error(error.response?.data?.message || 'Gagal menerapkan voucher');
     }
