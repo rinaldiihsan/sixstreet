@@ -234,7 +234,7 @@ const Home = () => {
       <AutoPopup />
       <main className="overflow-x-hidden">
         <div className="relative">
-          <img src={heroSixstreet} alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
+          <img src={heroSixstreet} alt="Hero" className="w-full object-cover h-screen object-[18%] md:object-center" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet apparel</h1>
@@ -250,7 +250,7 @@ const Home = () => {
         </div>
 
         <div className="relative mb-10">
-          <img src={heroApparel} alt="Hero2" className="w-full object-cover" style={{ height: windowHeight }} />
+          <img src={heroApparel} alt="Hero2" className="w-full object-cover h-screen object-[35.5%] md:object-center" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">apparel</h1>
@@ -314,7 +314,7 @@ const Home = () => {
           )}
         </div>
         <div className="relative mb-10">
-          <img src="/hero3.webp" alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
+          <img src="/hero3.webp" alt="Hero" className="w-full object-cover h-screen object-[40%] md:object-center" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sneakers</h1>
@@ -383,7 +383,7 @@ const Home = () => {
           )}
         </div>
         <div className="relative mb-10">
-          <img src={heroAccessories} alt="Hero" className="w-full object-cover" style={{ height: windowHeight }} />
+          <img src={heroAccessories} alt="Hero" className="w-full object-cover h-screen object-[23%] md:object-center" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">accessories</h1>
