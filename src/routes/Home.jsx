@@ -234,7 +234,7 @@ const Home = () => {
       <AutoPopup />
       <main className="overflow-x-hidden">
         <div className="relative">
-          <img src={heroSixstreet} alt="Hero" className="w-full object-cover h-screen object-[18%] md:object-center" />
+          <img src={heroSixstreet} alt="Hero" className="w-full object-cover h-[30rem] lg:h-screen" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sixstreet apparel</h1>
@@ -250,11 +250,11 @@ const Home = () => {
         </div>
 
         <div className="relative mb-10">
-          <img src={heroApparel} alt="Hero2" className="w-full object-cover h-screen object-[35.5%] md:object-center" />
-          <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
+          <img src={heroApparel} alt="Hero2" className="w-full object-cover lg:h-screen" />
+          <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col justify-center items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">apparel</h1>
-              <p className="capitalize font-garamond font-medium text-lg text-center md:text-xl lg:text-justify">Elevate your wardrobe with our latest arrivals.</p>
+              <p className="capitalize font-garamond font-medium text-lg md:text-xl text-center lg:text-justify">Elevate your wardrobe with our latest arrivals.</p>
             </div>
             <Link className="capitalize font-garamond font-medium text-xl md:text-2xl border border-white px-11 py-2 md:px-12 md:py-4 hover:bg-white hover:text-[#333333] transition-colors duration-300" to="/tops/t-shirts">
               Buy Now
@@ -314,7 +314,7 @@ const Home = () => {
           )}
         </div>
         <div className="relative mb-10">
-          <img src="/hero3.webp" alt="Hero" className="w-full object-cover h-screen object-[40%] md:object-center" />
+          <img src="/hero3.webp" alt="Hero" className="w-full object-cover lg:h-screen" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sneakers</h1>
@@ -383,7 +383,7 @@ const Home = () => {
           )}
         </div>
         <div className="relative mb-10">
-          <img src={heroAccessories} alt="Hero" className="w-full object-cover h-screen object-[23%] md:object-center" />
+          <img src={heroAccessories} alt="Hero" className="w-full object-cover lg:h-screen" />
           <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">accessories</h1>
