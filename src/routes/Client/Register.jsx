@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -23,7 +23,25 @@ const Register = () => {
   const [isValidEmail, setIsValidEmail] = useState(true);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  // Get email from URL parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const emailParam = params.get('email');
+
+    if (emailParam) {
+      // Decode the email parameter if it's URL encoded
+      const decodedEmail = decodeURIComponent(emailParam);
+      setEmail(decodedEmail);
+
+      // Validate email from URL
+      const isValid = validateEmail(decodedEmail);
+      setIsValidEmail(isValid);
+      setEmailError(isValid ? '' : 'Please enter a valid email address');
+    }
+  }, [location]);
 
   // Validation functions
   const validatePhoneNumber = (phone) => {

@@ -265,9 +265,9 @@ const Home = () => {
           {isLoading ? (
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="flex flex-col gap-y-5 items-center">
-                <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
-                <div className="flex flex-col text-center gap-y-2">
-                  <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopL:w-[22rem]" />
+                <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
+                <div className="flex flex-col text-c laptopM:w-[17rem] laptopM:h-[17rem]enter gap-y-2">
+                  <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem]" />
                   <Skeleton className="md:text-xl" />
                 </div>
               </div>
@@ -293,18 +293,18 @@ const Home = () => {
                       <img
                         src={variant.parentThumbnail}
                         alt={variant.item_name}
-                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                       />
                     ) : (
                       <img
                         src="/dummy-product.png"
                         alt={variant.item_name}
-                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                       />
                     )}
                   </Link>
                   <div className="flex flex-col md:text-center gap-y-2">
-                    <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopL:w-[22rem] text-center">
+                    <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center">
                       {variant.item_name}
                     </h2>
                     <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-gray-700">{formatPrice(variant.sell_price)}</h2>
@@ -331,9 +331,9 @@ const Home = () => {
           {isLoading ? (
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="flex flex-col gap-y-5 items-center">
-                <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
-                <div className="flex flex-col text-center gap-y-2">
-                  <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopL:w-[22rem]" />
+                <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
+                <div className="flex flex-col text-c laptopM:w-[17rem] laptopM:h-[17rem]enter gap-y-2">
+                  <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem]" />
                   <Skeleton className="md:text-xl" />
                 </div>
               </div>
@@ -364,18 +364,18 @@ const Home = () => {
                       <img
                         src={variant.parentThumbnail}
                         alt={variant.item_name}
-                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                       />
                     ) : (
                       <img
                         src="/dummy-product.png"
                         alt={variant.item_name}
-                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                       />
                     )}
                   </Link>
                   <div className="flex flex-col md:text-center gap-y-2">
-                    <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopL:w-[22rem] text-center">
+                    <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center">
                       {variant.item_name}
                     </h2>
                     <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-gray-700">{formatPrice(variant.sell_price)}</h2>
@@ -405,9 +405,9 @@ const Home = () => {
           {isLoading ? (
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="flex flex-col gap-y-5 items-center">
-                <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
-                <div className="flex flex-col text-center gap-y-2">
-                  <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopL:w-[22rem]" />
+                <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
+                <div className="flex flex-col text-c laptopM:w-[17rem] laptopM:h-[17rem]enter gap-y-2">
+                  <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem]" />
                   <Skeleton className="md:text-xl" />
                 </div>
               </div>
@@ -438,18 +438,18 @@ const Home = () => {
                       <img
                         src={variant.parentThumbnail}
                         alt={variant.item_name}
-                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                       />
                     ) : (
                       <img
                         src="/dummy-product.png"
                         alt={variant.item_name}
-                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                       />
                     )}
                   </Link>
                   <div className="flex flex-col md:text-center gap-y-2">
-                    <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopL:w-[22rem] text-center">
+                    <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center">
                       {variant.item_name}
                     </h2>
                     <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-gray-700">{formatPrice(variant.sell_price)}</h2>

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AutoPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [dontShow, setDontShow] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(5); // Countdown untuk autoclose
 
   useEffect(() => {
     // Check if popup should be shown
@@ -23,6 +29,19 @@ const AutoPopup = () => {
     setIsOpen(true);
   }, []);
 
+  // Effect untuk countdown setelah success
+  useEffect(() => {
+    let timer;
+    if (success && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (success && countdown === 0) {
+      handleClose();
+    }
+    return () => clearTimeout(timer);
+  }, [success, countdown]);
+
   const handleClose = () => {
     setIsOpen(false);
     if (dontShow) {
@@ -39,6 +58,70 @@ const AutoPopup = () => {
 
   const handleDontShowChange = (e) => {
     setDontShow(e.target.checked);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setError('');
+  };
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Reset states
+    setError('');
+    setSuccess(false);
+
+    // Validate email
+    if (!email.trim()) {
+      setError('Email is required');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Call the newsletter API
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/newsletter`, { email });
+
+      console.log('Newsletter API response:', response.data);
+      setSuccess(true);
+      setEmail('');
+      setCountdown(5); // Reset countdown to 5 seconds
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response:', error.response.data);
+        if (error.response.data && error.response.data.message) {
+          setError(error.response.data.message);
+        } else {
+          setError(`Server error: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Error request:', error.request);
+        setError('No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error message:', error.message);
+        setError(`An error occurred: ${error.message}`);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -63,13 +146,33 @@ const AutoPopup = () => {
 
             <p className="text-sm text-gray-600 font-overpass">*min. Purchase Rp 990.000</p>
 
-            <a
-              href="/register"
-              className="block w-full text-center mt-6 bg-[#333333] text-white py-3 px-6 hover:bg-white hover:text-[#333333] transition-colors border border-[#333333] font-overpass font-bold text-base"
-              onClick={handleClose}
-            >
-              CLAIM NOW
-            </a>
+            {success ? (
+              <div className="w-full space-y-3">
+                <div className="p-3 bg-green-100 text-green-700 rounded">
+                  <p className="font-medium">Success! Check your email for your exclusive voucher.</p>
+                  <p className="text-sm mt-1">If you don't see the email in your inbox, please check your spam folder.</p>
+                </div>
+                <p className="text-sm text-gray-500">This popup will close in {countdown} seconds...</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="w-full mt-2">
+                <div className="flex flex-row space-x-2">
+                  <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="flex-grow border border-gray-300 p-3 focus:ring-1 focus:ring-[#333333] focus:border-[#333333] outline-none" />
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`whitespace-nowrap bg-[#333333] text-white py-3 px-6 font-overpass font-bold text-base ${
+                      isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-white hover:text-[#333333] transition-colors border border-[#333333]'
+                    }`}
+                  >
+                    {isSubmitting ? 'SUBMITTING...' : 'CLAIM NOW'}
+                  </button>
+                </div>
+
+                {error && <p className="text-red-500 text-sm text-left mt-2">{error}</p>}
+              </form>
+            )}
 
             {/* Don't show again checkbox */}
             <div className="flex items-center space-x-2 mt-4">
