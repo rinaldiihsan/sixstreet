@@ -128,7 +128,7 @@ const AutoPopup = () => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 z-[999] flex items-center justify-center p-4">
-      <div className="bg-white overflow-hidden w-full max-w-xl">
+      <div className="bg-white overflow-hidden w-full max-w-lg md:max-w-xl">
         <div className="p-8 sm:p-10 relative">
           {/* Tombol close */}
           <button onClick={handleClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
@@ -138,17 +138,17 @@ const AutoPopup = () => {
           </button>
 
           <div className="flex flex-col items-center text-center space-y-4">
-            <h2 className="text-2xl font-bold font-overpass tracking-wide">EXCLUSIVE WELCOME GIFT</h2>
+            <h2 className="text-lg md:text-2xl font-bold font-overpass tracking-wide">EXCLUSIVE WELCOME GIFT</h2>
 
-            <p className="text-lg font-overpass">Sign up & get your first voucher!</p>
+            <p className="md:text-lg font-overpass">Sign up & get your first voucher!</p>
 
-            <div className="text-2xl font-bold text-[#333333] font-overpass">Discount up to 50% OFF</div>
+            <div className="text-lg md:text-2xl font-bold text-[#333333] font-overpass">Discount up to 50% OFF</div>
 
             <p className="text-sm text-gray-600 font-overpass">*min. Purchase Rp 990.000</p>
 
             {success ? (
               <div className="w-full space-y-3">
-                <div className="p-3 bg-green-100 text-green-700 rounded">
+                <div className="p-3 bg-green-100 text-green-700">
                   <p className="font-medium">Success! Check your email for your exclusive voucher.</p>
                   <p className="text-sm mt-1">If you don't see the email in your inbox, please check your spam folder.</p>
                 </div>
@@ -158,12 +158,12 @@ const AutoPopup = () => {
               <form onSubmit={handleSubmit} className="w-full mt-2">
                 {/* Layout responsif dengan flexbox direction yang berbeda pada mobile */}
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                  <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="w-full border border-gray-300 p-3 focus:ring-1 focus:ring-[#333333] focus:border-[#333333] outline-none" />
+                  <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="w-full border border-gray-300 p-2 md:p-3 focus:ring-1 focus:ring-[#333333] focus:border-[#333333] outline-none" />
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full md:w-auto whitespace-nowrap bg-[#333333] text-white py-3 px-6 font-overpass font-bold text-base ${
+                    className={`w-full md:w-auto whitespace-nowrap bg-[#333333] text-white py-2 md:py-3 px-6 font-overpass font-bold text-base ${
                       isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-white hover:text-[#333333] transition-colors border border-[#333333]'
                     }`}
                   >
@@ -177,7 +177,7 @@ const AutoPopup = () => {
 
             {/* Don't show again checkbox */}
             <div className="flex items-center space-x-2 mt-4">
-              <input type="checkbox" id="dontShow" checked={dontShow} onChange={handleDontShowChange} className="form-checkbox h-4 w-4 text-[#333333] rounded border-gray-300 focus:ring-[#333333]" />
+              <input type="checkbox" id="dontShow" checked={dontShow} onChange={handleDontShowChange} className="form-checkbox h-4 w-4 text-[#333333] border-gray-300 focus:ring-[#333333]" />
               <label htmlFor="dontShow" className="text-sm text-gray-600 font-overpass">
                 Don't show this again
               </label>
