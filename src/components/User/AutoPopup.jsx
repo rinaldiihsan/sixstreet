@@ -156,13 +156,14 @@ const AutoPopup = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="w-full mt-2">
-                <div className="flex flex-row space-x-2">
-                  <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="flex-grow border border-gray-300 p-3 focus:ring-1 focus:ring-[#333333] focus:border-[#333333] outline-none" />
+                {/* Layout responsif dengan flexbox direction yang berbeda pada mobile */}
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                  <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="w-full border border-gray-300 p-3 focus:ring-1 focus:ring-[#333333] focus:border-[#333333] outline-none" />
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`whitespace-nowrap bg-[#333333] text-white py-3 px-6 font-overpass font-bold text-base ${
+                    className={`w-full md:w-auto whitespace-nowrap bg-[#333333] text-white py-3 px-6 font-overpass font-bold text-base ${
                       isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-white hover:text-[#333333] transition-colors border border-[#333333]'
                     }`}
                   >
