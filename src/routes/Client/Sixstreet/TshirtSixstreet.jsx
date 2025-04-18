@@ -450,7 +450,7 @@ const TshirtSixstreet = () => {
                         />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-cente text-red-700">
+                        <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center text-red-700">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-red-600">Sold Out</h2>

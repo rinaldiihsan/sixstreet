@@ -448,7 +448,7 @@ const HoodiesSixstreet = () => {
                         />
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2 className="uppercase font-overpass font-extrabold text-base md:text-lg line-clamp-2 break-words text-center text-red-600 w-full max-w-[10rem] mobileS:max-w-[10.5rem] mobile:max-w-[11.5rem] md:max-w-[23rem]">
+                        <h2 cclassName="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center text-red-700">
                           {variant.item_name}
                         </h2>
                         <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">Sold Out</h2>
