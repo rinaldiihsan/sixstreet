@@ -11,16 +11,16 @@ const MultiLink = () => {
         </div>
 
         <div className="space-y-4">
-          <a href="#" className="block w-full text-center py-3 rounded-lg border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
+          <a href="#" className="block w-full text-center py-3  border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
             Link 1
           </a>
-          <a href="#" className="block w-full text-center py-3 rounded-lg border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
+          <a href="#" className="block w-full text-center py-3  border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
             Link 2
           </a>
-          <a href="#" className="block w-full text-center py-3 rounded-lg border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
+          <a href="#" className="block w-full text-center py-3  border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
             Link 3
           </a>
-          <a href="#" className="block w-full text-center py-3 rounded-lg border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
+          <a href="#" className="block w-full text-center py-3  border border-gray-300 bg-white text-[#333333] hover:bg-gray-50 hover:border-gray-400 transition font-overpass font-semibold">
             Link 4
           </a>
         </div>
