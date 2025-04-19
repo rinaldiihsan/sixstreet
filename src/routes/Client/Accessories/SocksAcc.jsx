@@ -200,7 +200,7 @@ const SocksAcc = () => {
         {/* Filter  */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
-            <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
+            {/* <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
               <p className="font-overpass text-lg hidden md:block">Filter</p>
               <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={toggleSidebar}>
                 <path d="M18.3335 5.41666H13.3335" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
@@ -224,9 +224,9 @@ const SocksAcc = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-            </div>
-            <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
-              <p className="font-overpass capitalize">{products.filter((item) => [24806, 24807].includes(item.item_category_id)).flatMap((item) => item.variants).length} Result</p>
+            </div> */}
+            <div className="border lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
+              {/* <p className="font-overpass capitalize">{products.filter((item) => [24806, 24807].includes(item.item_category_id)).flatMap((item) => item.variants).length} Result</p> */}
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p className="font-overpass capitalize cursor-pointer" onClick={handleDropdownToggle}>
@@ -346,13 +346,13 @@ const SocksAcc = () => {
           )}
 
           {/* Product */}
-          <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-3 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden scroll-hidden">
+          <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-4 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden scroll-hidden">
             {isLoading ? (
-              Array.from({ length: 9 }).map((_, index) => (
+              Array.from({ length: 8 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
-                  <Skeleton className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover" />
-                  <div className="flex flex-col text-center gap-y-2 w-full">
-                    <Skeleton className="md:text-xl w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[24rem]" />
+                  <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
+                  <div className="flex flex-col text-c laptopM:w-[17rem] laptopM:h-[17rem]enter gap-y-2">
+                    <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem]" />
                     <Skeleton className="md:text-xl" />
                   </div>
                 </div>
@@ -397,28 +397,21 @@ const SocksAcc = () => {
                           <img
                             src={variant.parentThumbnail}
                             alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                           />
                         ) : (
                           <img
                             src="/dummy-product.png"
                             alt={variant.item_name}
-                            className="w-[10rem] h-[10rem] mobileS:w-[10.5rem] mobileS:h-[10.5rem] mobile:w-[11.5rem] mobile:h-[11.5rem] md:w-[23rem] md:h-[23rem] lg:w-[31rem] lg:h-[31rem] laptopL:w-[27rem] laptopL:h-[27rem] object-cover"
+                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
                           />
                         )}
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg 
-                                                 break-words text-center
-                                                w-full max-w-[10rem] 
-                                                mobileS:max-w-[10.5rem] 
-                                                mobile:max-w-[11.5rem] 
-                                                md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center">
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1">Rp. {variant.sell_price.toLocaleString('id-ID')}</h2>
+                        <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-gray-700">Rp. {variant.sell_price.toLocaleString('id-ID')}</h2>
                       </div>
                     </div>
                   ))}
@@ -446,23 +439,24 @@ const SocksAcc = () => {
                     <div key={index} className="flex flex-col gap-y-5 items-center">
                       <Link to={`/product-detail-sold/${variant.item_group_id}`} className="cursor-pointer transition-opacity duration-300 hover:opacity-75">
                         {variant.parentThumbnail ? (
-                          <img src={variant.parentThumbnail} alt={variant.item_name} className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50" />
+                          <img
+                            src={variant.parentThumbnail}
+                            alt={variant.item_name}
+                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover opacity-50"
+                          />
                         ) : (
-                          <img src="/dummy-product.png" alt={variant.item_name} className="w-[10rem] mobileS:w-[10.5rem] mobile:w-[11.5rem] md:w-[23rem] lg:w-[31rem] laptopL:w-[27rem] object-cover opacity-50" />
+                          <img
+                            src="/dummy-product.png"
+                            alt={variant.item_name}
+                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover opacity-50"
+                          />
                         )}
                       </Link>
                       <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2
-                          className="uppercase font-overpass font-extrabold text-base md:text-lg
-                                                         line-clamp-2 break-words text-center text-red-600
-                                                         w-full max-w-[10rem]
-                                                         mobileS:max-w-[10.5rem]
-                                                         mobile:max-w-[11.5rem]
-                                                         md:max-w-[23rem]"
-                        >
+                        <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center text-red-700">
                           {variant.item_name}
                         </h2>
-                        <h2 className="uppercase font-overpass text-sm mobile:text-base md:text-xl mt-1 text-red-600">Sold Out</h2>
+                        <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-red-600">Sold Out</h2>
                       </div>
                     </div>
                   ))}
