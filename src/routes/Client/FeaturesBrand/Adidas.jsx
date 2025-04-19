@@ -259,7 +259,7 @@ const Adidas = () => {
           {/* Product Grid */}
           <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-4 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden scroll-hidden">
             {isLoading ? (
-              Array.from({ length: 9 }).map((_, index) => (
+              Array.from({ length: 8 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
                   <div className="flex flex-col text-c laptopM:w-[17rem] laptopM:h-[17rem]enter gap-y-2">
