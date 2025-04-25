@@ -8,11 +8,12 @@ const ForgotPassword = () => {
   const [emailSent, setEmailSent] = useState(false);
 
   const handleSubmit = async (e) => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3300/forgotPassword', {
+      const response = await axios.post('${backendUrl}/forgotPassword', {
         email,
       });
 
