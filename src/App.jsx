@@ -207,6 +207,7 @@ import AccessoriesSale from './routes/Client/Sale/AccessoriesSale';
 
 // Addtional
 import ScrollToTop from './components/ScrollToTop';
+import ForgotPassword from './routes/Client/ForgotPassword';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -299,6 +300,7 @@ const App = () => {
             {/* Auth */}
             <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Featured Brand */}
             <Route path="/allbrand" element={<NameAllBrand />} />
