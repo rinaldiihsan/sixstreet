@@ -9,6 +9,7 @@ const ChangePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +46,7 @@ const ChangePassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3300/changePassword', {
+      const response = await axios.post(`${backendUrl}/changePassword`, {
         email,
         password,
       });
