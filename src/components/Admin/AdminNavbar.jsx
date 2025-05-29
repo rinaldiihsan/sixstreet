@@ -6,6 +6,7 @@ import './AdminNavbar.css';
 import AdminSidebar from './AdminSidebar';
 
 const AdminNavbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -38,7 +39,7 @@ const AdminNavbar = ({ isLoggedIn, setIsLoggedIn, userId }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.delete('http://localhost:3000/logout');
+      await axios.delete(`${backendUrl}/logout`);
       Cookies.remove('accessToken');
       sessionStorage.removeItem('DetailUser');
       setIsLoggedIn(false);

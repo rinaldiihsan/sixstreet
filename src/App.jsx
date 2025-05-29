@@ -209,6 +209,7 @@ import AccessoriesSale from './routes/Client/Sale/AccessoriesSale';
 import ScrollToTop from './components/ScrollToTop';
 import ForgotPassword from './routes/Client/ForgotPassword';
 import ChangePassword from './routes/Client/ChangePassword';
+import EditTransaction from './routes/Admin/Transaction/EditTransaction';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -286,6 +287,7 @@ const App = () => {
             <Route path="/news-management/:judulberita" element={<NewsManagementDetail />} />
             <Route path="/news-management/tambah-news" element={<TambahNews />} />
             <Route path="/transaction-management" element={<TransactionManagement />} />
+            <Route path="/transaction-management/edit-transaction/:user_id/:transaction_uuid" element={<EditTransaction />} />
             <Route path="*" element={<NotFoundAdmin />} />
           </Routes>
         </>

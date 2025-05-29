@@ -41,7 +41,7 @@ const UserManagement = () => {
   const filteredUsers = userData.filter((user) => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      user.username.toLowerCase().includes(searchLower) ||
+      user.fullName.toLowerCase().includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower) ||
       user.no_hp.includes(searchLower) ||
       user.kode_user.toLowerCase().includes(searchLower) ||
@@ -283,7 +283,7 @@ const UserManagement = () => {
                 <td className="py-3 px-4">{user.no_hp}</td>
                 <td className="py-3 px-4">{user.email}</td>
                 <td className="py-3 px-4">{user.membership}</td>
-                <td className="py-3 px-4">{user.birthday}</td>
+                <td className="py-3 px-4">{new Date(user.birthday).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
                 <td className="py-3 px-4">{user.kode_user}</td>
                 <td className="py-3 px-4">{user.referd_kode}</td>
                 <td className="py-3 px-4">{user.role === 0 ? 'User / Client' : 'Admin'}</td>

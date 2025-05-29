@@ -11,7 +11,7 @@ const TransactionManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const transactionsPerPage = 10; // Batasan jumlah transaksi per halaman
+  const transactionsPerPage = 10;
 
   const fetchTransactions = async () => {
     try {
@@ -31,17 +31,83 @@ const TransactionManagement = () => {
     fetchTransactions();
   }, []);
 
-  const filteredTransactions = transactions.filter((transaction) => {
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const formatDate = (date) => {
+    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'full' }).format(new Date(date));
+  };
+
+  const handleEdit = (transaction) => {
+    navigate(`/transaction-management/edit-transaction/${transaction.user_id}/${transaction.transaction_uuid}`);
+  };
+
+  const handleDelete = async (transaction) => {
+    const confirmed = window.confirm('Are you sure you want to delete this transaction?');
+
+    if (!confirmed) return;
+
+    try {
+      const accessToken = Cookies.get('accessToken');
+      if (!accessToken) return;
+
+      const response = await axios.delete(`${backendUrl}/transaction/${transaction.id}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (response.status === 200) {
+        console.log('Transaction deleted successfully');
+        await fetchTransactions();
+      } else {
+        console.error('Failed to delete transaction. Status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+    }
+  };
+
+  // Kelompokkan transaksi berdasarkan transaction_uuid (sama seperti OrderHistory)
+  const groupedTransactions = transactions.reduce((acc, transaction) => {
+    if (!acc[transaction.transaction_uuid]) {
+      acc[transaction.transaction_uuid] = {
+        ...transaction,
+        product_name: [],
+        product_size: [],
+        quantity: [],
+        total: transaction.total,
+        city: transaction.city || '',
+        sub_district: transaction.sub_district || '',
+        detail_address: transaction.detail_address || '',
+        expedition: transaction.expedition || '',
+        expedition_services: transaction.expedition_services || '',
+        etd: transaction.etd || '',
+        resi: transaction.resi || '',
+      };
+    }
+    acc[transaction.transaction_uuid].product_name.push(transaction.product_name);
+    acc[transaction.transaction_uuid].product_size.push(transaction.product_size);
+    acc[transaction.transaction_uuid].quantity.push(transaction.quantity);
+    return acc;
+  }, {});
+
+  const groupedArray = Object.values(groupedTransactions);
+
+  const filteredTransactions = groupedArray.filter((transaction) => {
     const searchLower = searchTerm.toLowerCase();
     return (
       transaction.transaction_uuid?.toLowerCase().includes(searchLower) ||
       transaction.name?.toLowerCase().includes(searchLower) ||
       transaction.address?.toLowerCase().includes(searchLower) ||
       transaction.product_id?.toString().toLowerCase().includes(searchLower) ||
-      transaction.quantity?.toString().toLowerCase().includes(searchLower) ||
+      transaction.product_name?.join(', ').toLowerCase().includes(searchLower) ||
+      transaction.product_size?.join(', ').toLowerCase().includes(searchLower) ||
       transaction.product_price?.toString().toLowerCase().includes(searchLower) ||
-      transaction.product_name?.toLowerCase().includes(searchLower) ||
-      transaction.product_size?.toLowerCase().includes(searchLower) ||
       transaction.total?.toString().toLowerCase().includes(searchLower) ||
       transaction.status?.toLowerCase().includes(searchLower) ||
       new Date(transaction.createdAt).toLocaleString().toLowerCase().includes(searchLower)
@@ -56,111 +122,121 @@ const TransactionManagement = () => {
   // Menghitung jumlah halaman berdasarkan jumlah transaksi yang difilter
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
 
-  const FormatDate = (date) => {
-    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'full' }).format(new Date(date));
-  };
-
-  const FormatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
   return (
-    <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
-      <h1 className="font-overpass text-[#333333] font-semibold text-2xl my-4">Transaction Management</h1>
-      <div className="mt-10 flex w-full items-center justify-between">
-        <div className="space-y-1">
-          <div className="relative">
-            <input
-              type="search"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
+    <div className="mt-24 max-w-[115rem] py-5 mx-auto px-4 md:px-6 lg:px-8 font-overpass min-h-screen">
+      <h1 className="font-garamond text-[#333333] text-3xl font-semibold text-center mb-8">Transaction Management</h1>
+
+      <div className="mb-6 flex w-full items-center justify-start">
+        <div className="relative">
+          <input
+            type="search"
+            placeholder="Search transactions..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 rounded-md focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
+          />
+          <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
+              stroke="#AAAAAA"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
-                stroke="#AAAAAA"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M14.6666 14.6666L13.3333 13.3333" stroke="#AAAAAA" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
+            <path d="M14.6666 14.6666L13.3333 13.3333" stroke="#AAAAAA" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
       </div>
-      <div className="mt-10 w-full overflow-x-auto">
-        <table className="w-full table-auto border-collapse">
-          <thead>
-            <tr className="text-center font-overpass text-[#333333] text-lg">
-              <th className="py-3 px-4 bg-gray-100">Date</th>
-              <th className="py-3 px-4 bg-gray-100">Transaction ID</th>
-              <th className="py-3 px-4 bg-gray-100">User ID</th>
-              <th className="py-3 px-4 bg-gray-100">Name</th>
-              <th className="py-3 px-4 bg-gray-100">Address</th>
-              <th className="py-3 px-4 bg-gray-100">Product ID</th>
-              <th className="py-3 px-4 bg-gray-100">Product Name</th>
-              <th className="py-3 px-4 bg-gray-100">Size</th>
-              <th className="py-3 px-4 bg-gray-100">Quantity</th>
-              <th className="py-3 px-4 bg-gray-100">Price</th>
-              <th className="py-3 px-4 bg-gray-100">Total</th>
-              <th className="py-3 px-4 bg-gray-100">Status</th>
-              <th className="py-3 px-4 bg-gray-100">Action</th>
-            </tr>
-          </thead>
-          <tbody className="text-center font-overpass text-[#333333]">
-            {currentTransactions.length > 0 ? (
-              currentTransactions.map((transaction) => (
-                <tr key={transaction.id} className="border-b border-gray-200">
-                  <td className="py-3 px-4">{FormatDate(transaction.createdAt)}</td>
-                  <td className="py-3 px-4">{transaction.transaction_uuid}</td>
-                  <td className="py-3 px-4">{transaction.user_id}</td>
-                  <td className="py-3 px-4">{transaction.name}</td>
-                  <td className="py-3 px-4">{transaction.address}</td>
-                  <td className="py-3 px-4">{transaction.product_id}</td>
-                  <td className="py-3 px-4">{transaction.product_name}</td>
-                  <td className="py-3 px-4">{transaction.product_size}</td>
-                  <td className="py-3 px-4">{transaction.quantity}</td>
-                  <td className="py-3 px-4">{FormatPrice(transaction.product_price)}</td>
-                  <td className="py-3 px-4">{FormatPrice(transaction.total)}</td>
-                  <td className="py-3 px-4">{transaction.status}</td>
-                  <td className="py-3 px-4 space-y-3">
-                    <button className="px-3 py-1 bg-[#333333] hover:bg-[#ffffff] text-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass">Edit</button>
-                    <button className="px-3 py-1 bg-[#333333] hover:bg-[#ffffff] text-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass">Delete</button>
+
+      <div className="w-full overflow-x-auto">
+        <div className="inline-block min-w-full border border-gray-200 rounded-lg overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Transaksi</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Produk</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ukuran</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Penerima</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kota</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kecamatan</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat Detail</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ekspedisi</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Layanan</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimasi</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Resi</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentTransactions.length > 0 ? (
+                currentTransactions.map((transaction) => (
+                  <tr key={transaction.transaction_uuid} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(transaction.createdAt)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.transaction_uuid}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.user_id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.product_name.join(', ')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.product_size.join(', ')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.quantity.join(', ')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{formatCurrency(transaction.total)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.city || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.sub_district || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.detail_address || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.expedition || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.expedition_services || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.etd ? `${transaction.etd} hari` : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.resi || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${transaction.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : transaction.status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                      >
+                        {transaction.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button onClick={() => handleEdit(transaction)} className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">
+                          Edit
+                        </button>
+                        <button onClick={() => handleDelete(transaction)} className="text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="17" className="px-6 py-10 text-center text-sm text-gray-500">
+                    No transactions available.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="12" className="py-4 text-center">
-                  No transactions available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination Controls */}
-      <div className="mt-5 flex justify-center items-center space-x-3">
+      <div className="mt-6 flex justify-center items-center space-x-3">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          className="px-3 py-1 bg-[#333333] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass"
+          className="px-4 py-2 text-sm font-medium text-white bg-[#333333] hover:bg-[#444444] rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === 1}
         >
           Previous
         </button>
-        <span className="text-lg font-overpass">
+        <span className="text-sm font-medium text-gray-700">
           Page {currentPage} of {totalPages}
         </span>
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          className="px-3 py-1 bg-[#333333] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass"
+          className="px-4 py-2 text-sm font-medium text-white bg-[#333333] hover:bg-[#444444] rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === totalPages}
         >
           Next

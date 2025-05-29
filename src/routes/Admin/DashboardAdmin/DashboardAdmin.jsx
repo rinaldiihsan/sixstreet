@@ -13,7 +13,8 @@ const DashboardAdmin = () => {
   const [monthlyTransactions, setMonthlyTransactions] = useState([]);
   const [products, setProducts] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
-  const [IsLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const getGreetingTime = () => {
     const currentHour = new Date().getHours();
@@ -125,7 +126,7 @@ const DashboardAdmin = () => {
       const monthlyData = calculateMonthlyRegistrations(users);
       setMonthlyRegistrations(monthlyData);
 
-      // Total users
+      // Total users (exclude admin role)
       const filteredUsers = users.filter((user) => user.role !== 1);
       setTotalUsers(filteredUsers.length);
     } catch (error) {
@@ -155,27 +156,50 @@ const DashboardAdmin = () => {
       };
       const response = await axios.get(`${backendUrl}/transaction`, { headers });
       const transactions = response.data;
-      setTotalTransactions(transactions.length);
 
-      // Calculate monthly transactions
-      const monthlyData = calculateTransaction(transactions);
+      // Group transactions by transaction_uuid to get unique transactions
+      const groupedTransactions = transactions.reduce((acc, transaction) => {
+        if (!acc[transaction.transaction_uuid]) {
+          acc[transaction.transaction_uuid] = transaction;
+        }
+        return acc;
+      }, {});
+
+      const uniqueTransactions = Object.values(groupedTransactions);
+
+      // Set total transactions count
+      setTotalTransactions(uniqueTransactions.length);
+
+      // Calculate monthly transactions using unique transactions
+      const monthlyData = calculateTransaction(uniqueTransactions);
       setMonthlyTransactions(monthlyData);
     } catch (error) {
       console.error('Error fetching transactions:', error);
+      setTotalTransactions(0);
     }
   };
 
   const calculateMonthlyRegistrations = (users) => {
+    const currentYear = new Date().getFullYear();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
     const monthlyCounts = Array.from({ length: 12 }, (_, index) => {
-      const monthYear = `${index + 1}/${new Date().getFullYear()}`;
-      return { monthYear, Registered: 0 };
+      return {
+        monthYear: `${monthNames[index]} ${currentYear}`,
+        Registered: 0,
+      };
     });
 
     users.forEach((user) => {
       if (user.role !== 1) {
         const createdAt = new Date(user.createdAt);
-        const month = createdAt.getMonth();
-        monthlyCounts[month].Registered++;
+        const userYear = createdAt.getFullYear();
+
+        // Only count registrations from current year
+        if (userYear === currentYear) {
+          const month = createdAt.getMonth();
+          monthlyCounts[month].Registered++;
+        }
       }
     });
 
@@ -183,15 +207,25 @@ const DashboardAdmin = () => {
   };
 
   const calculateTransaction = (transactions) => {
+    const currentYear = new Date().getFullYear();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
     const monthlyCounts = Array.from({ length: 12 }, (_, index) => {
-      const monthYear = `${index + 1}/${new Date().getFullYear()}`;
-      return { monthYear, Transactions: 0 };
+      return {
+        monthYear: `${monthNames[index]} ${currentYear}`,
+        Transactions: 0,
+      };
     });
 
     transactions.forEach((transaction) => {
       const createdAt = new Date(transaction.createdAt);
-      const month = createdAt.getMonth();
-      monthlyCounts[month].Transactions++;
+      const transactionYear = createdAt.getFullYear();
+
+      // Only count transactions from current year
+      if (transactionYear === currentYear) {
+        const month = createdAt.getMonth();
+        monthlyCounts[month].Transactions++;
+      }
     });
 
     return monthlyCounts;
@@ -215,7 +249,7 @@ const DashboardAdmin = () => {
         {/* Search */}
         <div className="space-y-1">
           <div className="relative">
-            <input type="search" placeholder="Search" className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass" />
+            <input type="search" placeholder="Search" className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300  focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass" />
             <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
               <path
                 d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
@@ -229,50 +263,56 @@ const DashboardAdmin = () => {
         </div>
         {/* End Search */}
       </div>
+
       <div className="mt-10 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <Link to="/user-management" className="bg-white shadow-lg p-6">
+        <Link to="/user-management" className="bg-white shadow-lg  p-6">
           <h2 className="font-overpass text-[#333333] font-semibold text-xl">Total Users in Website</h2>
-          <p className="font-overpass text-[#333333] text-lg mt-2">{totalUsers}</p>
+          <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{totalUsers}</p>
         </Link>
-        <Link to="/news-management" className="bg-white shadow-lg p-6">
+
+        <Link to="/news-management" className="bg-white shadow-lg  p-6">
           <h2 className="font-overpass text-[#333333] font-semibold text-xl">Total News in Website</h2>
-          <p className="font-overpass text-[#333333] text-lg mt-2">{totalNews}</p>
+          <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{totalNews}</p>
         </Link>
-        <Link to="/transaction-management" className="bg-white shadow-lg p-6">
+
+        <Link to="/transaction-management" className="bg-white shadow-lg  p-6">
           <h2 className="font-overpass text-[#333333] font-semibold text-xl">Total Transactions</h2>
-          <p className="font-overpass text-[#333333] text-lg mt-2">{totalTransactions.length > 0 ? totalTransactions.length : 0}</p>
+          <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{totalTransactions}</p>
         </Link>
-        <div className="bg-white shadow-lg p-6">
+
+        <div className="bg-white shadow-lg  p-6">
           <h2 className="font-overpass text-[#333333] font-semibold text-xl">Total Products in Website</h2>
-          <p className="font-overpass text-[#333333] text-lg mt-2">{products.flatMap((item) => item.variants).length}</p>
+          <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{isLoading ? 'Loading...' : products.flatMap((item) => item.variants).length}</p>
         </div>
       </div>
+
       <div className="mt-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart User */}
-        <div className="bg-white shadow-lg p-6 flex flex-col flex-wrap justify-center items-center">
-          <h2 className="font-overpass text-[#333333] font-semibold text-lg mb-5">Monthly User Registrations</h2>
+        <div className="bg-white shadow-lg  p-6 flex flex-col flex-wrap justify-center items-center">
+          <h2 className="font-overpass text-[#333333] font-semibold text-lg mb-5">Monthly User Registrations ({new Date().getFullYear()})</h2>
           <ResponsiveContainer width="100%" height={432}>
             <LineChart data={monthlyRegistrations}>
               <CartesianGrid strokeDasharray="4 4" />
-              <XAxis dataKey="monthYear" interval={0} angle={-25} textAnchor="end" height={60} />
+              <XAxis dataKey="monthYear" interval={0} angle={-45} textAnchor="end" height={80} fontSize={12} />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotoneY" dataKey="Registered" stroke="#333333" activeDot={{ r: 8 }} />
+              <Line type="monotone" dataKey="Registered" stroke="#333333" activeDot={{ r: 8 }} strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
+
         {/* Chart Transactions */}
-        <div className="bg-white shadow-lg p-6 flex flex-col flex-wrap justify-center items-center">
-          <h2 className="font-overpass text-[#333333] font-semibold text-lg mb-5">Monthly Transactions</h2>
+        <div className="bg-white shadow-lg  p-6 flex flex-col flex-wrap justify-center items-center">
+          <h2 className="font-overpass text-[#333333] font-semibold text-lg mb-5">Monthly Transactions ({new Date().getFullYear()})</h2>
           <ResponsiveContainer width="100%" height={432}>
             <LineChart data={monthlyTransactions}>
               <CartesianGrid strokeDasharray="4 4" />
-              <XAxis dataKey="monthYear" interval={0} angle={-25} textAnchor="end" height={60} />
+              <XAxis dataKey="monthYear" interval={0} angle={-45} textAnchor="end" height={80} fontSize={12} />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotoneY" dataKey="Transactions" stroke="#333333" activeDot={{ r: 8 }} />
+              <Line type="monotone" dataKey="Transactions" stroke="#333333" activeDot={{ r: 8 }} strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
