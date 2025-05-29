@@ -210,6 +210,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ForgotPassword from './routes/Client/ForgotPassword';
 import ChangePassword from './routes/Client/ChangePassword';
 import EditTransaction from './routes/Admin/Transaction/EditTransaction';
+import EditDataUser from './routes/Admin/User/EditDataUser';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -283,6 +284,7 @@ const App = () => {
             <Route path="/dashboard-admin" element={<DashboardAdmin />} />
             <Route path="/user-management" element={<UserManagement />} />
             <Route path="/user-management/tambah-data-user" element={<TambahDataUser />} />
+            <Route path="/user-management/edit-data-user/:id" element={<EditDataUser />} />
             <Route path="/news-management" element={<NewsManagement />} />
             <Route path="/news-management/:judulberita" element={<NewsManagementDetail />} />
             <Route path="/news-management/tambah-news" element={<TambahNews />} />

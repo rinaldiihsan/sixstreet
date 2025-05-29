@@ -198,12 +198,12 @@ const TransactionManagement = () => {
                         {transaction.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="py-3 px-4 gap-3 flex justify-center items-center">
                       <div className="flex space-x-2">
-                        <button onClick={() => handleEdit(transaction)} className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">
+                        <button onClick={() => handleEdit(transaction)} className="px-3 py-1 bg-[#333333] hover:bg-[#ffffff] text-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass">
                           Edit
                         </button>
-                        <button onClick={() => handleDelete(transaction)} className="text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">
+                        <button onClick={() => handleDelete(transaction)} className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white transition-colors duration-300 font-overpass">
                           Delete
                         </button>
                       </div>
