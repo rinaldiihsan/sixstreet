@@ -10,8 +10,10 @@ const TransactionManagement = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [transactions, setTransactions] = useState([]);
+
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const transactionsPerPage = 10;
+  const [itemsPerPage] = useState(10);
 
   const fetchTransactions = async () => {
     try {
@@ -49,7 +51,7 @@ const TransactionManagement = () => {
   };
 
   const handleDelete = async (transaction) => {
-    const confirmed = window.confirm('Are you sure you want to delete this transaction?');
+    const confirmed = window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?');
 
     if (!confirmed) return;
 
@@ -64,11 +66,18 @@ const TransactionManagement = () => {
       if (response.status === 200) {
         console.log('Transaction deleted successfully');
         await fetchTransactions();
+
+        // Adjust current page if needed after deletion
+        const newTotalPages = Math.ceil((filteredTransactions.length - 1) / itemsPerPage);
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+          setCurrentPage(newTotalPages);
+        }
       } else {
         console.error('Failed to delete transaction. Status:', response.status);
       }
     } catch (error) {
       console.error('Error deleting transaction:', error);
+      alert('Gagal menghapus transaksi');
     }
   };
 
@@ -114,134 +123,225 @@ const TransactionManagement = () => {
     );
   });
 
-  // Menghitung index transaksi yang akan ditampilkan berdasarkan pagination
-  const indexOfLastTransaction = currentPage * transactionsPerPage;
-  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-  const currentTransactions = filteredTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentTransactions = filteredTransactions.slice(startIndex, endIndex);
 
-  // Menghitung jumlah halaman berdasarkan jumlah transaksi yang difilter
-  const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      }
+    }
+
+    return pageNumbers;
+  };
 
   return (
-    <div className="mt-24 max-w-[115rem] py-5 mx-auto px-4 md:px-6 lg:px-8 font-overpass min-h-screen">
-      <h1 className="font-garamond text-[#333333] text-3xl font-semibold text-center mb-8">Transaction Management</h1>
+    <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
+      <h1 className="font-overpass text-[#333333] font-semibold text-2xl my-4">Transaction Management</h1>
 
-      <div className="mb-6 flex w-full items-center justify-start">
-        <div className="relative">
-          <input
-            type="search"
-            placeholder="Search transactions..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 rounded-md focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
-          />
-          <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
-              stroke="#AAAAAA"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+      <div className="mt-10 flex w-full items-center justify-start">
+        <div className="space-y-1">
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search transactions..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
             />
-            <path d="M14.6666 14.6666L13.3333 13.3333" stroke="#AAAAAA" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+            <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
+                stroke="#AAAAAA"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path d="M14.6666 14.6666L13.3333 13.3333" stroke="#AAAAAA" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full border border-gray-200 rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Transaksi</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Produk</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ukuran</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Penerima</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kota</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kecamatan</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat Detail</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ekspedisi</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Layanan</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimasi</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Resi</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentTransactions.length > 0 ? (
-                currentTransactions.map((transaction) => (
-                  <tr key={transaction.transaction_uuid} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(transaction.createdAt)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.transaction_uuid}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.user_id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.product_name.join(', ')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.product_size.join(', ')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.quantity.join(', ')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{formatCurrency(transaction.total)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.city || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.sub_district || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.detail_address || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.expedition || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.expedition_services || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.etd ? `${transaction.etd} hari` : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.resi || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${transaction.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : transaction.status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
-                      >
-                        {transaction.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 gap-3 flex justify-center items-center">
-                      <div className="flex space-x-2">
-                        <button onClick={() => handleEdit(transaction)} className="px-3 py-1 bg-[#333333] hover:bg-[#ffffff] text-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass">
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(transaction)} className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white transition-colors duration-300 font-overpass">
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="17" className="px-6 py-10 text-center text-sm text-gray-500">
-                    No transactions available.
+      {/* Data info */}
+      <div className="mt-5 w-full flex justify-between items-center text-sm font-overpass text-[#666666]">
+        <div>
+          Menampilkan {startIndex + 1} - {Math.min(endIndex, filteredTransactions.length)} dari {filteredTransactions.length} transaksi
+          {searchTerm && ` (hasil pencarian untuk "${searchTerm}")`}
+        </div>
+        <div>
+          Halaman {currentPage} dari {totalPages}
+        </div>
+      </div>
+
+      <div className="mt-5 w-full overflow-x-auto">
+        <table className="w-full table-auto border-collapse">
+          <thead>
+            <tr className="text-center font-overpass text-[#333333] text-lg">
+              <th className="py-3 px-4 bg-gray-100">Tanggal</th>
+              <th className="py-3 px-4 bg-gray-100">ID Transaksi</th>
+              <th className="py-3 px-4 bg-gray-100">User ID</th>
+              <th className="py-3 px-4 bg-gray-100">Nama Produk</th>
+              <th className="py-3 px-4 bg-gray-100">Ukuran</th>
+              <th className="py-3 px-4 bg-gray-100">Jumlah</th>
+              <th className="py-3 px-4 bg-gray-100">Total</th>
+              <th className="py-3 px-4 bg-gray-100">Nama Penerima</th>
+              <th className="py-3 px-4 bg-gray-100">Kota</th>
+              <th className="py-3 px-4 bg-gray-100">Kecamatan</th>
+              <th className="py-3 px-4 bg-gray-100">Alamat Detail</th>
+              <th className="py-3 px-4 bg-gray-100">Ekspedisi</th>
+              <th className="py-3 px-4 bg-gray-100">Layanan</th>
+              <th className="py-3 px-4 bg-gray-100">Estimasi</th>
+              <th className="py-3 px-4 bg-gray-100">No. Resi</th>
+              <th className="py-3 px-4 bg-gray-100">Status</th>
+              <th className="py-3 px-4 bg-gray-100">Aksi</th>
+            </tr>
+          </thead>
+          <tbody className="text-center font-overpass text-[#333333]">
+            {currentTransactions.length > 0 ? (
+              currentTransactions.map((transaction) => (
+                <tr key={transaction.transaction_uuid} className="border-b border-gray-200">
+                  <td className="py-3 px-4">{formatDate(transaction.createdAt)}</td>
+                  <td className="py-3 px-4">{transaction.transaction_uuid}</td>
+                  <td className="py-3 px-4">{transaction.user_id}</td>
+                  <td className="py-3 px-4">{transaction.product_name.join(', ')}</td>
+                  <td className="py-3 px-4">{transaction.product_size.join(', ')}</td>
+                  <td className="py-3 px-4">{transaction.quantity.join(', ')}</td>
+                  <td className="py-3 px-4 font-medium">{formatCurrency(transaction.total)}</td>
+                  <td className="py-3 px-4">{transaction.name}</td>
+                  <td className="py-3 px-4">{transaction.city || '-'}</td>
+                  <td className="py-3 px-4">{transaction.sub_district || '-'}</td>
+                  <td className="py-3 px-4">{transaction.detail_address || '-'}</td>
+                  <td className="py-3 px-4">{transaction.expedition || '-'}</td>
+                  <td className="py-3 px-4">{transaction.expedition_services || '-'}</td>
+                  <td className="py-3 px-4">{transaction.etd ? `${transaction.etd} hari` : '-'}</td>
+                  <td className="py-3 px-4">{transaction.resi || '-'}</td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full 
+                      ${transaction.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : transaction.status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                    >
+                      {transaction.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 gap-3 flex justify-center items-center">
+                    <button onClick={() => handleEdit(transaction)} className="px-3 py-1 bg-[#333333] hover:bg-[#ffffff] text-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass">
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(transaction)} className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white transition-colors duration-300 font-overpass">
+                      Delete
+                    </button>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="17" className="py-8 text-center text-gray-500">
+                  {searchTerm ? `Tidak ada transaksi yang ditemukan untuk "${searchTerm}"` : 'Tidak ada transaksi'}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="mt-6 flex justify-center items-center space-x-3">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          className="px-4 py-2 text-sm font-medium text-white bg-[#333333] hover:bg-[#444444] rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span className="text-sm font-medium text-gray-700">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          className="px-4 py-2 text-sm font-medium text-white bg-[#333333] hover:bg-[#444444] rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center space-x-2">
+          {/* Previous button */}
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-3 py-2 text-sm font-overpass ${
+              currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-[#333333] hover:bg-[#333333] hover:text-white'
+            } transition-colors duration-300`}
+          >
+            Previous
+          </button>
+
+          {/* Page numbers */}
+          {getPageNumbers().map((pageNumber, index) => (
+            <button
+              key={index}
+              onClick={() => typeof pageNumber === 'number' && handlePageChange(pageNumber)}
+              disabled={pageNumber === '...'}
+              className={`px-3 py-2 text-sm font-overpass ${
+                pageNumber === currentPage ? 'bg-[#333333] text-white' : pageNumber === '...' ? 'bg-white text-gray-400 cursor-default' : 'bg-white border border-gray-300 text-[#333333] hover:bg-[#333333] hover:text-white'
+              } transition-colors duration-300`}
+            >
+              {pageNumber}
+            </button>
+          ))}
+
+          {/* Next button */}
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-2 text-sm font-overpass ${
+              currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-[#333333] hover:bg-[#333333] hover:text-white'
+            } transition-colors duration-300`}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Pagination info */}
+      {totalPages > 1 && (
+        <div className="mt-4 text-center text-sm font-overpass text-[#666666]">
+          Total {filteredTransactions.length} transaksi, {totalPages} halaman
+        </div>
+      )}
     </div>
   );
 };

@@ -10,7 +10,7 @@ const EditDataUser = () => {
 
   const [formUser, setFormUser] = useState({
     email: '',
-    username: '',
+    fullName: '',
     no_hp: '',
     birthday: '',
     kode_user: '',
@@ -30,17 +30,17 @@ const EditDataUser = () => {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(`${backendUrl}/detail/${id}`, { headers });
-      const user = response.data;
+      const user = response.data.data; // Akses data dari response.data.data
 
       setFormUser({
-        email: user.email,
-        username: user.username,
-        no_hp: user.no_hp,
-        birthday: user.birthday,
-        kode_user: user.kode_user,
-        referd_kode: user.referd_kode ?? '',
-        role: user.role,
-        membership: user.membership,
+        email: user.email || '',
+        fullName: user.fullName || '',
+        no_hp: user.no_hp || '',
+        birthday: user.birthday || '',
+        kode_user: user.kode_user || '',
+        referd_kode: user.referd_kode || '',
+        role: user.role || '',
+        membership: user.membership || '',
       });
       setLoading(false);
     } catch (error) {
@@ -111,35 +111,22 @@ const EditDataUser = () => {
 
   return (
     <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
-      <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-6">
+      <h1 className="font-overpass text-[#333333] font-semibold text-2xl my-4">Edit Data User</h1>
+
+      <div className="bg-white p-8 shadow-md md:max-w-md w-full space-y-6 mt-10">
         <form onSubmit={handleEditUser} className="w-full space-y-4">
           <h2 className="text-2xl font-bold mb-4 text-center font-garamond text-[#333333]">Edit Profile</h2>
 
           <div className="flex flex-col">
-            <label htmlFor="username" className="font-overpass font-semibold mb-1">
-              Username
+            <label htmlFor="fullName" className="font-overpass font-semibold mb-1">
+              Full Name
             </label>
             <input
               type="text"
-              name="username"
-              value={formUser.username}
+              name="fullName"
+              value={formUser.fullName}
               onChange={handleInputChange}
-              placeholder="Username"
-              required
-              className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="no_hp" className="font-overpass font-semibold mb-1">
-              No HP
-            </label>
-            <input
-              type="text"
-              name="no_hp"
-              value={formUser.no_hp}
-              onChange={handleInputChange}
-              placeholder="No HP"
+              placeholder="Full Name"
               required
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
             />
@@ -161,15 +148,15 @@ const EditDataUser = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="membership" className="font-overpass font-semibold mb-1">
-              Membership
+            <label htmlFor="no_hp" className="font-overpass font-semibold mb-1">
+              No HP
             </label>
             <input
-              type="number"
-              name="membership"
-              value={formUser.membership}
+              type="text"
+              name="no_hp"
+              value={formUser.no_hp}
               onChange={handleInputChange}
-              placeholder="Membership"
+              placeholder="No HP"
               required
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
             />
@@ -179,7 +166,13 @@ const EditDataUser = () => {
             <label htmlFor="birthday" className="font-overpass font-semibold mb-1">
               Birthday
             </label>
-            <input type="date" name="birthday" value={formUser.birthday} onChange={handleInputChange} className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent" />
+            <input
+              type="date"
+              name="birthday"
+              value={formUser.birthday ? formUser.birthday.split('T')[0] : ''}
+              onChange={handleInputChange}
+              className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
+            />
           </div>
 
           <div className="flex flex-col">
@@ -204,11 +197,22 @@ const EditDataUser = () => {
             <input
               type="text"
               name="referd_kode"
-              value={formUser.referd_kode || ''}
+              value={formUser.referd_kode}
               onChange={handleInputChange}
               placeholder="Referral Kode"
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent"
             />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="membership" className="font-overpass font-semibold mb-1">
+              Membership
+            </label>
+            <select name="membership" value={formUser.membership} onChange={handleInputChange} required className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#333333] focus:border-transparent">
+              <option value="">Pilih Membership</option>
+              <option value="0">Basic</option>
+              <option value="1">Premium</option>
+            </select>
           </div>
 
           <div className="flex flex-col">
