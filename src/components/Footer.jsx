@@ -23,7 +23,7 @@ const Footer = () => {
               <Link to="/footwear/all-products-footwear" className="font-garamond text-white text-xl">
                 Footwear
               </Link>
-              <Link to="/footwear/all-products-footwear" className="font-garamond text-white text-xl">
+              <Link to="/accessories/all-products-accessories" className="font-garamond text-white text-xl">
                 Accessories
               </Link>
               <Link to="/collaboration/all-collaborations" className="font-garamond text-white text-xl">
