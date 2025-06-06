@@ -9,12 +9,10 @@ const DashboardAdmin = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalNews, setTotalNews] = useState(0);
   const [totalTransactions, setTotalTransactions] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [monthlyRegistrations, setMonthlyRegistrations] = useState([]);
   const [monthlyTransactions, setMonthlyTransactions] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loginStatus, setLoginStatus] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   const getGreetingTime = () => {
     const currentHour = new Date().getHours();
@@ -28,90 +26,52 @@ const DashboardAdmin = () => {
     }
   };
 
-  const fetchProducts = async (token) => {
+  // Fetch products from internal backend (same as ProductManagement)
+  const fetchProducts = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(`${apiUrl}/inventory/items/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+      setIsLoadingProducts(true);
+      const accessToken = Cookies.get('accessToken');
+      if (!accessToken) return;
+
+      const response = await axios.get(`${backendUrl}/products`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
-      if (response.status !== 200) {
-        throw new Error('Failed to fetch products');
+      if (response.data.success) {
+        const products = response.data.data;
+
+        // Group products by base name (same logic as ProductManagement)
+        const groupedProducts = products.reduce((acc, product) => {
+          const baseName = product.nama_produk.split(' - ')[0].trim();
+
+          if (!acc[baseName]) {
+            acc[baseName] = {
+              base_name: baseName,
+              item_group_id: product.item_group_id,
+              variants: [],
+            };
+          }
+
+          acc[baseName].variants.push({
+            id: product.id,
+            full_name: product.nama_produk,
+            harga: parseFloat(product.harga),
+            stok: product.stok,
+          });
+
+          return acc;
+        }, {});
+
+        const groupedArray = Object.values(groupedProducts);
+        setTotalProducts(groupedArray.length); // Set the count of unique product groups
       }
-
-      const data = response.data;
-
-      const productsWithThumbnails = data.data.map((item) => {
-        item.variants = item.variants.map((variant) => ({
-          ...variant,
-          parentThumbnail: item.thumbnail,
-          last_modified: item.last_modified,
-        }));
-        return item;
-      });
-
-      setProducts(productsWithThumbnails);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setTotalProducts(0);
     } finally {
-      setIsLoading(false);
+      setIsLoadingProducts(false);
     }
   };
-
-  const loginAndFetchProducts = async () => {
-    const email = import.meta.env.VITE_API_EMAIL;
-    const password = import.meta.env.VITE_API_PASSWORD;
-    const apiUrl = import.meta.env.VITE_API_URL;
-
-    if (!email || !password) {
-      setError('Missing email or password in environment variables.');
-      setLoginStatus('error');
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${apiUrl}/login`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = response.data;
-
-      if (response.status === 200) {
-        Cookies.set('pos_token', data.token, { expires: 1 });
-        setLoginStatus('success');
-        fetchProducts(data.token);
-      } else {
-        setError(data.message);
-        setLoginStatus('error');
-      }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
-      setLoginStatus('error');
-    }
-  };
-
-  useEffect(() => {
-    loginAndFetchProducts();
-  }, []);
-
-  useEffect(() => {
-    const token = Cookies.get('pos_token');
-    if (token) {
-      fetchProducts(token);
-    }
-  }, []);
 
   const fetchUserData = async () => {
     try {
@@ -232,6 +192,7 @@ const DashboardAdmin = () => {
   };
 
   useEffect(() => {
+    fetchProducts(); // Fetch products on component mount
     fetchUserData();
     fetchNewsData();
     fetchTransactions();
@@ -280,10 +241,10 @@ const DashboardAdmin = () => {
           <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{totalTransactions}</p>
         </Link>
 
-        <div className="bg-white shadow-lg  p-6">
+        <Link to="/product-management" className="bg-white shadow-lg  p-6">
           <h2 className="font-overpass text-[#333333] font-semibold text-xl">Total Products in Website</h2>
-          <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{isLoading ? 'Loading...' : products.flatMap((item) => item.variants).length}</p>
-        </div>
+          <p className="font-overpass text-[#333333] text-3xl font-bold mt-2">{isLoadingProducts ? 'Loading...' : totalProducts}</p>
+        </Link>
       </div>
 
       <div className="mt-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-6">

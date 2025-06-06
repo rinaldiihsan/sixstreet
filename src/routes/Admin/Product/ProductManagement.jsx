@@ -13,9 +13,11 @@ const ProductManagement = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [stockFilter, setStockFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Data states
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]); // Store all products for search
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,9 @@ const ProductManagement = () => {
       });
 
       if (response.data.success) {
-        setProducts(response.data.data);
+        const productsData = response.data.data || [];
+        setProducts(productsData);
+        setAllProducts(productsData); // Store all products for search
       }
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -57,12 +61,55 @@ const ProductManagement = () => {
       });
 
       if (response.data.success) {
-        setCategories(response.data.data);
+        setCategories(response.data.data || []);
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   };
+
+  // Search products locally (similar to SearchBar)
+  const searchProducts = async (term) => {
+    if (!term || term.length < 2) {
+      setProducts(allProducts);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+
+    try {
+      // Filter products locally based on search term
+      const filteredProducts = allProducts.filter(
+        (product) =>
+          product.nama_produk?.toLowerCase().includes(term.toLowerCase()) ||
+          product.category_name?.toLowerCase().includes(term.toLowerCase()) ||
+          product.item_group_id?.toLowerCase().includes(term.toLowerCase()) ||
+          product.deskripsi?.toLowerCase().includes(term.toLowerCase())
+      );
+
+      setProducts(filteredProducts);
+    } catch (error) {
+      console.error('Error searching products:', error);
+      setProducts([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounce search to avoid too many operations
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchTerm) {
+        searchProducts(searchTerm.toLowerCase());
+      } else {
+        setProducts(allProducts);
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, allProducts]);
 
   useEffect(() => {
     fetchProducts();
@@ -150,6 +197,7 @@ const ProductManagement = () => {
     setStockFilter('all');
     setSortField('updated_at');
     setSortDirection('desc');
+    setProducts(allProducts); // Reset to all products
   };
 
   // Group products by base name with category info
@@ -206,16 +254,6 @@ const ProductManagement = () => {
 
   // Enhanced filtering with category and stock
   const filteredProducts = groupedArray.filter((product) => {
-    const searchLower = searchTerm.toLowerCase();
-
-    // Search filter (name, category, description, group ID)
-    const matchesSearch =
-      !searchTerm ||
-      product.base_name?.toLowerCase().includes(searchLower) ||
-      product.category_name?.toLowerCase().includes(searchLower) ||
-      product.item_group_id?.toLowerCase().includes(searchLower) ||
-      product.deskripsi?.toLowerCase().includes(searchLower);
-
     // Category filter
     const matchesCategory = !categoryFilter || product.category_name === categoryFilter;
 
@@ -223,7 +261,7 @@ const ProductManagement = () => {
     const matchesStock =
       stockFilter === 'all' || (stockFilter === 'in_stock' && product.total_stock > 0) || (stockFilter === 'low_stock' && product.total_stock > 0 && product.total_stock <= 5) || (stockFilter === 'out_of_stock' && product.total_stock === 0);
 
-    return matchesSearch && matchesCategory && matchesStock;
+    return matchesCategory && matchesStock;
   });
 
   // Enhanced sorting
@@ -325,6 +363,20 @@ const ProductManagement = () => {
     return `${formatCurrency(priceRange.min)} - ${formatCurrency(priceRange.max)}`;
   };
 
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) {
+      return '/dummy-product.png';
+    }
+
+    // Check if it's already a full URL
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+
+    // If it's a relative path, prepend backend URL
+    return `${backendUrl}/${imageUrl}`;
+  };
+
   if (loading) {
     return (
       <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
@@ -349,20 +401,26 @@ const ProductManagement = () => {
             <div className="relative">
               <input
                 type="search"
-                placeholder="Search by name, category, description..."
+                placeholder="Search by name, category, description, Group ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="block md:w-[25rem] pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
               />
-              <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
-                  stroke="#AAAAAA"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path d="M14.6666 14.6666L13.3333 13.3333" stroke="#AAAAAA" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              {isSearching ? (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
+                </div>
+              ) : (
+                <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+                  <path
+                    d="M7.66659 14C11.1644 14 13.9999 11.1644 13.9999 7.66665C13.9999 4.16884 11.1644 1.33331 7.66659 1.33331C4.16878 1.33331 1.33325 4.16884 1.33325 7.66665C1.33325 11.1644 4.16878 14 7.66659 14Z"
+                    stroke="#AAAAAA"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M14.6666 14.6666L13.3333 13.3333" stroke="#AAAAAA" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
             </div>
 
             <button
@@ -388,6 +446,19 @@ const ProductManagement = () => {
             Sync from Jubelio
           </button>
         </div>
+
+        {/* Show search info */}
+        {searchTerm && (
+          <div className="text-sm text-gray-600 bg-blue-50 px-4 py-2 border border-blue-200">
+            {isSearching ? (
+              <span>Searching for "{searchTerm}"...</span>
+            ) : (
+              <span>
+                {groupedArray.length} result{groupedArray.length !== 1 ? 's' : ''} found for "{searchTerm}"{groupedArray.length === 0 && searchTerm.length < 2 && ' (type at least 2 characters)'}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Advanced Filters */}
         {showFilters && (
@@ -446,10 +517,19 @@ const ProductManagement = () => {
       <div className="mt-5 w-full flex justify-between items-center text-sm font-overpass text-[#666666]">
         <div>
           Menampilkan {startIndex + 1} - {Math.min(endIndex, sortedProducts.length)} dari {sortedProducts.length} produk
-          {(searchTerm || categoryFilter || stockFilter !== 'all') && ` (filtered from ${groupedArray.length} total)`}
+          {(searchTerm || categoryFilter || stockFilter !== 'all') &&
+            ` (filtered from ${
+              Object.values(
+                products.reduce((acc, product) => {
+                  const baseName = product.nama_produk.split(' - ')[0].trim();
+                  acc[baseName] = true;
+                  return acc;
+                }, {})
+              ).length
+            } total)`}
         </div>
         <div>
-          Halaman {currentPage} dari {totalPages}
+          Halaman {currentPage} dari {totalPages || 1}
         </div>
       </div>
 
@@ -507,7 +587,14 @@ const ProductManagement = () => {
                   <tr key={product.item_group_id} className="border-b border-gray-200 hover:bg-gray-50">
                     <td className="py-3 px-4">
                       {product.thumbnail ? (
-                        <img src={`${backendUrl}/${product.thumbnail}`} alt={product.base_name} className="w-16 h-16 object-cover mx-auto" />
+                        <img
+                          src={getImageUrl(product.thumbnail)}
+                          alt={product.base_name}
+                          className="w-16 h-16 object-cover mx-auto"
+                          onError={(e) => {
+                            e.target.src = '/dummy-product.png';
+                          }}
+                        />
                       ) : (
                         <div className="w-16 h-16 bg-gray-200 mx-auto flex items-center justify-center">
                           <span className="text-gray-400 text-xs">No Image</span>
@@ -550,7 +637,7 @@ const ProductManagement = () => {
             ) : (
               <tr>
                 <td colSpan="10" className="py-8 text-center text-gray-500">
-                  {searchTerm || categoryFilter || stockFilter !== 'all' ? 'Tidak ada produk yang sesuai dengan filter' : 'Tidak ada produk'}
+                  {searchTerm && searchTerm.length < 2 ? 'Type at least 2 characters to search' : searchTerm || categoryFilter || stockFilter !== 'all' ? 'Tidak ada produk yang sesuai dengan filter' : 'Tidak ada produk'}
                 </td>
               </tr>
             )}
