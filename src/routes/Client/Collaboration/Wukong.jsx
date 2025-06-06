@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import axios from 'axios';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -10,7 +9,6 @@ import AssetBannerWukong from '../../../assets/banner/six-x-wukong.webp';
 const Wukong = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Relevance');
-  const [loginStatus, setLoginStatus] = useState(null);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,142 +16,98 @@ const Wukong = () => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [isSoldProducts, setIsSoldProducts] = useState(10);
 
-  const fetchProductGroup = async (token, group_id) => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(`${apiUrl}/inventory/catalog/for-listing/${group_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      // Karena response.data adalah array, ambil item pertama
-      if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
-        const productData = response.data[0];
-
-        // Pastikan ada images dan url
-        if (productData.images && productData.images.length > 0) {
-          const imageUrl = productData.images[0].url;
-
-          return {
-            groupId: group_id,
-            thumbnail: imageUrl,
-            images: productData.images,
-          };
-        }
-      }
-
-      return {
-        groupId: group_id,
-        thumbnail: null,
-        images: [],
-      };
-    } catch (error) {
-      return {
-        groupId: group_id,
-        thumbnail: null,
-        images: [],
-      };
-    }
+  // Helper function to format price
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   };
 
-  const fetchProducts = async (token) => {
+  // Helper function to get Wukong products
+  const getWukongProducts = (products) => {
+    // Group products by base name first
+    const groupedProducts = products.reduce((acc, product) => {
+      // Filter only Wukong products
+      const productName = product.nama_produk.toLowerCase();
+      if (!productName.includes('wukong')) {
+        return acc;
+      }
+
+      const baseName = product.nama_produk.split(' - ')[0].trim();
+
+      if (!acc[baseName]) {
+        acc[baseName] = {
+          base_name: baseName,
+          item_group_id: product.item_group_id,
+          category_id: product.category_id,
+          category_name: product.category_name,
+          thumbnail: product.thumbnail,
+          images_folder: product.images_folder,
+          price: parseFloat(product.harga),
+          total_stock: 0,
+          variants: [],
+          updated_at: product.updated_at,
+          // Additional properties for compatibility
+          item_name: product.nama_produk,
+          sell_price: parseFloat(product.harga),
+          available_qty: product.stok,
+          last_modified: product.updated_at,
+        };
+      }
+
+      acc[baseName].total_stock += product.stok;
+      acc[baseName].variants.push({
+        id: product.id,
+        name: product.nama_produk,
+        price: parseFloat(product.harga),
+        stock: product.stok,
+        size: product.nama_produk.split(' - ')[1] || 'One Size',
+      });
+
+      return acc;
+    }, {});
+
+    return Object.values(groupedProducts);
+  };
+
+  // Fetch products from local API
+  const fetchProducts = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.get(`${apiUrl}/inventory/items/`, {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await axios.get(`${backendUrl}/products`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.status === 200) {
-        const data = response.data.data || [];
-
-        // Filter products
-        const sixstreetProducts = data.filter((item) =>
-          item?.variants?.some((variant) => {
-            const name = (variant?.item_name || '').toLowerCase();
-            return name.includes('wukong');
-          })
-        );
-
-        // Get unique IDs
-        const uniqueGroupIds = [...new Set(sixstreetProducts.map((item) => item?.item_group_id).filter(Boolean))];
-
-        // Fetch details
-        const groupDetails = await Promise.allSettled(uniqueGroupIds.map((groupId) => fetchProductGroup(token, groupId)));
-
-        const validGroupDetails = groupDetails
-          .filter((result) => result.status === 'fulfilled')
-          .map((result) => result.value)
-          .filter(Boolean);
-
-        // Combine products with images
-        const productsWithThumbnails = sixstreetProducts.map((item) => {
-          const groupDetail = validGroupDetails.find((g) => g?.groupId === item?.item_group_id);
-
-          const result = {
-            ...item,
-            thumbnail: groupDetail?.thumbnail || null,
-            images: groupDetail?.images || [],
-          };
-
-          return result;
-        });
-
-        setProducts(productsWithThumbnails);
+      if (response.data.success) {
+        const wukongProducts = getWukongProducts(response.data.data);
+        setProducts(wukongProducts);
+      } else {
+        setError('Failed to fetch products');
+        setProducts([]);
       }
     } catch (error) {
-      console.error('Error in fetchProducts:', error);
+      console.error('Error fetching products:', error);
+      setError(`Error fetching products: ${error.message}`);
       setProducts([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const loginAndFetchProducts = async () => {
-    const email = import.meta.env.VITE_API_EMAIL;
-    const password = import.meta.env.VITE_API_PASSWORD;
-    const ApiLogin = import.meta.env.VITE_LOGIN_JUBELIO;
-
-    if (!email || !password) {
-      setError('Missing email or password in environment variables.');
-      setLoginStatus('error');
-      return;
-    }
-
-    try {
-      const response = await axios.post(`${ApiLogin}/loginjubelio`);
-
-      const data = response.data;
-
-      if (response.status === 200) {
-        Cookies.set('pos_token', data.token, { expires: 1 });
-        setLoginStatus('success');
-        fetchProducts(data.token);
-      } else {
-        setError(data.message);
-        setLoginStatus('error');
-      }
-    } catch (error) {
-      setError(`An error occurred: ${error.message}`);
-      setLoginStatus('error');
-    }
-  };
-
   useEffect(() => {
-    loginAndFetchProducts();
+    fetchProducts();
   }, []);
-
-  useEffect(() => {
-    const token = Cookies.get('pos_token');
-    if (token) {
-      fetchProducts(token);
-    }
-  }, [selectedOption]);
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -177,6 +131,11 @@ const Wukong = () => {
   const isProductMatchSelectedBrands = (productName, selectedBrands) => {
     if (selectedBrands.length === 0) return true;
     return selectedBrands.some((brand) => productName.toLowerCase().includes(brand.toLowerCase()));
+  };
+
+  const isProductMatchSelectedSizes = (variants, selectedSizes) => {
+    if (selectedSizes.length === 0) return true;
+    return variants.some((variant) => selectedSizes.some((size) => variant.size.toLowerCase().includes(size.toLowerCase())));
   };
 
   const toggleSidebar = () => {
@@ -204,6 +163,39 @@ const Wukong = () => {
     }, 3000);
   };
 
+  // Get image URL for products
+  const getProductImageUrl = (product) => {
+    if (product.thumbnail) {
+      return `${backendUrl}/${product.thumbnail}`;
+    }
+    return '/dummy-product.png';
+  };
+
+  // Filter and sort products
+  const filteredProducts = products.filter((product) => {
+    const brandMatch = isProductMatchSelectedBrands(product.base_name, selectedBrands);
+    const sizeMatch = isProductMatchSelectedSizes(product.variants, selectedSizes);
+    return brandMatch && sizeMatch;
+  });
+
+  // Sort products based on selected option
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (selectedOption === 'Harga Tertinggi') {
+      return b.price - a.price;
+    } else if (selectedOption === 'Harga Terendah') {
+      return a.price - b.price;
+    } else if (selectedOption === 'Alphabet') {
+      return a.base_name.localeCompare(b.base_name);
+    } else if (selectedOption === 'Product Terbaru') {
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    }
+    return 0;
+  });
+
+  // Separate available and sold out products
+  const availableProducts = sortedProducts.filter((product) => product.total_stock > 0);
+  const soldOutProducts = sortedProducts.filter((product) => product.total_stock <= 0).slice(0, isSoldProducts);
+
   return (
     <>
       <div className="mt-20 max-w-[115rem] py-5 mx-auto px-5 md:px-2 flex flex-col justify-center items-center overflow-x-hidden">
@@ -214,7 +206,8 @@ const Wukong = () => {
         )}
 
         <img src={AssetBannerWukong} alt="Hero Wukong" className="w-full h-full md:h-auto mb-6" />
-        {/* Filter  */}
+
+        {/* Filter */}
         <div className="w-full flex justify-between mb-6 sticky top-[70px] bg-white z-[997] py-1 md:py-4">
           <div className="flex flex-grow">
             <div className="border border-[#E5E5E5] hidden items-center justify-center w-[10rem] md:w-[17rem] px-4 md:px-10 py-5 gap-x-5 md:gap-x-14">
@@ -243,7 +236,7 @@ const Wukong = () => {
               </svg>
             </div>
             <div className="border-t border-b border-r lg:border-r-0 border-[#E5E5E5] flex-grow flex items-center px-4 md:px-10 py-5">
-              {/* <p className="font-overpass capitalize">{products.flatMap((item) => item.variants).filter((variant) => variant.item_name.toLowerCase().includes('wukong')).length} Result</p> */}
+              <p className="font-overpass capitalize">{filteredProducts.length} Result</p>
             </div>
             <div className="relative border border-[#E5E5E5] hidden md:flex items-center justify-center w-full md:w-[25rem] px-4 md:px-10 py-5 gap-x-5">
               <p className="font-overpass capitalize cursor-pointer" onClick={handleDropdownToggle}>
@@ -268,39 +261,40 @@ const Wukong = () => {
             </div>
           </div>
         </div>
+
         <div className="w-full flex justify-between md:gap-x-3 overflow-x-hidden">
           {/* Sidebar Filter */}
-          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden  md:py-5">
+          <div className="w-[15%] border border-[#E5E5E5] flex-col px-6 py-6 h-[calc(100vh-4rem)] overflow-y-auto hidden md:py-5">
             {/* Filter Brand */}
             <div className="mb-6">
               <h3 className="text-lg font-medium font-overpass">Collaborations</h3>
               <ul className="mt-3 space-y-2">
                 <li className="flex items-center gap-x-2">
-                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="TEE" onChange={handleBrandChange} />
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="TEE" value="TEE" onChange={handleBrandChange} />
                   <label className="font-overpass" htmlFor="TEE">
                     TEE
                   </label>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="BUCKET" onChange={handleBrandChange} />
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="BUCKET" value="BUCKET" onChange={handleBrandChange} />
                   <label className="font-overpass" htmlFor="BUCKET">
                     BUCKET
                   </label>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="SLEEVELESS" onChange={handleBrandChange} />
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="SLEEVELESS" value="SLEEVELESS" onChange={handleBrandChange} />
                   <label className="font-overpass" htmlFor="SLEEVELESS">
                     SLEEVELESS
                   </label>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="HOODIE" onChange={handleBrandChange} />
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="HOODIE" value="HOODIE" onChange={handleBrandChange} />
                   <label className="font-overpass" htmlFor="HOODIE">
                     HOODIE
                   </label>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="VEST" onChange={handleBrandChange} />
+                  <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="VEST" value="VEST" onChange={handleBrandChange} />
                   <label className="font-overpass" htmlFor="VEST">
                     VEST
                   </label>
@@ -324,32 +318,39 @@ const Wukong = () => {
                 <h3 className="text-lg font-medium font-overpass">Collaborations</h3>
                 <ul className="mt-3 space-y-2">
                   <li className="flex items-center gap-x-2">
-                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="TEE" onChange={handleBrandChange} />
-                    <label className="font-overpass" htmlFor="TEE">
+                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="TEE_mobile" value="TEE" onChange={handleBrandChange} />
+                    <label className="font-overpass" htmlFor="TEE_mobile">
                       TEE
                     </label>
                   </li>
                   <li className="flex items-center gap-x-2">
-                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="BUCKET" onChange={handleBrandChange} />
-                    <label className="font-overpass" htmlFor="BUCKET">
+                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="BUCKET_mobile" value="BUCKET" onChange={handleBrandChange} />
+                    <label className="font-overpass" htmlFor="BUCKET_mobile">
                       BUCKET
                     </label>
                   </li>
                   <li className="flex items-center gap-x-2">
-                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="SLEEVELESS" onChange={handleBrandChange} />
-                    <label className="font-overpass" htmlFor="SLEEVELESS">
+                    <input
+                      type="checkbox"
+                      className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0"
+                      name="brand"
+                      id="SLEEVELESS_mobile"
+                      value="SLEEVELESS"
+                      onChange={handleBrandChange}
+                    />
+                    <label className="font-overpass" htmlFor="SLEEVELESS_mobile">
                       SLEEVELESS
                     </label>
                   </li>
                   <li className="flex items-center gap-x-2">
-                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="HOODIE" onChange={handleBrandChange} />
-                    <label className="font-overpass" htmlFor="HOODIE">
+                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="HOODIE_mobile" value="HOODIE" onChange={handleBrandChange} />
+                    <label className="font-overpass" htmlFor="HOODIE_mobile">
                       HOODIE
                     </label>
                   </li>
                   <li className="flex items-center gap-x-2">
-                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="AAPE" value="VEST" onChange={handleBrandChange} />
-                    <label className="font-overpass" htmlFor="VEST">
+                    <input type="checkbox" className="border border-[#E5E5E5] focus:outline-none focus:shadow-outline focus:border-[#E5E5E5] focus:ring-0" name="brand" id="VEST_mobile" value="VEST" onChange={handleBrandChange} />
+                    <label className="font-overpass" htmlFor="VEST_mobile">
                       VEST
                     </label>
                   </li>
@@ -358,105 +359,69 @@ const Wukong = () => {
             </motion.div>
           )}
 
-          {/* Product */}
+          {/* Product Grid */}
           <div className="w-full grid grid-cols-2 gap-5 lg:grid-cols-4 mb-10 overflow-y-auto h-[calc(100vh-4rem)] md:px-5 overflow-x-hidden scroll-hidden">
             {isLoading ? (
               Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="flex flex-col gap-y-5 items-center">
                   <Skeleton className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover" />
-                  <div className="flex flex-col text-c laptopM:w-[17rem] laptopM:h-[17rem]enter gap-y-2">
+                  <div className="flex flex-col text-center gap-y-2">
                     <Skeleton className="text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem]" />
                     <Skeleton className="md:text-xl" />
                   </div>
                 </div>
               ))
-            ) : loginStatus === 'success' && products.some((item) => item.variants.some((variant) => variant.item_name.toLowerCase().includes('wukong'))) ? (
-              <>
-                {/* Produk yang tersedia */}
-                {products
-                  .flatMap((item) => ({
-                    ...item.variants[0],
-                    item_group_id: item.item_group_id,
-                    parentThumbnail: item.thumbnail,
-                    last_modified: item.last_modified,
-                  }))
-                  .filter((variant) => variant.item_name.toLowerCase().includes('wukong'))
-                  .filter((variant) => isProductMatchSelectedBrands(variant.item_name.toLowerCase(), selectedBrands, selectedSizes))
-                  .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty > 0)
-                  .sort((a, b) => {
-                    if (selectedOption === 'Harga Tertinggi') {
-                      return b.sell_price - a.sell_price;
-                    } else if (selectedOption === 'Harga Terendah') {
-                      return a.sell_price - b.sell_price;
-                    } else if (selectedOption === 'Alphabet') {
-                      return a.item_name.localeCompare(b.item_name);
-                    }
-                    return 0;
-                  })
-                  .map((variant, index) => (
-                    <div key={index} className="flex flex-col gap-y-5 items-center">
-                      <Link to={`/product-detail/${variant.item_group_id}`}>
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
-                          />
-                        )}
-                      </Link>
-                      <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center">
-                          {variant.item_name}
-                        </h2>
-                        <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-gray-700">Rp. {variant.sell_price.toLocaleString('id-ID')}</h2>
-                      </div>
-                    </div>
-                  ))}
-                {/* Produk yang habis */}
-                {products
-                  .flatMap((item) => ({
-                    ...item.variants[0],
-                    item_group_id: item.item_group_id,
-                    parentThumbnail: item.thumbnail,
-                    last_modified: item.last_modified,
-                  }))
-                  .filter((variant) => variant.item_name.toLowerCase().includes('wukong'))
-                  .filter((variant) => isProductMatchSelectedBrands(variant.item_name.toLowerCase(), selectedBrands))
-                  .filter((variant) => variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty <= 0)
-                  .map((variant, index) => (
-                    <div key={index} className="flex flex-col gap-y-5 items-center">
-                      <Link href="#" onClick={handleSoldOutClick} className="cursor-not-allowed transition-opacity duration-300 hover:opacity-75">
-                        {variant.parentThumbnail ? (
-                          <img
-                            src={variant.parentThumbnail}
-                            alt={variant.item_name}
-                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover opacity-50"
-                          />
-                        ) : (
-                          <img
-                            src="/dummy-product.png"
-                            alt={variant.item_name}
-                            className="lazyload w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover opacity-50"
-                          />
-                        )}
-                      </Link>
-                      <div className="flex flex-col items-center text-center w-full px-2">
-                        <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center text-red-700">
-                          {variant.item_name}
-                        </h2>
-                        <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-red-600">Sold Out</h2>
-                      </div>
-                    </div>
-                  ))}
-              </>
+            ) : error ? (
+              <p className="uppercase font-overpass font-bold text-xl text-red-500 col-span-full text-center">{error}</p>
             ) : (
-              <p className="uppercase font-overpass font-bold text-xl">{error ? `Login failed: ${error}` : 'No products found in this category'}</p>
+              <>
+                {/* Available Products */}
+                {availableProducts.map((product, index) => (
+                  <div key={`available-${product.item_group_id}-${index}`} className="flex flex-col gap-y-5 items-center">
+                    <Link to={`/product-detail/${product.item_group_id}`}>
+                      <img
+                        src={getProductImageUrl(product)}
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover"
+                        alt={product.base_name}
+                        onError={(e) => {
+                          e.target.src = '/dummy-product.png';
+                        }}
+                      />
+                    </Link>
+                    <div className="flex flex-col items-center text-center w-full px-2">
+                      <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center">
+                        {product.base_name}
+                      </h2>
+                      <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-gray-700">{formatPrice(product.price)}</h2>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Sold Out Products */}
+                {soldOutProducts.map((product, index) => (
+                  <div key={`soldout-${product.item_group_id}-${index}`} className="flex flex-col gap-y-5 items-center">
+                    <Link to={`/product-detail-sold/${product.item_group_id}`} className="cursor-pointer transition-opacity duration-300 hover:opacity-75">
+                      <img
+                        src={getProductImageUrl(product)}
+                        className="w-[8rem] h-[8rem] mobile:w-[10.5rem] mobile:h-[10.5rem] md:w-[18rem] md:h-[18rem] lg:w-[13rem] lg:h-[13rem] laptopM:w-[17rem] laptopM:h-[17rem] laptopL:w-[22rem] laptopL:h-[22rem] object-cover opacity-50"
+                        alt={product.base_name}
+                        onError={(e) => {
+                          e.target.src = '/dummy-product.png';
+                        }}
+                      />
+                    </Link>
+                    <div className="flex flex-col items-center text-center w-full px-2">
+                      <h2 className="uppercase font-overpass font-medium lg:font-semibold text-sm md:text-lg lg:text-base laptopL:text-lg w-[8rem] mobile:w-[10rem] md:w-[18rem] lg:w-[13rem] laptopM:w-[17rem] laptopL:w-[22rem] text-center text-red-700">
+                        {product.base_name}
+                      </h2>
+                      <h2 className="uppercase font-overpass text-sm md:text-lg text-center text-red-600">Sold Out</h2>
+                    </div>
+                  </div>
+                ))}
+
+                {/* No products message */}
+                {filteredProducts.length === 0 && !isLoading && <p className="uppercase font-overpass font-bold text-xl text-center w-full col-span-full">No Wukong products found</p>}
+              </>
             )}
           </div>
         </div>
