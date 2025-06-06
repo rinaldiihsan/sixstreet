@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 const SearchBar = ({ onResultClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,7 +8,7 @@ const SearchBar = ({ onResultClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -18,17 +17,13 @@ const SearchBar = ({ onResultClick }) => {
 
   const fetchCategories = async () => {
     try {
-      const token = Cookies.get('pos_token');
-      if (!token) return;
-
-      const response = await axios.get(`${apiUrl}/inventory/categories/item-categories/`, {
+      const response = await axios.get(`${backendUrl}/products/categories`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.status === 200) {
+      if (response.data.success) {
         setCategories(response.data.data || []);
       }
     } catch (error) {
@@ -44,64 +39,42 @@ const SearchBar = ({ onResultClick }) => {
 
     setIsLoading(true);
     try {
-      const token = Cookies.get('pos_token');
-      if (!token) {
-        setSearchResults([]);
-        setIsLoading(false);
-        return;
-      }
-
-      // Search in products
-      const response = await axios.get(`${apiUrl}/inventory/items/`, {
+      // Try to get all products first (more reliable)
+      const response = await axios.get(`${backendUrl}/products`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.status === 200) {
-        const products = response.data.data || [];
+      if (response.data.success) {
+        const allProducts = response.data.data || [];
 
-        // Filter products based on search term
-        const filteredProducts = products.filter((product) => {
-          // Search in product name and variants
-          const productMatch = product.item_name?.toLowerCase().includes(term);
-          const variantMatch = product.variants?.some((variant) => variant.item_name?.toLowerCase().includes(term));
+        // Filter products locally
+        const filteredProducts = allProducts.filter((product) => product.nama_produk?.toLowerCase().includes(term.toLowerCase()) && product.stok > 0);
 
-          return productMatch || variantMatch;
-        });
-
-        // Transform filtered products for display
-        const searchResults = [];
+        // Group by item_group_id to avoid duplicates
+        const groupedProducts = {};
 
         filteredProducts.forEach((product) => {
-          // Add unique variants to results
-          if (product.variants && product.variants.length > 0) {
-            const uniqueVariants = {};
-
-            product.variants.forEach((variant) => {
-              if (variant.item_name?.toLowerCase().includes(term) && variant.sell_price !== null && variant.sell_price !== 0 && variant.available_qty !== null && variant.available_qty >= 1) {
-                if (!uniqueVariants[variant.item_name]) {
-                  uniqueVariants[variant.item_name] = {
-                    id: variant.item_id,
-                    name: variant.item_name,
-                    price: variant.sell_price,
-                    groupId: product.item_group_id,
-                    categoryId: product.item_category_id,
-                    thumbnail: product.thumbnail || '/dummy-product.png',
-                  };
-                }
-              }
-            });
-
-            Object.values(uniqueVariants).forEach((variant) => {
-              searchResults.push(variant);
-            });
+          const groupId = product.item_group_id;
+          if (!groupedProducts[groupId]) {
+            groupedProducts[groupId] = {
+              id: product.id,
+              name: product.nama_produk.split(' - ')[0].trim(), // Get base name without size
+              price: parseFloat(product.harga),
+              groupId: product.item_group_id,
+              categoryId: product.category_id,
+              categoryName: product.category_name,
+              thumbnail: product.thumbnail ? `${backendUrl}/${product.thumbnail}` : '/dummy-product.png',
+            };
           }
         });
 
-        // Limit results to 10 items
-        setSearchResults(searchResults.slice(0, 10));
+        // Convert to array - no limit, show all results
+        const searchResults = Object.values(groupedProducts);
+        setSearchResults(searchResults);
+      } else {
+        setSearchResults([]);
       }
     } catch (error) {
       console.error('Error searching products:', error);
@@ -145,9 +118,29 @@ const SearchBar = ({ onResultClick }) => {
     }).format(price);
   };
 
-  const getCategoryName = (categoryId) => {
-    const category = categories.find((cat) => cat.item_category_id === categoryId);
-    return category ? category.item_category_name : '';
+  const getCategoryName = (categoryId, categoryName) => {
+    // If we have category name from the product data, use it
+    if (categoryName) {
+      return categoryName;
+    }
+
+    // Otherwise, try to find it in the categories array
+    const category = categories.find((cat) => cat.category_id === categoryId);
+    return category ? category.category_name : '';
+  };
+
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl || imageUrl === '/dummy-product.png') {
+      return '/dummy-product.png';
+    }
+
+    // Check if it's already a full URL
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+
+    // If it's a relative path, prepend backend URL
+    return `${backendUrl}/${imageUrl}`;
   };
 
   return (
@@ -173,15 +166,20 @@ const SearchBar = ({ onResultClick }) => {
 
       {/* Display search results */}
       {searchTerm && (
-        <div className="mt-2 border border-gray-200 shadow-sm bg-white max-h-80 overflow-y-auto">
+        <div className="mt-2 border border-gray-200 shadow-sm bg-white max-h-96 overflow-y-auto">
           {isLoading ? (
             <div className="px-4 py-3 text-sm text-gray-500 text-center">Searching...</div>
           ) : searchResults.length > 0 ? (
             <>
+              {/* Results header with count */}
+              <div className="px-4 py-2 text-xs text-gray-600 bg-gray-50 border-b border-gray-200 font-medium">
+                {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found for "{searchTerm}"
+              </div>
+
               {searchResults.map((item, index) => (
                 <Link key={index} to={`/product-detail/${item.groupId}`} className="flex items-center px-4 py-3 hover:bg-gray-100 border-b border-gray-100 last:border-b-0" onClick={() => handleResultClick(item)}>
                   <img
-                    src={item.thumbnail}
+                    src={getImageUrl(item.thumbnail)}
                     alt={item.name}
                     className="w-12 h-12 object-cover mr-3 flex-shrink-0"
                     onError={(e) => {
@@ -190,12 +188,11 @@ const SearchBar = ({ onResultClick }) => {
                   />
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-gray-900 truncate">{item.name}</h4>
-                    <p className="text-xs text-gray-500 truncate">{getCategoryName(item.categoryId)}</p>
+                    <p className="text-xs text-gray-500 truncate">{getCategoryName(item.categoryId, item.categoryName)}</p>
                     <p className="text-sm font-semibold text-gray-700">{formatPrice(item.price)}</p>
                   </div>
                 </Link>
               ))}
-              {searchResults.length === 10 && <div className="px-4 py-2 text-xs text-gray-500 text-center bg-gray-50">Showing top 10 results</div>}
             </>
           ) : searchTerm.length >= 2 ? (
             <div className="px-4 py-3 text-sm text-gray-500 text-center">No products found for "{searchTerm}"</div>
