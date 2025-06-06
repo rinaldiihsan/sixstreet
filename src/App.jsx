@@ -80,6 +80,9 @@ import NewsManagementDetail from './routes/Admin/News/NewsManagementDetail';
 import TambahNews from './routes/Admin/News/TambahNews';
 import TransactionManagement from './routes/Admin/Transaction/TransactionManagement';
 import MultiLink from './routes/Client/MultiLink';
+import ProductManagement from './routes/Admin/Product/ProductManagement';
+import EditProduct from './routes/Admin/Product/EditProduct';
+import DetailProductManagement from './routes/Admin/Product/DetailProductManagement';
 // End Import Admin Component
 
 // Featured Brand Component
@@ -289,6 +292,9 @@ const App = () => {
             <Route path="/news-management/:judulberita" element={<NewsManagementDetail />} />
             <Route path="/news-management/tambah-news" element={<TambahNews />} />
             <Route path="/transaction-management" element={<TransactionManagement />} />
+            <Route path="/product-management" element={<ProductManagement />} />
+            <Route path="/product-management/edit-product/:id" element={<EditProduct />} />
+            <Route path="/product-management/detail-product/:group_id" element={<DetailProductManagement />} />
             <Route path="/transaction-management/edit-transaction/:user_id/:transaction_uuid" element={<EditTransaction />} />
             <Route path="*" element={<NotFoundAdmin />} />
           </Routes>
@@ -473,7 +479,7 @@ const App = () => {
             <Route path="/collaboration/jameson" element={<Jameson />} />
 
             {/* Product Detail */}
-            <Route path="/product-detail/:itemId" element={<ProductDetail userId={userId} isLoggedIn={isLoggedIn} />} />
+            <Route path="/product-detail/:group_id" element={<ProductDetail userId={userId} isLoggedIn={isLoggedIn} />} />
 
             {/* Product Detail Sold */}
             <Route path="/product-detail-sold/:itemId" element={<ProductDetailSold userId={userId} isLoggedIn={isLoggedIn} />} />

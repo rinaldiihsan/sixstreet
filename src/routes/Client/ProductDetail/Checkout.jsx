@@ -14,7 +14,6 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const jubelioUrl = import.meta.env.VITE_API_URL;
 
   // State untuk Alamat
   const [addresses, setAddresses] = useState([]);
@@ -41,8 +40,8 @@ const Checkout = () => {
   const [usePoints, setUsePoints] = useState(false);
   const [pointsToUse, setPointsToUse] = useState(0);
 
-  // State untuk Produk Jubelio
-  const [productJubelio, setProductJubelio] = useState(null);
+  // State untuk Produk Lokal
+  const [productLocal, setProductLocal] = useState(null);
   const [productCategory, setProductCategory] = useState('');
 
   // State untuk Voucher
@@ -70,40 +69,68 @@ const Checkout = () => {
     };
   }, []);
 
-  // Fetch data produk dari Jubelio
-  const fetchJubelioProduct = async (productId) => {
+  // Fetch data produk dari API lokal menggunakan database_id
+  const fetchLocalProduct = async (databaseId) => {
     try {
-      const pos_token = Cookies.get('pos_token');
-      if (!pos_token) {
-        throw new Error('POS Token tidak ditemukan');
-      }
-
-      const response = await axios.get(`${jubelioUrl}/inventory/items/${productId}`, {
+      // Fetch product detail from local API using database_id
+      const response = await axios.get(`${backendUrl}/products/${databaseId}`, {
         headers: {
-          Authorization: `Bearer ${pos_token}`,
           'Content-Type': 'application/json',
         },
       });
-      setProductJubelio(response.data);
 
-      // Tentukan kategori produk
-      const category_id = response.data.item_category_id;
-      const apparel = [18215, 18218, 18210, 18216, 18199, 18198, 18209, 18217, 18200];
-      const sneakers = [5472, 999, 1013, 12780, 12803, 1027, 18710, 7545, 17895];
-      const accessories = [7339, 7340, 17860, 1147, 7332, 1143, 10217, 36, 5516];
+      if (response.data.success) {
+        const productData = response.data.data;
+        setProductLocal(productData);
 
-      let category = '';
-      if (apparel.includes(category_id)) {
-        category = 'apparel';
-      } else if (sneakers.includes(category_id)) {
-        category = 'sneakers';
-      } else if (accessories.includes(category_id)) {
-        category = 'accessories';
+        // Tentukan kategori produk berdasarkan nama produk atau data kategori
+        const productName = productData.nama_produk.toLowerCase();
+        let category = '';
+
+        // Cek berdasarkan nama produk untuk kategori khusus
+        if (productName.includes('sixstreet')) {
+          category = 'sixstreet';
+          setProductCategory(category);
+        } else {
+          // Mapping kategori berdasarkan category_id
+          const categoryId = productData.category_id;
+
+          // Mapping berdasarkan category_id yang ada di Home component
+          const apparelIds = [18200, 18199, 18198, 7278, 18216, 18217, 18215, 18218];
+          const sneakersIds = [5472, 12780, 18462, 12794, 18710, 15087];
+          const accessoriesIds = [7332, 17866, 7339, 17860, 7340, 5515, 10230, 18225, 12632, 12611, 12610];
+
+          if (apparelIds.includes(categoryId)) {
+            category = 'apparel';
+          } else if (sneakersIds.includes(categoryId)) {
+            category = 'sneakers';
+          } else if (accessoriesIds.includes(categoryId)) {
+            category = 'accessories';
+          } else {
+            // Fallback berdasarkan nama kategori
+            const categoryName = productData.category_name?.toLowerCase() || '';
+            if (categoryName.includes('kaos') || categoryName.includes('kemeja') || categoryName.includes('hoodie') || categoryName.includes('jaket')) {
+              category = 'apparel';
+            } else if (categoryName.includes('sneaker') || categoryName.includes('sepatu') || categoryName.includes('slip')) {
+              category = 'sneakers';
+            } else if (categoryName.includes('tas') || categoryName.includes('topi') || categoryName.includes('dompet') || categoryName.includes('kacamata')) {
+              category = 'accessories';
+            } else {
+              category = 'apparel'; // Default fallback
+            }
+          }
+
+          setProductCategory(category);
+        }
+
+        console.log('Product category determined:', category);
+      } else {
+        console.error('Product not found for database_id:', databaseId);
+        toast.error('Produk tidak ditemukan');
       }
-      setProductCategory(category);
     } catch (error) {
-      console.error('Error fetching Jubelio product:', error);
-      toast.error('Gagal memuat data produk dari Jubelio');
+      console.error('Error fetching local product:', error);
+      toast.error('Gagal memuat data produk');
     }
   };
 
@@ -116,9 +143,11 @@ const Checkout = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       setTransactionData(response.data);
       return response.data;
     } catch (err) {
+      console.error('Error fetching transaction:', err);
       setError('Failed to fetch transaction data.');
       toast.error('Gagal memuat data transaksi', { autoClose: 1500 });
     } finally {
@@ -132,9 +161,19 @@ const Checkout = () => {
       const fetchInitialData = async () => {
         try {
           const transactionResponse = await fetchTransaction();
+
           if (transactionResponse && transactionResponse.length > 0) {
-            await fetchJubelioProduct(transactionResponse[0].product_id);
+            // Gunakan database product_id langsung untuk fetch produk
+            const databaseProductId = transactionResponse[0].product_id; // Database ID
+
+            if (databaseProductId) {
+              await fetchLocalProduct(databaseProductId);
+            } else {
+              console.error('No database product_id found in transaction data');
+              toast.error('Data produk tidak lengkap');
+            }
           }
+
           await Promise.all([fetchAddresses(), fetchCities(), fetchUserPoints(), fetchVoucherByUserId()]);
         } catch (error) {
           console.error('Error fetching initial data:', error);
@@ -233,13 +272,13 @@ const Checkout = () => {
   // Implement Voucher
   const implementVoucher = async (productId, price) => {
     try {
-      if (!productJubelio) {
-        throw new Error('Data produk Jubelio tidak tersedia');
+      if (!productLocal) {
+        throw new Error('Data produk tidak tersedia');
       }
 
       const token = Cookies.get('accessToken');
       let endpoint = `${backendUrl}/voucher/${user_id}`;
-      const productName = productJubelio.item_group_name.toLowerCase();
+      const productName = productLocal.nama_produk.toLowerCase();
       const isSixstreet = productName.includes('sixstreet');
 
       // Validasi kategori voucher
@@ -288,7 +327,7 @@ const Checkout = () => {
   // Handle Apply Voucher
   const handleApplyVoucher = async () => {
     // Validasi data dasar
-    if (!transactionData?.length || !productJubelio) {
+    if (!transactionData?.length || !productLocal) {
       toast.error('Data transaksi atau produk tidak tersedia');
       return;
     }
@@ -298,12 +337,22 @@ const Checkout = () => {
       return;
     }
 
-    const productId = transactionData[0].product_id;
+    // Gunakan database product_id dari transaksi untuk voucher
+    const databaseProductId = transactionData[0].product_id; // Database ID
     const price = transactionData[0].product_price * transactionData[0].quantity;
-    const productName = productJubelio.item_group_name.toLowerCase();
+    const productName = productLocal.nama_produk.toLowerCase();
     const isSixstreet = productName.includes('sixstreet');
     const voucherCategory = selectedVoucher.applicableProducts.toLowerCase();
     const isSixstreetVoucher = voucherCategory === 'sixstreet';
+
+    console.log('Applying voucher with database ID:', {
+      databaseProductId,
+      price,
+      productName,
+      isSixstreet,
+      productCategory,
+      voucherCategory,
+    });
 
     try {
       // Validasi untuk produk Sixstreet
@@ -320,7 +369,6 @@ const Checkout = () => {
           return;
         }
 
-        // Validasi kategori produk
         if (!productCategory) {
           toast.error('Kategori produk tidak valid');
           return;
@@ -332,10 +380,9 @@ const Checkout = () => {
         }
       }
 
-      // Implementasi voucher
-      await implementVoucher(productId, price);
+      // Implementasi voucher dengan database ID
+      await implementVoucher(databaseProductId, price);
     } catch (error) {
-      ``;
       console.error('Error applying voucher:', error);
       toast.error(error.response?.data?.message || 'Gagal menerapkan voucher');
     }
@@ -464,11 +511,9 @@ const Checkout = () => {
       // Hitung total akhir setelah points dan voucher
       const pointsDiscount = pointsToUse * 1000;
       const voucherDiscount = voucherApplied && voucherData ? voucherData.discountAmount : 0;
-
-      // Hitung final total sekaligus
       const finalTotal = Math.max(0, totalWithShipping - pointsDiscount - voucherDiscount);
 
-      // Update data transaksi
+      // Update data transaksi dengan database ID yang benar
       const updateData = {
         user_id,
         transaction_uuid,
@@ -479,7 +524,9 @@ const Checkout = () => {
         expedition: selectedExpedition,
         expedition_services: selectedProvider,
         etd: selectedService ? selectedService.cost[0].etd || '1-7' : '',
-        product_id: transactionData[0].product_id,
+        product_id: transactionData[0].product_id, // Database ID
+        product_group_id: transactionData[0].product_group_id, // Group ID
+        jubelio_item_id: transactionData[0].jubelio_item_id, // Jubelio item_id
         product_name: transactionData[0].product_name,
         product_price: transactionData[0].product_price,
         product_size: transactionData[0].product_size,
@@ -492,6 +539,8 @@ const Checkout = () => {
         final_total: finalTotal,
         status: 'PENDING',
       };
+
+      console.log('Updating transaction with database ID:', updateData);
 
       await axios.put(`${backendUrl}/transaction/${user_id}/${transaction_uuid}`, updateData, {
         headers: {
@@ -511,7 +560,7 @@ const Checkout = () => {
         expedition_services: selectedProvider,
         etd: updateData.etd,
         items: transactionData.map((transaction) => ({
-          id: transaction.product_id,
+          id: transaction.product_id, // Database ID
           price: transaction.product_price,
           quantity: transaction.quantity,
           name: transaction.product_name,
@@ -608,7 +657,7 @@ const Checkout = () => {
             {/* Voucher Section */}
             <div className="space-y-4 border-t pt-4">
               <h3 className="font-overpass font-bold text-lg">Voucher</h3>
-              {productJubelio ? (
+              {productLocal ? (
                 voucherList.length > 0 ? (
                   <div className="flex flex-col space-y-2">
                     <select
@@ -624,7 +673,7 @@ const Checkout = () => {
                         .filter((voucher) => {
                           if (voucher.isUsed) return false;
 
-                          const productName = productJubelio.item_group_name.toLowerCase();
+                          const productName = productLocal.nama_produk.toLowerCase();
                           const isSixstreet = productName.includes('sixstreet');
                           if (isSixstreet) {
                             return voucher.applicableProducts.toLowerCase() === 'sixstreet';

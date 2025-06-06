@@ -59,6 +59,9 @@ const AdminSidebar = ({ sidebarOpen, showSidebar, isLoggedIn, setIsLoggedIn, use
                 <Link to="/transaction-management" className="uppercase block text-lg font-overpass font-semibold text-[#333333] hover:text-gray-900" onClick={handleCloseSidebar}>
                   transaction management
                 </Link>
+                <Link to="/product-management" className="uppercase block text-lg font-overpass font-semibold text-[#333333] hover:text-gray-900" onClick={handleCloseSidebar}>
+                  product management
+                </Link>
               </nav>
             </div>
           </motion.div>
