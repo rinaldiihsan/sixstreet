@@ -244,6 +244,35 @@ const Profile = () => {
             <>
               <AccordionSection title="Account Details" isActive={activeSection === 'account'} onToggle={() => toggleSection('account')}>
                 <UserDetails userData={userData} toggleEditUserForm={() => setShowEditUserForm(true)} />
+
+                {/* User Code Section */}
+                <div className="mt-6 p-4 bg-gray-50  border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 font-garamond">Kode Referral</h3>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Kode Anda:</p>
+                      <p className="text-xl font-bold text-[#333333] font-overpass tracking-wider">{userData.kode_user}</p>
+                      <p className="text-xs text-gray-500 mt-1">Bagikan kode ini untuk mendapatkan poin referral</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(userData.kode_user);
+                        toast.success('Kode berhasil disalin!');
+                      }}
+                      className="px-4 py-2 bg-[#333333] text-white hover:bg-gray-700 transition-colors duration-300 text-sm font-overpass"
+                    >
+                      Salin Kode
+                    </button>
+                  </div>
+
+                  {/* Referred Code Section */}
+                  {userData.referd_kode && userData.referd_kode.trim() !== '' && (
+                    <div className="mt-4 pt-4 border-t border-gray-300">
+                      <p className="text-sm text-gray-600 mb-1">Direferensi oleh:</p>
+                      <p className="text-lg font-semibold text-green-600 font-overpass">{userData.referd_kode}</p>
+                    </div>
+                  )}
+                </div>
               </AccordionSection>
 
               <AccordionSection title="Manage Address" isActive={activeSection === 'address'} onToggle={() => toggleSection('address')}>
