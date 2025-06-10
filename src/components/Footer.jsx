@@ -14,19 +14,19 @@ const Footer = () => {
               <h1 className="font-garamond font-semibold text-2xl tracking-[10px] md:text-3xl md:tracking-[16px] text-white">SIXSTREET</h1>
             </Link>
             <div className="flex flex-wrap items-center justify-center gap-x-2 md:gap-x-8">
-              <Link to="/tops/all-products-tops" className="font-garamond text-white text-xl">
+              <Link to="/tops/all-products-tops" className="font-garamond text-white text-lg md:text-xl">
                 Tops
               </Link>
-              <Link to="/bottoms/all-products-bottoms" className="font-garamond text-white text-xl">
+              <Link to="/bottoms/all-products-bottoms" className="font-garamond text-white text-lg md:text-xl">
                 Bottoms
               </Link>
-              <Link to="/footwear/all-products-footwear" className="font-garamond text-white text-xl">
+              <Link to="/footwear/all-products-footwear" className="font-garamond text-white text-lg md:text-xl">
                 Footwear
               </Link>
-              <Link to="/accessories/all-products-accessories" className="font-garamond text-white text-xl">
+              <Link to="/accessories/all-products-accessories" className="font-garamond text-white text-lg md:text-xl">
                 Accessories
               </Link>
-              <Link to="/collaboration/all-collaborations" className="font-garamond text-white text-xl">
+              <Link to="/collaboration/all-collaborations" className="font-garamond text-white text-lg md:text-xl">
                 Collaborations
               </Link>
             </div>
@@ -73,7 +73,7 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-          <h1 className="font-overpass text-white text-lg">&copy; {currentYear} SIXSTREET. All Rights Reserved.</h1>
+          <h1 className="font-overpass text-white text-sm md:text-lg">&copy; {currentYear} SIXSTREET. All Rights Reserved.</h1>
         </div>
       </footer>
     </>
