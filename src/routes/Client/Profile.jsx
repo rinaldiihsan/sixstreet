@@ -47,14 +47,17 @@ const Profile = () => {
       const response = await axios.get(`${backendUrl}/detail/${id}`, {
         headers,
       });
-      setUserData(response.data.message);
+
+      // Updated to use response.data.data instead of response.data.message
+      const userDataFromAPI = response.data.data;
+      setUserData(userDataFromAPI);
 
       // Pre-fill user form data
       setFormUser({
-        email: response.data.message.email,
-        fullName: response.data.message.fullName,
-        no_hp: response.data.message.no_hp,
-        birthday: response.data.message.birthday,
+        email: userDataFromAPI.email,
+        fullName: userDataFromAPI.fullName,
+        no_hp: userDataFromAPI.no_hp,
+        birthday: userDataFromAPI.birthday,
       });
     } catch (error) {
       console.error('Error fetching user data:', error);

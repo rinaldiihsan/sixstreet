@@ -10,10 +10,21 @@ const TransactionManagement = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const [statusFilter, setStatusFilter] = useState(''); // New state for status filter
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+
+  // Status options based on your EditTransaction component
+  const statusOptions = [
+    { value: '', label: 'Semua Status' },
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'PAID', label: 'Paid' },
+    { value: 'SHIPPED', label: 'Shipped' },
+    { value: 'DELIVERED', label: 'Delivered' },
+    { value: 'CANCELLED', label: 'Cancelled' },
+  ];
 
   const fetchTransactions = async () => {
     try {
@@ -81,6 +92,53 @@ const TransactionManagement = () => {
     }
   };
 
+  // Function to get status display label
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Pending';
+      case 'PAID':
+        return 'Paid';
+      case 'SHIPPED':
+        return 'Shipped';
+      case 'DELIVERED':
+        return 'Delivered';
+      case 'CANCELLED':
+        return 'Cancelled';
+      default:
+        return status;
+    }
+  };
+
+  // Function to get status styling
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'PAID':
+        return 'bg-blue-100 text-blue-800';
+      case 'SHIPPED':
+        return 'bg-purple-100 text-purple-800';
+      case 'DELIVERED':
+        return 'bg-green-100 text-green-800';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Handle status filter change
+  const handleStatusFilterChange = (e) => {
+    setStatusFilter(e.target.value);
+  };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('');
+  };
+
   // Kelompokkan transaksi berdasarkan transaction_uuid (sama seperti OrderHistory)
   const groupedTransactions = transactions.reduce((acc, transaction) => {
     if (!acc[transaction.transaction_uuid]) {
@@ -107,9 +165,11 @@ const TransactionManagement = () => {
 
   const groupedArray = Object.values(groupedTransactions);
 
+  // Updated filteredTransactions to include status filter
   const filteredTransactions = groupedArray.filter((transaction) => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
+      searchTerm === '' ||
       transaction.transaction_uuid?.toLowerCase().includes(searchLower) ||
       transaction.name?.toLowerCase().includes(searchLower) ||
       transaction.address?.toLowerCase().includes(searchLower) ||
@@ -119,8 +179,11 @@ const TransactionManagement = () => {
       transaction.product_price?.toString().toLowerCase().includes(searchLower) ||
       transaction.total?.toString().toLowerCase().includes(searchLower) ||
       transaction.status?.toLowerCase().includes(searchLower) ||
-      new Date(transaction.createdAt).toLocaleString().toLowerCase().includes(searchLower)
-    );
+      new Date(transaction.createdAt).toLocaleString().toLowerCase().includes(searchLower);
+
+    const matchesStatus = statusFilter === '' || transaction.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
   });
 
   // Calculate pagination
@@ -129,10 +192,10 @@ const TransactionManagement = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentTransactions = filteredTransactions.slice(startIndex, endIndex);
 
-  // Reset to first page when search term changes
+  // Reset to first page when search term or status filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, statusFilter]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -186,19 +249,53 @@ const TransactionManagement = () => {
     return pageNumbers;
   };
 
+  // Count transactions by status for display
+  const getStatusCounts = () => {
+    const counts = statusOptions.reduce((acc, option) => {
+      if (option.value === '') {
+        acc[option.value] = groupedArray.length;
+      } else {
+        acc[option.value] = groupedArray.filter((transaction) => transaction.status === option.value).length;
+      }
+      return acc;
+    }, {});
+    return counts;
+  };
+
+  const statusCounts = getStatusCounts();
+
   return (
     <div className="mt-24 max-w-[115rem] py-5 mx-auto px-5 lg:px-2 flex flex-col justify-center items-center">
       <h1 className="font-overpass text-[#333333] font-semibold text-2xl my-4">Transaction Management</h1>
 
-      <div className="mt-10 flex w-full items-center justify-start">
-        <div className="space-y-1">
+      {/* Status Summary Cards */}
+      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        {statusOptions.map((option) => (
+          <div
+            key={option.value}
+            className={`p-4  border ${statusFilter === option.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'} 
+              cursor-pointer hover:shadow-sm transition-all duration-200`}
+            onClick={() => setStatusFilter(option.value)}
+          >
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${statusFilter === option.value ? 'text-blue-600' : 'text-gray-800'}`}>{statusCounts[option.value] || 0}</div>
+              <div className={`text-sm ${statusFilter === option.value ? 'text-blue-600' : 'text-gray-600'}`}>{option.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="mt-6 flex flex-col md:flex-row w-full items-center justify-between gap-4">
+        {/* Search Input */}
+        <div className="flex-1">
           <div className="relative">
             <input
               type="search"
               placeholder="Search transactions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
+              className="block w-full md:w-[30rem] pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass"
             />
             <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
               <path
@@ -211,13 +308,58 @@ const TransactionManagement = () => {
             </svg>
           </div>
         </div>
+
+        {/* Status Filter Dropdown */}
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <select value={statusFilter} onChange={handleStatusFilterChange} className="pl-4 pr-10 py-3 border border-gray-300 focus:ring-gray-300 focus:border-gray-300 sm:text-[1rem] font-overpass bg-white">
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} ({statusCounts[option.value] || 0})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Clear Filters Button */}
+          {(searchTerm || statusFilter) && (
+            <button onClick={handleClearFilters} className="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white font-overpass transition-colors duration-300">
+              Clear Filters
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Active Filters Display */}
+      {(searchTerm || statusFilter) && (
+        <div className="w-full mt-4 p-3 bg-blue-50 border border-blue-200 ">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-blue-800">Active Filters:</span>
+            {searchTerm && (
+              <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs ">
+                Search: "{searchTerm}"
+                <button onClick={() => setSearchTerm('')} className="ml-1 text-blue-600 hover:text-blue-800">
+                  ×
+                </button>
+              </span>
+            )}
+            {statusFilter && (
+              <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs ">
+                Status: {statusOptions.find((opt) => opt.value === statusFilter)?.label}
+                <button onClick={() => setStatusFilter('')} className="ml-1 text-blue-600 hover:text-blue-800">
+                  ×
+                </button>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Data info */}
       <div className="mt-5 w-full flex justify-between items-center text-sm font-overpass text-[#666666]">
         <div>
           Menampilkan {startIndex + 1} - {Math.min(endIndex, filteredTransactions.length)} dari {filteredTransactions.length} transaksi
-          {searchTerm && ` (hasil pencarian untuk "${searchTerm}")`}
+          {(searchTerm || statusFilter) && ` (filtered from ${groupedArray.length} total)`}
         </div>
         <div>
           Halaman {currentPage} dari {totalPages}
@@ -267,12 +409,7 @@ const TransactionManagement = () => {
                   <td className="py-3 px-4">{transaction.etd ? `${transaction.etd} hari` : '-'}</td>
                   <td className="py-3 px-4">{transaction.resi || '-'}</td>
                   <td className="py-3 px-4">
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full 
-                      ${transaction.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : transaction.status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
-                    >
-                      {transaction.status}
-                    </span>
+                    <span className={`px-2 py-1 text-xs font-semibold -full ${getStatusStyle(transaction.status)}`}>{getStatusLabel(transaction.status)}</span>
                   </td>
                   <td className="py-3 px-4 gap-3 flex justify-center items-center">
                     <button onClick={() => handleEdit(transaction)} className="px-3 py-1 bg-[#333333] hover:bg-[#ffffff] text-[#ffffff] hover:text-[#333333] transition-colors duration-300 font-overpass">
@@ -287,7 +424,7 @@ const TransactionManagement = () => {
             ) : (
               <tr>
                 <td colSpan="17" className="py-8 text-center text-gray-500">
-                  {searchTerm ? `Tidak ada transaksi yang ditemukan untuk "${searchTerm}"` : 'Tidak ada transaksi'}
+                  {searchTerm || statusFilter ? 'Tidak ada transaksi yang sesuai dengan filter yang dipilih' : 'Tidak ada transaksi'}
                 </td>
               </tr>
             )}
