@@ -44,6 +44,7 @@ import Watch from './routes/Client/Accessories/Watch';
 import AllCollaborations from './routes/Client/Collaboration/AllCollaborations';
 import Wukong from './routes/Client/Collaboration/Wukong';
 import Jameson from './routes/Client/Collaboration/Jameson';
+import Rajawali from './routes/Client/Collaboration/Rajawali';
 // End Collaboration Component
 
 // Product Detail Component
@@ -477,6 +478,7 @@ const App = () => {
             <Route path="/collaboration/all-collaborations" element={<AllCollaborations />} />
             <Route path="/collaboration/wukong" element={<Wukong />} />
             <Route path="/collaboration/jameson" element={<Jameson />} />
+            <Route path="/collaboration/rajawali" element={<Rajawali />} />
 
             {/* Product Detail */}
             <Route path="/product-detail/:group_id" element={<ProductDetail userId={userId} isLoggedIn={isLoggedIn} />} />

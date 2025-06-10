@@ -11,4 +11,8 @@ export const Collaborations = [
     name: 'Sixstreet x Jameson',
     path: '/collaboration/jameson',
   },
+  {
+    name: 'Sixstreet x Rajawali',
+    path: '/collaboration/rajawali',
+  },
 ];
