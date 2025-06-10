@@ -229,7 +229,7 @@ const Home = () => {
         {/* Hero Section - Sneakers */}
         <div className="relative mb-10">
           <img src="/hero3.webp" alt="Hero" className="w-full object-cover lg:h-screen" />
-          <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
+          <div className="absolute bottom-[5%] md:bottom-[10%] left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0 text-white px-5 md:px-10 flex flex-col justify-center items-center md:items-start w-full md:w-auto">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">sneakers</h1>
               <p className="capitalize font-garamond font-medium text-lg md:text-xl text-center lg:text-justify">Elevate every step – browse our sneaker collection now.</p>
@@ -246,7 +246,7 @@ const Home = () => {
         {/* Hero Section - Accessories */}
         <div className="relative mb-10">
           <img src={heroAccessories} alt="Hero" className="w-full object-cover lg:h-screen" />
-          <div className="absolute bottom-[5%] md:bottom-[10%] left-0 text-white px-5 md:px-10 flex flex-col items-center md:items-start">
+          <div className="absolute bottom-[5%] md:bottom-[10%] left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0 text-white px-5 md:px-10 flex flex-col justify-center items-center md:items-start w-full md:w-auto">
             <div className="md:max-w-[55rem] mb-2 text-center md:text-left">
               <h1 className="uppercase font-overpass tracking-[5px] md:tracking-[10px] font-extrabold text-xl md:text-3xl">accessories</h1>
               <p className="capitalize font-garamond font-medium text-lg md:text-xl text-center lg:text-justify">Accessorize your life – shop now for the perfect pieces.</p>

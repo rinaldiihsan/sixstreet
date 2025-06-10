@@ -73,7 +73,7 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-          <h1 className="font-overpass text-white text-sm md:text-lg">&copy; {currentYear} SIXSTREET. All Rights Reserved.</h1>
+          <h1 className="font-overpass text-white text-sm md:text-base">&copy; {currentYear} SIXSTREET. All Rights Reserved.</h1>
         </div>
       </footer>
     </>
